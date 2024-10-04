@@ -1,0 +1,9 @@
+controlador\RegistroUsuarioServlet.class
+modelo\Perfil.class
+com\mycompany\teatroweb\resources\JakartaEE10Resource.class
+controlador\PerfilServlet.class
+com\mycompany\teatroweb\JakartaRestConfiguration.class
+modelo\Conexion.class
+modelo\UsuarioDAO.class
+modelo\PerfilDAO.class
+modelo\Usuario.class

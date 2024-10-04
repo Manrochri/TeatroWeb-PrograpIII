@@ -1,0 +1,19 @@
+/* Estilo para el borde del formulario */
+.form-container {
+    border: 1px solid #ced4da;
+    padding: 30px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 600px; /* Limitar el ancho del formulario */
+}
+
+/* Ajuste del tamaño de los labels e inputs */
+.form-control, .form-select {
+    max-width: 400px; /* Ajustar el tamaño de los inputs */
+}
+
+.form-label {
+    font-weight: bold;
+    margin-right: 10px; /* Espacio entre label e input */
+}
