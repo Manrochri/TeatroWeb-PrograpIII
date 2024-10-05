@@ -12,7 +12,7 @@
     </session-config>
     
 <welcome-file-list>
-    <welcome-file>PerfilServlet</welcome-file>
+    <welcome-file>loginUsuario.jsp</welcome-file>
 </welcome-file-list>
 
     

@@ -7,8 +7,8 @@ public class Conexion {
     public static Connection getConnection() {
         Connection con = null;
         try {
-            // Cargar el driver JDBC
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Asegúrate de tener el driver correcto
+      
+            Class.forName("com.mysql.cj.jdbc.Driver"); 
 
             // Establecer la conexión
             con = DriverManager.getConnection(
