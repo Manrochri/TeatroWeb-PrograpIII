@@ -1,3 +1,4 @@
+-- Base de datos : teatroweb
 -- Creación de la tabla Usuario
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
