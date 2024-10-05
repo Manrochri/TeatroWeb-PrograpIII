@@ -1,16 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controlador;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,8 +43,14 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("nombre", nombre);
                 session.setAttribute("perfil", perfil);
                 
-                // Redirigir a la página que muestra el perfil
-                response.sendRedirect("perfilUsuario.jsp");
+                // Redirigir dependiendo del perfil del usuario
+                if ("Administrador".equals(perfil)) {
+                    // Redirigir a la página de mantenimiento si es administrador
+                    response.sendRedirect("mantenimiento.jsp");
+                } else {
+                    // Redirigir a una página común para otros perfiles
+                    response.sendRedirect("dashboard.jsp");
+                }
             } else {
                 // Si el login falla, redirigir a una página de error
                 response.sendRedirect("errorLogin.jsp");

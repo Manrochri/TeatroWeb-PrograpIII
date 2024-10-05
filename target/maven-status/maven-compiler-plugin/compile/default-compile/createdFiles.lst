@@ -7,4 +7,5 @@ modelo\Conexion.class
 modelo\UsuarioDAO.class
 modelo\PerfilDAO.class
 modelo\Usuario.class
+controlador\MantenimientoServlet.class
 controlador\LoginServlet.class
