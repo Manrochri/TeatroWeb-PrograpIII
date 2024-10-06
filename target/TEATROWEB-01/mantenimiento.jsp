@@ -3,13 +3,11 @@
 <%@ page import="java.sql.Connection, java.sql.PreparedStatement, java.sql.ResultSet" %>
 <%@ page import="jakarta.servlet.http.HttpSession" %>
 <%
-    if (session == null || session.getAttribute("perfil") == null || 
-        !"Administrador".equals(session.getAttribute("perfil"))) {
+    if (session == null || session.getAttribute("perfil") == null
+            || !"Administrador".equals(session.getAttribute("perfil"))) {
         response.sendRedirect("errorAcceso.jsp");
         return;
     }
-    
-    // FALTA TERMINAR EL CRUD
 
     // Obteniendo el nombre del usuario y su rol desde la sesión
     String nombreUsuario = (String) session.getAttribute("nombre");
@@ -17,15 +15,39 @@
 
     // Conexión a la base de datos para obtener los usuarios y perfiles
     Connection con = Conexion.getConnection();
-    
+
     // Obtener usuarios
     PreparedStatement psUsuarios = con.prepareStatement("SELECT u.IdUsuario, u.DNI, u.Nombres, u.ApellidoPaterno, u.CorreoElectronico, p.Nombre as Perfil FROM Usuario u JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario JOIN Perfiles p ON up.IdPerfil = p.IdPerfil WHERE u.EstadoRegistro = 1");
     ResultSet rsUsuarios = psUsuarios.executeQuery();
-    
+
     // Obtener perfiles
     PreparedStatement psPerfiles = con.prepareStatement("SELECT IdPerfil, Nombre, Descripcion FROM Perfiles WHERE EstadoRegistro = 1");
     ResultSet rsPerfiles = psPerfiles.executeQuery();
 %>
+
+<!-- Aquí se agregan los mensajes de éxito o error -->
+<%
+    String successMessage = request.getParameter("success");
+    if (successMessage != null) {
+%>
+    <div class="alert alert-success mt-3">
+        <% 
+            if ("usuarioRegistrado".equals(successMessage)) {
+                out.print("¡Usuario registrado exitosamente!");
+            } else if ("usuarioEditado".equals(successMessage)) {
+                out.print("¡Usuario editado exitosamente!");
+            } else if ("usuarioEliminado".equals(successMessage)) {
+                out.print("¡Usuario eliminado exitosamente!");
+            } else if ("perfilRegistrado".equals(successMessage)) {
+                out.print("¡Perfil registrado exitosamente!");
+            } else if ("perfilEditado".equals(successMessage)) {
+                out.print("¡Perfil editado exitosamente!");
+            } else if ("perfilEliminado".equals(successMessage)) {
+                out.print("¡Perfil eliminado exitosamente!");
+            }
+        %>
+    </div>
+<% } %>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -40,8 +62,8 @@
             <div class="row">
                 <!-- Menú principal a la izquierda -->
                 <div class="col-md-3 bg-light p-4">
-                    <h5>Bienvenido, <%= nombreUsuario %></h5>
-                    <p>Rol: <strong><%= rolUsuario %></strong></p>
+                    <h5>Bienvenido, <%= nombreUsuario%></h5>
+                    <p>Rol: <strong><%= rolUsuario%></strong></p>
                     <hr>
                     <h6>Opciones</h6>
                     <button class="btn btn-primary w-100 my-2" data-bs-toggle="modal" data-bs-target="#modalUsuarios">CRUD Usuarios</button>
@@ -84,13 +106,12 @@
                                             <label for="perfil" class="form-label">Perfil</label>
                                             <select class="form-select" id="perfil" name="perfil" required>
                                                 <option value="" disabled selected>Seleccionar Perfil</option>
-                                                <% 
-                                                    // Ejecutar nuevamente la consulta para obtener los perfiles
+                                                <%
                                                     PreparedStatement psPerfiles2 = con.prepareStatement("SELECT IdPerfil, Nombre FROM Perfiles WHERE EstadoRegistro = 1");
                                                     ResultSet rsPerfiles2 = psPerfiles2.executeQuery();
-                                                    while (rsPerfiles2.next()) { 
+                                                    while (rsPerfiles2.next()) {
                                                 %>
-                                                    <option value="<%= rsPerfiles2.getInt("IdPerfil") %>"><%= rsPerfiles2.getString("Nombre") %></option>
+                                                <option value="<%= rsPerfiles2.getInt("IdPerfil")%>"><%= rsPerfiles2.getString("Nombre")%></option>
                                                 <% } %>
                                             </select>
                                         </div>
@@ -110,18 +131,20 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% while (rsUsuarios.next()) { %>
+                                            <% while (rsUsuarios.next()) {%>
                                             <tr>
-                                                <td><%= rsUsuarios.getString("DNI") %></td>
-                                                <td><%= rsUsuarios.getString("Nombres") %> <%= rsUsuarios.getString("ApellidoPaterno") %></td>
-                                                <td><%= rsUsuarios.getString("CorreoElectronico") %></td>
-                                                <td><%= rsUsuarios.getString("Perfil") %></td>
+                                                <td><%= rsUsuarios.getString("DNI")%></td>
+                                                <td><%= rsUsuarios.getString("Nombres")%> <%= rsUsuarios.getString("ApellidoPaterno")%></td>
+                                                <td><%= rsUsuarios.getString("CorreoElectronico")%></td>
+                                                <td><%= rsUsuarios.getString("Perfil")%></td>
                                                 <td>
-                                                    <button class="btn btn-warning btn-sm" onclick="editarUsuario(<%= rsUsuarios.getInt("IdUsuario") %>)">Editar</button>
-                                                    <form action="MantenimientoServlet" method="post" class="d-inline">
-                                                        <input type="hidden" name="idUsuario" value="<%= rsUsuarios.getInt("IdUsuario") %>">
+                                                    <!-- Llamada a la función editarUsuario con los datos del usuario -->
+                                                    <button class="btn btn-warning btn-sm" onclick="editarUsuario(<%= rsUsuarios.getInt("IdUsuario")%>, '<%= rsUsuarios.getString("DNI")%>', '<%= rsUsuarios.getString("Nombres")%>', '<%= rsUsuarios.getString("ApellidoPaterno")%>', '<%= rsUsuarios.getString("CorreoElectronico")%>', '<%= rsUsuarios.getString("Perfil")%>')">Editar</button>
+                                                    <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                                        <input type="hidden" name="idUsuario" value="<%= rsUsuarios.getInt("IdUsuario")%>">
                                                         <button type="submit" name="accion" value="eliminarUsuario" class="btn btn-danger btn-sm">Eliminar</button>
                                                     </form>
+
                                                 </td>
                                             </tr>
                                             <% } %>
@@ -166,19 +189,20 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% while (rsPerfiles.next()) { %>
+                                            <% while (rsPerfiles.next()) {%>
                                             <tr>
-                                                <td><%= rsPerfiles.getString("Nombre") %></td>
-                                                <td><%= rsPerfiles.getString("Descripcion") %></td>
+                                                <td><%= rsPerfiles.getString("Nombre")%></td>
+                                                <td><%= rsPerfiles.getString("Descripcion")%></td>
                                                 <td>
-                                                    <button class="btn btn-warning btn-sm" onclick="editarPerfil(<%= rsPerfiles.getInt("IdPerfil") %>)">Editar</button>
+                                                    <!-- Llamada a la función editarPerfil con los datos del perfil -->
+                                                    <button class="btn btn-warning btn-sm" onclick="editarPerfil(<%= rsPerfiles.getInt("IdPerfil")%>, '<%= rsPerfiles.getString("Nombre")%>', '<%= rsPerfiles.getString("Descripcion")%>')">Editar</button>
                                                     <form action="MantenimientoServlet" method="post" class="d-inline">
-                                                        <input type="hidden" name="idPerfil" value="<%= rsPerfiles.getInt("IdPerfil") %>">
+                                                        <input type="hidden" name="idPerfil" value="<%= rsPerfiles.getInt("IdPerfil")%>">
                                                         <button type="submit" name="accion" value="eliminarPerfil" class="btn btn-danger btn-sm">Eliminar</button>
                                                     </form>
                                                 </td>
                                             </tr>
-                                            <% } %>
+                                            <% }%>
                                         </tbody>
                                     </table>
                                 </div>
@@ -191,16 +215,33 @@
 
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
         <!-- Script para precargar datos en el modal para editar -->
         <script>
-            function editarUsuario(idUsuario) {
-                // Aquí debes hacer una llamada AJAX o precargar los datos de la tabla al formulario
-                // para permitir editar el usuario en el modal.
-            }
+                                                        function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, correo, perfil) {
+                                                            document.getElementById('idUsuario').value = idUsuario;
+                                                            document.getElementById('dni').value = dni;
+                                                            document.getElementById('nombres').value = nombres;
+                                                            document.getElementById('apellidoPaterno').value = apellidoPaterno;
+                                                            document.getElementById('correo').value = correo;
+                                                            document.getElementById('perfil').value = perfil;
 
-            function editarPerfil(idPerfil) {
-                // Similar al caso de los usuarios, precargar datos para editar un perfil
-            }
+                                                            // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
+                                                            document.querySelector('#formUsuario button[type="submit"]').innerText = "Actualizar Usuario";
+                                                            document.querySelector('#formUsuario button[type="submit"]').name = "accion";
+                                                            document.querySelector('#formUsuario button[type="submit"]').value = "editarUsuario";
+                                                        }
+
+                                                        function editarPerfil(idPerfil, nombrePerfil, descripcionPerfil) {
+                                                            document.getElementById('idPerfil').value = idPerfil;
+                                                            document.getElementById('nombrePerfil').value = nombrePerfil;
+                                                            document.getElementById('descripcionPerfil').value = descripcionPerfil;
+
+                                                            // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
+                                                            document.querySelector('#formPerfil button[type="submit"]').innerText = "Actualizar Perfil";
+                                                            document.querySelector('#formPerfil button[type="submit"]').name = "accion";
+                                                            document.querySelector('#formPerfil button[type="submit"]').value = "editarPerfil";
+                                                        }
         </script>
     </body>
 </html>

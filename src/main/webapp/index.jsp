@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="modelo.Perfil" %>
 <%@ page import="modelo.Conexion" %>
+<%@ page import="controlador.PerfilServlet" %>
 <!DOCTYPE html>
 <html>
     <head>
