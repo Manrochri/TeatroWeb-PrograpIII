@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +17,8 @@ import modelo.Conexion;
 
 @WebServlet("/MantenimientoServlet")
 public class MantenimientoServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String accion = request.getParameter("accion");
 
@@ -32,8 +34,8 @@ public class MantenimientoServlet extends HttpServlet {
                 String correo = request.getParameter("correo");
                 int perfil = Integer.parseInt(request.getParameter("perfil"));
 
-                String query = "INSERT INTO Usuario (DNI, Nombres, ApellidoPaterno, CorreoElectronico, Clave, FechaCreacion, EstadoRegistro) " +
-                               "VALUES (?, ?, ?, ?, ?, NOW(), 1)";
+                String query = "INSERT INTO Usuario (DNI, Nombres, ApellidoPaterno, CorreoElectronico, Clave, FechaCreacion, EstadoRegistro) "
+                        + "VALUES (?, ?, ?, ?, ?, NOW(), 1)";
                 ps = con.prepareStatement(query);
                 ps.setString(1, dni);
                 ps.setString(2, nombres);
@@ -61,7 +63,43 @@ public class MantenimientoServlet extends HttpServlet {
                 ps.executeUpdate();
 
                 response.sendRedirect("mantenimiento.jsp?success=perfilRegistrado");
+            } else if ("editarUsuario".equals(accion)) {
+                // Editar un usuario existente
+                int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+                String dni = request.getParameter("dni");
+                String nombres = request.getParameter("nombres");
+                String apellidoPaterno = request.getParameter("apellidoPaterno");
+                String correo = request.getParameter("correo");
+
+                String query = "UPDATE Usuario SET DNI=?, Nombres=?, ApellidoPaterno=?, CorreoElectronico=?, FechaModificacion=NOW() WHERE IdUsuario=?";
+                ps = con.prepareStatement(query);
+                ps.setString(1, dni);
+                ps.setString(2, nombres);
+                ps.setString(3, apellidoPaterno);
+                ps.setString(4, correo);
+                ps.setInt(5, idUsuario);
+                ps.executeUpdate();
+
+                // Actualizar la sesión si es el usuario actual
+                HttpSession session = request.getSession();
+                Integer idUsuarioSesion = (Integer) session.getAttribute("idUsuario");
+                if (idUsuarioSesion != null && idUsuarioSesion == idUsuario) {
+                    session.setAttribute("nombre", nombres);  // Actualiza el nombre en la sesión
+                }
+                response.sendRedirect("mantenimiento.jsp?success=usuarioEditado");
+
+            } else if ("eliminarUsuario".equals(accion)) {
+                // Lógica para eliminar un usuario
+                int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+
+                String query = "DELETE FROM Usuario WHERE IdUsuario = ?";
+                ps = con.prepareStatement(query);
+                ps.setInt(1, idUsuario);
+                ps.executeUpdate();
+
+                response.sendRedirect("mantenimiento.jsp?success=usuarioEliminado");
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp");
