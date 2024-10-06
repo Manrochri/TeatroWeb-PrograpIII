@@ -8,6 +8,8 @@
         response.sendRedirect("errorAcceso.jsp");
         return;
     }
+    
+    // FALTA TERMINAR EL CRUD
 
     // Obteniendo el nombre del usuario y su rol desde la sesión
     String nombreUsuario = (String) session.getAttribute("nombre");
