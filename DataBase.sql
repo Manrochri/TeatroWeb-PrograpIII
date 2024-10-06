@@ -1,3 +1,4 @@
+--hola mundo
 --Hola papitas fritas
 -- Base de datos : teatroweb
 -- Creación de la tabla Usuario
