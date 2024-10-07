@@ -1,8 +1,23 @@
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.Connection"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="modelo.Perfil" %>
 <%@ page import="modelo.Conexion" %>
 <%@ page import="controlador.PerfilServlet" %>
+<%
+
+    // Conexión a la base de datos
+    Connection con = Conexion.getConnection();
+
+    // Obtener perfiles
+    PreparedStatement psPerfiles = con.prepareStatement("SELECT IdPerfil, Nombre, Descripcion FROM Perfiles WHERE EstadoRegistro = 1");
+    ResultSet rsPerfiles = psPerfiles.executeQuery();
+%>
+
+
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -94,16 +109,13 @@
                             <select name="perfil" class="form-select" required>
                                 <option value="">Seleccione un perfil</option>
                                 <%-- Aquí debes asegurarte de que los perfiles se carguen correctamente --%>
-                                <%
-                                    List<Perfil> perfiles = (List<Perfil>) request.getAttribute("perfiles");
-                                    if (perfiles != null) {
-                                        for (Perfil perfil : perfiles) {
-                                %>
-                                <option value="<%= perfil.getIdPerfil()%>"><%= perfil.getNombre()%></option>
-                                <%
-                                        }
-                                    }
-                                %>
+<%
+                                                    PreparedStatement psPerfiles2 = con.prepareStatement("SELECT IdPerfil, Nombre FROM Perfiles WHERE EstadoRegistro = 1");
+                                                    ResultSet rsPerfiles2 = psPerfiles2.executeQuery();
+                                                    while (rsPerfiles2.next()) {
+                                                %>
+                                                <option value="<%= rsPerfiles2.getInt("IdPerfil")%>"><%= rsPerfiles2.getString("Nombre")%></option>
+                                                <% } %>
                             </select>
                         </div>
                     </div>

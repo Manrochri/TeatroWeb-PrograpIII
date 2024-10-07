@@ -7,21 +7,27 @@
         <link rel="stylesheet" href="styles/styles.css">
     </head>
     <body>
-        <div class="container mt-5">
+        <div class="container mt-5 pt-5 d-flex justify-content-center">
+        <div class="form-container">
             <h2 class="text-center">Login</h2>
-            <form action="LoginServlet" method="post">
-                <div class="mb-3">
-                    <label for="dni" class="form-label">DNI</label>
-                    <input type="text" class="form-control" id="dni" name="dni" required>
-                </div>
-                <div class="mb-3">
-                    <label for="clave" class="form-label">Clave</label>
-                    <input type="password" class="form-control" id="clave" name="clave" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                <a href="registroPerfil.jsp" class="boton">Registrar</a>
-
-            </form>
-        </div>
+            
+                <form action="LoginServlet" method="post">
+                    <div class="mb-3">
+                        <label for="dni" class="form-label">DNI</label>
+                        <input type="text" class="form-control" id="dni" name="dni" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clave" class="form-label">Clave</label>
+                        <input type="password" class="form-control" id="clave" name="clave" required>
+                    </div>
+                    <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    </div>
+                    <div class="mt-4">
+                    <a href="index.jsp" class="boton">¿No tienes cuenta? Regístrate</a>
+                    </div>
+                </form>
+            </div>
+    </div>
     </body>
 </html>
