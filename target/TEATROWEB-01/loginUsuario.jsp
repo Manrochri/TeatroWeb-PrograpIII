@@ -19,7 +19,7 @@
                     <input type="password" class="form-control" id="clave" name="clave" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                <a href="registroPerfil.jsp" class="boton">Registrar</a>
+                <a href="index.jsp" class="boton">Registrar</a>
 
             </form>
         </div>
