@@ -8,7 +8,7 @@
 <%@ page import="controlador.PerfilServlet" %>
 <%
 
-    // Conexión a la base de datos para obtener los usuarios y perfiles
+    // Conexión a la base de datos
     Connection con = Conexion.getConnection();
 
     // Obtener perfiles
