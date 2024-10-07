@@ -1,3 +1,4 @@
+-- Hola soy Batman
 -- Base de datos : teatroweb
 -- Creación de la tabla Usuario
 CREATE TABLE Usuario (
