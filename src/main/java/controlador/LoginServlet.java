@@ -9,10 +9,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modelo.Conexion;
+import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         String dni = request.getParameter("dni");
@@ -22,41 +27,45 @@ public class LoginServlet extends HttpServlet {
             // Conectar a la base de datos
             Connection con = Conexion.getConnection();
             
-            // Consultar el usuario por DNI y clave
-            String query = "SELECT u.Nombres, p.Nombre as Perfil FROM Usuario u " +
+            // Consultar la contraseña encriptada por DNI
+            String query = "SELECT u.Clave, u.Nombres, p.Nombre as Perfil FROM Usuario u " +
                            "JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario " +
                            "JOIN Perfiles p ON up.IdPerfil = p.IdPerfil " +
-                           "WHERE u.DNI = ? AND u.Clave = ?";
+                           "WHERE u.DNI = ?";
             PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, dni);
-            ps.setString(2, clave);
             
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                // Obtener el nombre y perfil del usuario
-                String nombre = rs.getString("Nombres");
-                String perfil = rs.getString("Perfil");
+                String hashedClave = rs.getString("Clave");
                 
-                // Crear una sesión para el usuario autenticado
-                HttpSession session = request.getSession();
-                session.setAttribute("nombre", nombre);
-                session.setAttribute("perfil", perfil);
-                
-                // Redirigir dependiendo del perfil del usuario
-                if ("Administrador".equals(perfil)) {
-                    // Redirigir a la página de mantenimiento si es administrador
-                    response.sendRedirect("mantenimiento.jsp");
+                // Verificar si la clave ingresada coincide con la clave encriptada
+                if (BCrypt.checkpw(clave, hashedClave)) {
+                    // Obtener el nombre y perfil del usuario
+                    String nombre = rs.getString("Nombres");
+                    String perfil = rs.getString("Perfil");
+                    
+                    // Crear una sesión para el usuario autenticado
+                    HttpSession session = request.getSession();
+                    session.setAttribute("nombre", nombre);
+                    session.setAttribute("perfil", perfil);
+                    
+                    // Redirigir dependiendo del perfil del usuario
+                    if ("Administrador".equals(perfil)) {
+                        response.sendRedirect("mantenimiento.jsp");
+                    } else {
+                        response.sendRedirect("dashboard.jsp");
+                    }
                 } else {
-                    // Redirigir a una página común para otros perfiles
-                    response.sendRedirect("dashboard.jsp");
+                    // Si la clave no coincide
+                    response.sendRedirect("errorLogin.jsp");
                 }
             } else {
-                // Si el login falla, redirigir a una página de error
+                // Si no se encuentra el usuario
                 response.sendRedirect("errorLogin.jsp");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | SQLException e) {
             response.sendRedirect("errorLogin.jsp");
         }
     }

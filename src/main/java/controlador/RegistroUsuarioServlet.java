@@ -12,6 +12,8 @@ import java.util.List;
 import modelo.Usuario;
 import modelo.UsuarioDAO;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 @WebServlet("/registrarUsuario")
 public class RegistroUsuarioServlet extends HttpServlet {
 
@@ -50,6 +52,9 @@ public class RegistroUsuarioServlet extends HttpServlet {
             // Parsear el ID del perfil
             int perfilId = Integer.parseInt(perfilIdStr);
 
+            // Encriptar la contraseña usando bcrypt
+            String hashedClave = BCrypt.hashpw(clave, BCrypt.gensalt());
+            
             // Crear objeto Usuario y asignar los valores
             Usuario usuario = new Usuario();
             usuario.setDni(dni);
@@ -58,7 +63,7 @@ public class RegistroUsuarioServlet extends HttpServlet {
             usuario.setApellidoMaterno(apellidoMaterno);
             usuario.setCelular(celular);
             usuario.setCorreoElectronico(correoElectronico);
-            usuario.setClave(clave);
+            usuario.setClave(hashedClave); // Guardar la clave encriptada
             usuario.setEstadoRegistro(true); // Activo
 
             // Asignar el perfil seleccionado
@@ -76,10 +81,10 @@ public class RegistroUsuarioServlet extends HttpServlet {
                 request.getRequestDispatcher("index.jsp").forward(request, response);
             }
 
-        } catch (Exception e) {
+        } catch (ServletException | IOException | NumberFormatException e) {
             // Capturar el error y reenviar los detalles a la página JSP para que se muestren
             request.setAttribute("error", "Error: " + e.getMessage());
-            e.printStackTrace(); // Imprimir el error en los logs del servidor
+            // Imprimir el error en los logs del servidor
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }
