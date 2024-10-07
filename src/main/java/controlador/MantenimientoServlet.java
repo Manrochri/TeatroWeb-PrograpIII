@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
@@ -70,7 +71,9 @@ public class MantenimientoServlet extends HttpServlet {
                 String nombres = request.getParameter("nombres");
                 String apellidoPaterno = request.getParameter("apellidoPaterno");
                 String correo = request.getParameter("correo");
+                int perfil = Integer.parseInt(request.getParameter("perfil"));  // Obtener el perfil actualizado
 
+                // Actualizar los datos del usuario
                 String query = "UPDATE Usuario SET DNI=?, Nombres=?, ApellidoPaterno=?, CorreoElectronico=?, FechaModificacion=NOW() WHERE IdUsuario=?";
                 ps = con.prepareStatement(query);
                 ps.setString(1, dni);
@@ -78,6 +81,13 @@ public class MantenimientoServlet extends HttpServlet {
                 ps.setString(3, apellidoPaterno);
                 ps.setString(4, correo);
                 ps.setInt(5, idUsuario);
+                ps.executeUpdate();
+
+                // Actualizar el perfil del usuario en la tabla Usuario_Perfiles
+                query = "UPDATE Usuario_Perfiles SET IdPerfil=? WHERE IdUsuario=?";
+                ps = con.prepareStatement(query);
+                ps.setInt(1, perfil);  // Actualizar con el nuevo perfil
+                ps.setInt(2, idUsuario);
                 ps.executeUpdate();
 
                 // Actualizar la sesión si es el usuario actual
