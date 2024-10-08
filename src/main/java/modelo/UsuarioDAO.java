@@ -41,35 +41,34 @@ public class UsuarioDAO {
 
                     // Actualizar los campos UsuarioCreacion, UsuarioModificacion y FechaModificacion con el ID del usuario recién insertado
                     String sqlUpdate = "UPDATE Usuario SET UsuarioCreacion = ?, UsuarioModificacion = ?, FechaModificacion = ? WHERE IdUsuario = ?";
-                    PreparedStatement psUpdate = con.prepareStatement(sqlUpdate);
-                    psUpdate.setInt(1, idUsuario); // UsuarioCreacion
-                    psUpdate.setInt(2, idUsuario); // UsuarioModificacion
-                    psUpdate.setTimestamp(3, new java.sql.Timestamp(new Date().getTime())); // Fecha de modificación igual a la de creación
-                    psUpdate.setInt(4, idUsuario); // ID del usuario a actualizar
-                    psUpdate.executeUpdate();
-                    psUpdate.close();
+                    try (PreparedStatement psUpdate = con.prepareStatement(sqlUpdate)) {
+                        psUpdate.setInt(1, idUsuario); // UsuarioCreacion
+                        psUpdate.setInt(2, idUsuario); // UsuarioModificacion
+                        psUpdate.setTimestamp(3, new java.sql.Timestamp(new Date().getTime())); // Fecha de modificación igual a la de creación
+                        psUpdate.setInt(4, idUsuario); // ID del usuario a actualizar
+                        psUpdate.executeUpdate();
+                    } // UsuarioCreacion
 
                     // Insertar los perfiles asociados al usuario
                     for (Integer idPerfil : usuario.getPerfiles()) {
                         String sqlPerfiles = "INSERT INTO Usuario_Perfiles (IdUsuario, IdPerfil, EstadoRegistro) VALUES (?, ?, ?)";
-                        PreparedStatement psPerfiles = con.prepareStatement(sqlPerfiles);
-                        psPerfiles.setInt(1, idUsuario);
-                        psPerfiles.setInt(2, idPerfil);
-                        psPerfiles.setBoolean(3, true); // Estado activo
-                        psPerfiles.executeUpdate();
-                        psPerfiles.close();
+                        try (PreparedStatement psPerfiles = con.prepareStatement(sqlPerfiles)) {
+                            psPerfiles.setInt(1, idUsuario);
+                            psPerfiles.setInt(2, idPerfil);
+                            psPerfiles.setBoolean(3, true); // Estado activo
+                            psPerfiles.executeUpdate();
+                        }
                     }
 
                     registrado = true;
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             // Cerrar recursos de base de datos
-            try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
-            try { if (con != null) con.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try { if (rs != null) rs.close(); } catch (SQLException e) {}
+            try { if (ps != null) ps.close(); } catch (SQLException e) {}
+            try { if (con != null) con.close(); } catch (SQLException e) {}
         }
         return registrado;
     }
@@ -107,11 +106,10 @@ public class UsuarioDAO {
                 actualizado = true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             // Cerrar recursos de base de datos
-            try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
-            try { if (con != null) con.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try { if (ps != null) ps.close(); } catch (SQLException e) {}
+            try { if (con != null) con.close(); } catch (SQLException e) {}
         }
         return actualizado;
     }

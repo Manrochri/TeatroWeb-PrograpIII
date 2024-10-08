@@ -12,6 +12,8 @@ import java.util.List;
 import modelo.Usuario;
 import modelo.UsuarioDAO;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 @WebServlet("/registrarUsuario")
 public class RegistroUsuarioServlet extends HttpServlet {
 
@@ -41,7 +43,6 @@ public class RegistroUsuarioServlet extends HttpServlet {
                     || clave == null || clave.trim().isEmpty()
                     || perfilIdStr == null || perfilIdStr.trim().isEmpty()) {
 
-                // Si hay un error en los campos obligatorios, regresar al formulario
                 request.setAttribute("error", "Todos los campos obligatorios deben ser completados.");
                 request.getRequestDispatcher("index.jsp").forward(request, response);
                 return;
@@ -49,6 +50,9 @@ public class RegistroUsuarioServlet extends HttpServlet {
 
             // Parsear el ID del perfil
             int perfilId = Integer.parseInt(perfilIdStr);
+
+            // Encriptar la contraseña usando bcrypt
+            String hashedClave = BCrypt.hashpw(clave, BCrypt.gensalt());
 
             // Crear objeto Usuario y asignar los valores
             Usuario usuario = new Usuario();
@@ -58,8 +62,8 @@ public class RegistroUsuarioServlet extends HttpServlet {
             usuario.setApellidoMaterno(apellidoMaterno);
             usuario.setCelular(celular);
             usuario.setCorreoElectronico(correoElectronico);
-            usuario.setClave(clave);
-            usuario.setEstadoRegistro(true); // Activo
+            usuario.setClave(hashedClave); // Guardar la clave encriptada
+            usuario.setEstadoRegistro(true);
 
             // Asignar el perfil seleccionado
             usuario.setPerfiles(List.of(perfilId));
@@ -68,7 +72,6 @@ public class RegistroUsuarioServlet extends HttpServlet {
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             boolean registrado = usuarioDAO.registrarUsuario(usuario);
 
-            // Redirigir según el resultado del registro
             if (registrado) {
                 response.sendRedirect("registroExitoso.jsp");
             } else {
@@ -76,11 +79,8 @@ public class RegistroUsuarioServlet extends HttpServlet {
                 request.getRequestDispatcher("index.jsp").forward(request, response);
             }
 
-        } catch (Exception e) {
-            // Capturar el error y reenviar los detalles a la página JSP para que se muestren
+        } catch (ServletException | IOException | NumberFormatException e) {
             request.setAttribute("error", "Error: " + e.getMessage());
-            e.printStackTrace(); // Imprimir el error en los logs del servidor
-            request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }
 }

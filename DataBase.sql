@@ -1,4 +1,3 @@
--- el guason 2 es mala
 -- Base de datos : teatroweb
 -- Creación de la tabla Usuario
 CREATE TABLE Usuario (
