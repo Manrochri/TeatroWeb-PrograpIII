@@ -196,10 +196,12 @@
                                                 <td>
                                                     <!-- Llamada a la función editarPerfil con los datos del perfil -->
                                                     <button class="btn btn-warning btn-sm" onclick="editarPerfil(<%= rsPerfiles.getInt("IdPerfil")%>, '<%= rsPerfiles.getString("Nombre")%>', '<%= rsPerfiles.getString("Descripcion")%>')">Editar</button>
+
                                                     <form action="MantenimientoServlet" method="post" class="d-inline">
                                                         <input type="hidden" name="idPerfil" value="<%= rsPerfiles.getInt("IdPerfil")%>">
                                                         <button type="submit" name="accion" value="eliminarPerfil" class="btn btn-danger btn-sm">Eliminar</button>
                                                     </form>
+
                                                 </td>
                                             </tr>
                                             <% }%>
@@ -208,7 +210,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>  
                 </div>
             </div>
         </div>
@@ -218,30 +220,35 @@
 
         <!-- Script para precargar datos en el modal para editar -->
         <script>
-                                                        function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, correo, perfil) {
-                                                            document.getElementById('idUsuario').value = idUsuario;
-                                                            document.getElementById('dni').value = dni;
-                                                            document.getElementById('nombres').value = nombres;
-                                                            document.getElementById('apellidoPaterno').value = apellidoPaterno;
-                                                            document.getElementById('correo').value = correo;
-                                                            document.getElementById('perfil').value = perfil;
+                                        function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, correo, perfil) {
+                                            document.getElementById('idUsuario').value = idUsuario;
+                                            document.getElementById('dni').value = dni;
+                                            document.getElementById('nombres').value = nombres;
+                                            document.getElementById('apellidoPaterno').value = apellidoPaterno;
+                                            document.getElementById('correo').value = correo;
+                                            document.getElementById('perfil').value = perfil;
 
-                                                            // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
-                                                            document.querySelector('#formUsuario button[type="submit"]').innerText = "Actualizar Usuario";
-                                                            document.querySelector('#formUsuario button[type="submit"]').name = "accion";
-                                                            document.querySelector('#formUsuario button[type="submit"]').value = "editarUsuario";
-                                                        }
+                                            // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
+                                            document.querySelector('#formUsuario button[type="submit"]').innerText = "Actualizar Usuario";
+                                            document.querySelector('#formUsuario button[type="submit"]').name = "accion";
+                                            document.querySelector('#formUsuario button[type="submit"]').value = "editarUsuario";
+                                        }
 
-                                                        function editarPerfil(idPerfil, nombrePerfil, descripcionPerfil) {
-                                                            document.getElementById('idPerfil').value = idPerfil;
-                                                            document.getElementById('nombrePerfil').value = nombrePerfil;
-                                                            document.getElementById('descripcionPerfil').value = descripcionPerfil;
+               
 
-                                                            // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
-                                                            document.querySelector('#formPerfil button[type="submit"]').innerText = "Actualizar Perfil";
-                                                            document.querySelector('#formPerfil button[type="submit"]').name = "accion";
-                                                            document.querySelector('#formPerfil button[type="submit"]').value = "editarPerfil";
-                                                        }
+        </script>
+        
+        <script>
+            //script para editar perfiles
+                                     function editarPerfil(idPerfil, nombrePerfil, descripcionPerfil) {
+                                           document.getElementById('idPerfil').value = idPerfil;
+                                           document.getElementById('nombrePerfil').value = nombrePerfil;
+                                           document.getElementById('descripcionPerfil').value = descripcionPerfil;
+
+                                           // Cambiar el botón a "Actualizar"
+                                           document.querySelector('#formPerfil button[type="submit"]').innerText = "Actualizar Perfil";
+                                           document.querySelector('#formPerfil button[type="submit"]').value = "editarPerfil";
+                                       }
         </script>
     </body>
 </html>

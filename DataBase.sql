@@ -8,7 +8,7 @@ CREATE TABLE Usuario (
     ApellidoMaterno VARCHAR(40),
     Celular VARCHAR(15),
     CorreoElectronico VARCHAR(40) NOT NULL,
-    Clave VARCHAR(40) NOT NULL,
+    Clave VARCHAR(60) NOT NULL,
     UsuarioCreacion INT,
     FechaCreacion DATETIME NOT NULL,
     UsuarioModificacion INT,

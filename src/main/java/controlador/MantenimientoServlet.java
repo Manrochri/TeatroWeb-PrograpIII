@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import modelo.Conexion;
 
 @WebServlet("/MantenimientoServlet")
@@ -65,6 +66,29 @@ public class MantenimientoServlet extends HttpServlet {
                     response.sendRedirect("mantenimiento.jsp?success=perfilRegistrado");
                         break;
                     }
+
+                case "editarPerfil": {
+                    int idPerfil = Integer.parseInt(request.getParameter("idPerfil"));
+                    String nombrePerfil = request.getParameter("nombrePerfil");
+                    String descripcionPerfil = request.getParameter("descripcionPerfil");
+
+                    String query = "UPDATE Perfiles SET Nombre=?, Descripcion=? WHERE IdPerfil=?";
+                    try (PreparedStatement psUpdatePerfil = con.prepareStatement(query)) {
+                        psUpdatePerfil.setString(1, nombrePerfil);
+                        psUpdatePerfil.setString(2, descripcionPerfil);
+                        psUpdatePerfil.setInt(3, idPerfil);
+                        psUpdatePerfil.executeUpdate();
+                    }
+
+                    response.sendRedirect("mantenimiento.jsp?success=perfilEditado");
+                    break;
+                }
+
+                
+                
+
+
+                
                 case "editarUsuario":{
                     // Editar un usuario existente
                     int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
@@ -96,16 +120,25 @@ public class MantenimientoServlet extends HttpServlet {
                     }       response.sendRedirect("mantenimiento.jsp?success=usuarioEditado");
                         break;
                     }
-                case "eliminarUsuario":{
-                    // Lógica para eliminar un usuario
+                case "eliminarUsuario": {
                     int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-                    String query = "DELETE FROM Usuario WHERE IdUsuario = ?";
+
+                 
+                    String query = "DELETE FROM Usuario_Perfiles WHERE IdUsuario = ?";
                     ps = con.prepareStatement(query);
                     ps.setInt(1, idUsuario);
                     ps.executeUpdate();
+
+                    
+                    query = "DELETE FROM Usuario WHERE IdUsuario = ?";
+                    ps = con.prepareStatement(query);
+                    ps.setInt(1, idUsuario);
+                    ps.executeUpdate();
+
                     response.sendRedirect("mantenimiento.jsp?success=usuarioEliminado");
-                        break;
-                    }
+                    break;
+                }
+
                 default:
                     break;
             }
