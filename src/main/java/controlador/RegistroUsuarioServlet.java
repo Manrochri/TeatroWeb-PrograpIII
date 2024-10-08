@@ -43,7 +43,6 @@ public class RegistroUsuarioServlet extends HttpServlet {
                     || clave == null || clave.trim().isEmpty()
                     || perfilIdStr == null || perfilIdStr.trim().isEmpty()) {
 
-                // Si hay un error en los campos obligatorios, regresar al formulario
                 request.setAttribute("error", "Todos los campos obligatorios deben ser completados.");
                 request.getRequestDispatcher("index.jsp").forward(request, response);
                 return;
@@ -54,7 +53,7 @@ public class RegistroUsuarioServlet extends HttpServlet {
 
             // Encriptar la contraseña usando bcrypt
             String hashedClave = BCrypt.hashpw(clave, BCrypt.gensalt());
-            
+
             // Crear objeto Usuario y asignar los valores
             Usuario usuario = new Usuario();
             usuario.setDni(dni);
@@ -64,7 +63,7 @@ public class RegistroUsuarioServlet extends HttpServlet {
             usuario.setCelular(celular);
             usuario.setCorreoElectronico(correoElectronico);
             usuario.setClave(hashedClave); // Guardar la clave encriptada
-            usuario.setEstadoRegistro(true); // Activo
+            usuario.setEstadoRegistro(true);
 
             // Asignar el perfil seleccionado
             usuario.setPerfiles(List.of(perfilId));
@@ -73,7 +72,6 @@ public class RegistroUsuarioServlet extends HttpServlet {
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             boolean registrado = usuarioDAO.registrarUsuario(usuario);
 
-            // Redirigir según el resultado del registro
             if (registrado) {
                 response.sendRedirect("registroExitoso.jsp");
             } else {
@@ -82,10 +80,7 @@ public class RegistroUsuarioServlet extends HttpServlet {
             }
 
         } catch (ServletException | IOException | NumberFormatException e) {
-            // Capturar el error y reenviar los detalles a la página JSP para que se muestren
             request.setAttribute("error", "Error: " + e.getMessage());
-            // Imprimir el error en los logs del servidor
-            request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }
 }
