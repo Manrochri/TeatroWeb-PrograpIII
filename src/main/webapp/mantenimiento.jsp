@@ -17,7 +17,8 @@
     Connection con = Conexion.getConnection();
 
     // Obtener usuarios
-    PreparedStatement psUsuarios = con.prepareStatement("SELECT u.IdUsuario, u.DNI, u.Nombres, u.ApellidoPaterno, u.CorreoElectronico, p.Nombre as Perfil FROM Usuario u JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario JOIN Perfiles p ON up.IdPerfil = p.IdPerfil WHERE u.EstadoRegistro = 1");
+    PreparedStatement psUsuarios = con.prepareStatement("SELECT u.IdUsuario, u.DNI, u.Nombres, u.ApellidoPaterno, u.ApellidoMaterno, u.CorreoElectronico, p.Nombre as Perfil FROM Usuario u JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario JOIN Perfiles p ON up.IdPerfil = p.IdPerfil WHERE u.EstadoRegistro = 1");
+
     ResultSet rsUsuarios = psUsuarios.executeQuery();
 
     // Obtener perfiles
@@ -66,151 +67,16 @@
                     <p>Rol: <strong><%= rolUsuario%></strong></p>
                     <hr>
                     <h6>Opciones</h6>
-                    <button class="btn btn-primary w-100 my-2" data-bs-toggle="modal" data-bs-target="#modalUsuarios">CRUD Usuarios</button>
-                    <button class="btn btn-secondary w-100 my-2" data-bs-toggle="modal" data-bs-target="#modalPerfiles">CRUD Perfiles</button>
+                    <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('usuarios')">CRUD Usuarios</button>
+                    <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('perfiles')">CRUD Perfiles</button>
                 </div>
 
                 <!-- Contenido a la derecha -->
                 <div class="col-md-9">
-                    <!-- Aquí se muestra el contenido de los CRUDs -->
-
-                    <!-- Modal CRUD Usuarios -->
-                    <div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modalUsuariosLabel">CRUD Usuarios</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- Formulario para registrar o editar usuarios -->
-                                    <form action="MantenimientoServlet" method="post" id="formUsuario">
-                                        <input type="hidden" name="idUsuario" id="idUsuario">
-                                        <div class="mb-3">
-                                            <label for="dni" class="form-label">DNI</label>
-                                            <input type="text" class="form-control" id="dni" name="dni" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="nombres" class="form-label">Nombres</label>
-                                            <input type="text" class="form-control" id="nombres" name="nombres" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
-                                            <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="correo" class="form-label">Correo Electrónico</label>
-                                            <input type="email" class="form-control" id="correo" name="correo" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="perfil" class="form-label">Perfil</label>
-                                            <select class="form-select" id="perfil" name="perfil" required>
-                                                <option value="" disabled selected>Seleccionar Perfil</option>
-                                                <%
-                                                    PreparedStatement psPerfiles2 = con.prepareStatement("SELECT IdPerfil, Nombre FROM Perfiles WHERE EstadoRegistro = 1");
-                                                    ResultSet rsPerfiles2 = psPerfiles2.executeQuery();
-                                                    while (rsPerfiles2.next()) {
-                                                %>
-                                                <option value="<%= rsPerfiles2.getInt("IdPerfil")%>"><%= rsPerfiles2.getString("Nombre")%></option>
-                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <button type="submit" name="accion" value="registrarUsuario" class="btn btn-primary">Guardar Usuario</button>
-                                    </form>
-
-                                    <!-- Tabla de usuarios registrados -->
-                                    <h5 class="mt-4">Usuarios Registrados</h5>
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>DNI</th>
-                                                <th>Nombre Completo</th>
-                                                <th>Correo Electrónico</th>
-                                                <th>Perfil</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% while (rsUsuarios.next()) {%>
-                                            <tr>
-                                                <td><%= rsUsuarios.getString("DNI")%></td>
-                                                <td><%= rsUsuarios.getString("Nombres")%> <%= rsUsuarios.getString("ApellidoPaterno")%></td>
-                                                <td><%= rsUsuarios.getString("CorreoElectronico")%></td>
-                                                <td><%= rsUsuarios.getString("Perfil")%></td>
-                                                <td>
-                                                    <!-- Llamada a la función editarUsuario con los datos del usuario -->
-                                                    <button class="btn btn-warning btn-sm" onclick="editarUsuario(<%= rsUsuarios.getInt("IdUsuario")%>, '<%= rsUsuarios.getString("DNI")%>', '<%= rsUsuarios.getString("Nombres")%>', '<%= rsUsuarios.getString("ApellidoPaterno")%>', '<%= rsUsuarios.getString("CorreoElectronico")%>', '<%= rsUsuarios.getString("Perfil")%>')">Editar</button>
-                                                    <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
-                                                        <input type="hidden" name="idUsuario" value="<%= rsUsuarios.getInt("IdUsuario")%>">
-                                                        <button type="submit" name="accion" value="eliminarUsuario" class="btn btn-danger btn-sm">Eliminar</button>
-                                                    </form>
-
-                                                </td>
-                                            </tr>
-                                            <% } %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Sección donde aparecerán las opciones CRUD -->
+                    <div id="seccionCRUD" style="display: none;">
+                        <!-- Aquí se llenará con los CRUD de usuarios o perfiles -->
                     </div>
-
-                    <!-- Modal CRUD Perfiles -->
-                    <div class="modal fade" id="modalPerfiles" tabindex="-1" aria-labelledby="modalPerfilesLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modalPerfilesLabel">CRUD Perfiles</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- Formulario para registrar o editar perfiles -->
-                                    <form action="MantenimientoServlet" method="post" id="formPerfil">
-                                        <input type="hidden" name="idPerfil" id="idPerfil">
-                                        <div class="mb-3">
-                                            <label for="nombrePerfil" class="form-label">Nombre del Perfil</label>
-                                            <input type="text" class="form-control" id="nombrePerfil" name="nombrePerfil" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="descripcionPerfil" class="form-label">Descripción</label>
-                                            <textarea class="form-control" id="descripcionPerfil" name="descripcionPerfil" required></textarea>
-                                        </div>
-                                        <button type="submit" name="accion" value="registrarPerfil" class="btn btn-primary">Guardar Perfil</button>
-                                    </form>
-
-                                    <!-- Tabla de perfiles registrados -->
-                                    <h5 class="mt-4">Perfiles Registrados</h5>
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Nombre</th>
-                                                <th>Descripción</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% while (rsPerfiles.next()) {%>
-                                            <tr>
-                                                <td><%= rsPerfiles.getString("Nombre")%></td>
-                                                <td><%= rsPerfiles.getString("Descripcion")%></td>
-                                                <td>
-                                                    <!-- Llamada a la función editarPerfil con los datos del perfil -->
-                                                    <button class="btn btn-warning btn-sm" onclick="editarPerfil(<%= rsPerfiles.getInt("IdPerfil")%>, '<%= rsPerfiles.getString("Nombre")%>', '<%= rsPerfiles.getString("Descripcion")%>')">Editar</button>
-
-                                                    <form action="MantenimientoServlet" method="post" class="d-inline">
-                                                        <input type="hidden" name="idPerfil" value="<%= rsPerfiles.getInt("IdPerfil")%>">
-                                                        <button type="submit" name="accion" value="eliminarPerfil" class="btn btn-danger btn-sm">Eliminar</button>
-                                                    </form>
-
-                                                </td>
-                                            </tr>
-                                            <% }%>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>  
                 </div>
             </div>
         </div>
@@ -218,39 +84,156 @@
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Script para precargar datos en el modal para editar -->
+        <!-- Script para manejar CRUD -->
         <script>
-                                        function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, correo, perfil) {
-                                            document.getElementById('idUsuario').value = idUsuario;
-                                            document.getElementById('dni').value = dni;
-                                            document.getElementById('nombres').value = nombres;
-                                            document.getElementById('apellidoPaterno').value = apellidoPaterno;
-                                            document.getElementById('correo').value = correo;
-                                            document.getElementById('perfil').value = perfil;
+            function mostrarCRUD(tipo) {
+                const seccionCRUD = document.getElementById('seccionCRUD');
+                let contenido = '';
 
-                                            // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
-                                            document.querySelector('#formUsuario button[type="submit"]').innerText = "Actualizar Usuario";
-                                            document.querySelector('#formUsuario button[type="submit"]').name = "accion";
-                                            document.querySelector('#formUsuario button[type="submit"]').value = "editarUsuario";
-                                        }
+                if (tipo === 'usuarios') {
+                    contenido = `
+                        <h5>CRUD Usuarios</h5>
+                        <form action="MantenimientoServlet" method="post" id="formUsuario">
+                            <input type="hidden" name="idUsuario" id="idUsuario">
+                            <div class="mb-3">
+                                <label for="dni" class="form-label">DNI</label>
+                                <input type="text" class="form-control" id="dni" name="dni" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nombres" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="nombres" name="nombres" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+                                <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                                <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno">
+                            </div>
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="correo" name="correo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="perfil" class="form-label">Perfil</label>
+                                <select class="form-select" id="perfil" name="perfil" required>
+                                    <option value="" disabled selected>Seleccionar Perfil</option>
+                                    <%
+                                        PreparedStatement psPerfiles2 = con.prepareStatement("SELECT IdPerfil, Nombre FROM Perfiles WHERE EstadoRegistro = 1");
+                                        ResultSet rsPerfiles2 = psPerfiles2.executeQuery();
+                                        while (rsPerfiles2.next()) {
+                                    %>
+                                    <option value="<%= rsPerfiles2.getInt("IdPerfil")%>"><%= rsPerfiles2.getString("Nombre")%></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <button type="submit" name="accion" value="registrarUsuario" class="btn btn-primary">Guardar Usuario</button>
+                        </form>
 
-               
+                        <h5 class="mt-4">Usuarios Registrados</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>DNI</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Correo Electrónico</th>
+                                    <th>Perfil</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% while (rsUsuarios.next()) { %>
+                                <tr>
+                                    <td><%= rsUsuarios.getString("DNI")%></td>
+                                    <td><%= rsUsuarios.getString("Nombres")%> <%= rsUsuarios.getString("ApellidoPaterno")%></td>
+                                    <td><%= rsUsuarios.getString("CorreoElectronico")%></td>
+                                    <td><%= rsUsuarios.getString("Perfil")%></td>
+                                    <td>
+                                       <button class="btn btn-warning btn-sm" onclick="editarUsuario(<%= rsUsuarios.getInt("IdUsuario")%>, '<%= rsUsuarios.getString("DNI")%>', '<%= rsUsuarios.getString("Nombres")%>', '<%= rsUsuarios.getString("ApellidoPaterno")%>', '<%= rsUsuarios.getString("ApellidoMaterno")%>', '<%= rsUsuarios.getString("CorreoElectronico")%>', '<%= rsUsuarios.getString("Perfil")%>')">Editar</button>
 
+                                        <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                            <input type="hidden" name="idUsuario" value="<%= rsUsuarios.getInt("IdUsuario")%>">
+                                            <button type="submit" name="accion" value="eliminarUsuario" class="btn btn-danger btn-sm">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    `;
+                } else if (tipo === 'perfiles') {
+                    contenido = `
+                        <h5>CRUD Perfiles</h5>
+                        <form action="MantenimientoServlet" method="post" id="formPerfil">
+                            <input type="hidden" name="idPerfil" id="idPerfil">
+                            <div class="mb-3">
+                                <label for="nombrePerfil" class="form-label">Nombre del Perfil</label>
+                                <input type="text" class="form-control" id="nombrePerfil" name="nombrePerfil" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="descripcionPerfil" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="descripcionPerfil" name="descripcionPerfil" required></textarea>
+                            </div>
+                            <button type="submit" name="accion" value="registrarPerfil" class="btn btn-primary">Guardar Perfil</button>
+                        </form>
+
+                        <h5 class="mt-4">Perfiles Registrados</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% while (rsPerfiles.next()) { %>
+                                <tr>
+                                    <td><%= rsPerfiles.getString("Nombre")%></td>
+                                    <td><%= rsPerfiles.getString("Descripcion")%></td>
+                                    <td>
+                                        <button class="btn btn-warning btn-sm" onclick="editarPerfil(<%= rsPerfiles.getInt("IdPerfil")%>, '<%= rsPerfiles.getString("Nombre")%>', '<%= rsPerfiles.getString("Descripcion")%>')">Editar</button>
+                                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                                            <input type="hidden" name="idPerfil" value="<%= rsPerfiles.getInt("IdPerfil")%>">
+                                            <button type="submit" name="accion" value="eliminarPerfil" class="btn btn-danger btn-sm">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+                seccionCRUD.innerHTML = contenido;
+                seccionCRUD.style.display = 'block';
+            }
+
+            function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, apellidoMaterno, correo, perfil) {
+                    document.getElementById('idUsuario').value = idUsuario;
+                    document.getElementById('dni').value = dni;
+                    document.getElementById('nombres').value = nombres;
+                    document.getElementById('apellidoPaterno').value = apellidoPaterno;
+                    document.getElementById('apellidoMaterno').value = apellidoMaterno;  // Agregar Apellido Materno
+                    document.getElementById('correo').value = correo;
+                    document.getElementById('perfil').value = perfil;
+
+                    // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
+                    document.querySelector('#formUsuario button[type="submit"]').innerText = "Actualizar Usuario";
+                    document.querySelector('#formUsuario button[type="submit"]').value = "editarUsuario";
+                }
+
+            function editarPerfil(idPerfil, nombrePerfil, descripcionPerfil) {
+                document.getElementById('idPerfil').value = idPerfil;
+                document.getElementById('nombrePerfil').value = nombrePerfil;
+                document.getElementById('descripcionPerfil').value = descripcionPerfil;
+
+                // Cambiar el botón a "Actualizar"
+                document.querySelector('#formPerfil button[type="submit"]').innerText = "Actualizar Perfil";
+                document.querySelector('#formPerfil button[type="submit"]').value = "editarPerfil";
+            }
         </script>
-        
-        <script>
-            //script para editar perfiles
-                                     function editarPerfil(idPerfil, nombrePerfil, descripcionPerfil) {
-                                           document.getElementById('idPerfil').value = idPerfil;
-                                           document.getElementById('nombrePerfil').value = nombrePerfil;
-                                           document.getElementById('descripcionPerfil').value = descripcionPerfil;
-
-                                           // Cambiar el botón a "Actualizar"
-                                           document.querySelector('#formPerfil button[type="submit"]').innerText = "Actualizar Perfil";
-                                           document.querySelector('#formPerfil button[type="submit"]').value = "editarPerfil";
-                                       }
-        </script>
-        
         
     </body>
 </html>
