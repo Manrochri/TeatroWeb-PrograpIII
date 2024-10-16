@@ -56,6 +56,24 @@ CREATE TABLE OpcionesMenu_Perfiles (
     FOREIGN KEY (IdPerfil) REFERENCES Perfiles(IdPerfil)
 );
 
+
+-- Creación de tabla GradoAcademico
+CREATE TABLE GradoAcademico (
+    IdGradoAcademico INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(50) NOT NULL
+);
+-- Creación de tabla Docente
+
+CREATE TABLE Docente (
+    IdDocente INT AUTO_INCREMENT PRIMARY KEY,
+    IdUsuario INT NOT NULL,
+    IdGradoAcademico INT NOT NULL,
+    Descripcion TEXT,
+    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario),
+    FOREIGN KEY (IdGradoAcademico) REFERENCES GradoAcademico(IdGradoAcademico)
+);
+
+
 -- Inserción de datos en la tabla Perfiles
 INSERT INTO Perfiles (Nombre, Descripcion, EstadoRegistro)
 VALUES
@@ -64,3 +82,11 @@ VALUES
 ('Moderador', 'Usuario con permisos para gestionar contenidos y usuarios.', 1),
 ('Invitado', 'Usuario con acceso temporal y permisos muy limitados.', 1);
 
+-- Inserción de grado académico
+
+INSERT INTO GradoAcademico (Nombre)
+VALUES
+('Bachiller'),
+('Licenciado'),
+('Magíster'),
+('Doctorado');
