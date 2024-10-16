@@ -4,6 +4,7 @@ controlador\PerfilServlet.class
 com\mycompany\teatroweb\JakartaRestConfiguration.class
 modelo\UsuarioDAO.class
 modelo\PerfilDAO.class
+controlador\LogoutServlet.class
 controlador\MantenimientoServlet.class
 modelo\Perfil.class
 modelo\DocenteDAO.class
