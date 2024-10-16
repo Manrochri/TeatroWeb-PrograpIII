@@ -1,5 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="java.util.*" %>
+<%@page import="modelo.Conexion"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.sql.Connection, java.sql.PreparedStatement, java.sql.ResultSet" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="jakarta.servlet.http.HttpSession" %>
 <%
 if (session == null || session.getAttribute("perfil") == null
             || !"Docente".equals(session.getAttribute("perfil"))) {
@@ -7,13 +10,29 @@ if (session == null || session.getAttribute("perfil") == null
         return;
     }
 
-    // Obtener el nombre, apellido y perfil desde la sesión
+
+    // Obtener el nombre y rol del usuario desde la sesión
     String nombreUsuario = (String) session.getAttribute("nombre");
     String apellidoUsuario = (String) session.getAttribute("apellido");
     String rolUsuario = (String) session.getAttribute("perfil");
 
-    // Obtener los grados académicos desde la base de datos (puedes hacer esta parte en un servlet)
-    List<String> gradosAcademicos = Arrays.asList("Bachiller", "Licenciado", "Magíster", "Doctorado");
+    // Crear una lista para almacenar los grados académicos
+    ArrayList<String> gradosAcademicos = new ArrayList<>();
+    
+    // Conexión a la base de datos para obtener los grados académicos
+    Connection con = Conexion.getConnection();
+    PreparedStatement psGrados = con.prepareStatement("SELECT Nombre FROM GradoAcademico");
+    ResultSet rsGrados = psGrados.executeQuery();
+    
+    // Agregar los grados académicos a la lista
+    while (rsGrados.next()) {
+        gradosAcademicos.add(rsGrados.getString("Nombre"));
+    }
+
+    // Cerrar la conexión
+    rsGrados.close();
+    psGrados.close();
+    con.close();
 %>
 
 <!DOCTYPE html>
@@ -33,7 +52,6 @@ if (session == null || session.getAttribute("perfil") == null
                 <p>Rol: <strong><%= rolUsuario %></strong></p>
                 <hr>
                 <h6>Opciones</h6>
-                <!-- Opciones de perfil, "Mi perfil" para actualizar información -->
                 <button class="btn btn-primary w-100 my-2" onclick="mostrarSeccion('miPerfil')">Mi Perfil</button>
                 <button class="btn btn-secondary w-100 my-2" onclick="mostrarSeccion('otraOpcion')">Otras Opciones</button>
 
@@ -72,8 +90,8 @@ if (session == null || session.getAttribute("perfil") == null
 
                 <!-- Otra opción que podrías agregar -->
                 <div id="otraOpcion" style="display: none;">
-                    <h5>Otras Opciones</h5>
-                    <p>Aquí puedes agregar otras funcionalidades o secciones para el docente.</p>
+                    <h5>Registrar curso</h5>
+                    <p>Aquí se registrarán curso. Falta terminar</p>
                 </div>
             </div>
         </div>

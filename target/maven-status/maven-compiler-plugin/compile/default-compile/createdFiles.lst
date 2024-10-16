@@ -2,6 +2,7 @@ controlador\RegistroUsuarioServlet.class
 controlador\DocentePerfilServlet.class
 controlador\PerfilServlet.class
 com\mycompany\teatroweb\JakartaRestConfiguration.class
+controlador\PerfilDocenteServlet.class
 modelo\UsuarioDAO.class
 modelo\PerfilDAO.class
 controlador\LogoutServlet.class
