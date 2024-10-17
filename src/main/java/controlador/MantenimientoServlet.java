@@ -1,8 +1,3 @@
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controlador;
 
 import jakarta.servlet.ServletException;
@@ -10,11 +5,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import modelo.Conexion;
 
 @WebServlet("/MantenimientoServlet")
@@ -44,16 +37,17 @@ public class MantenimientoServlet extends HttpServlet {
                     ps.setString(2, nombres);
                     ps.setString(3, apellidoPaterno);
                     ps.setString(4, correo);
-                    ps.setString(5, "clave_generica");  // Puedes generar una contraseña aleatoria aquí
+                    ps.setString(5, "clave_generica");
                     ps.executeUpdate();
-                    // Asignar el perfil al usuario en la tabla intermedia
+
                     query = "INSERT INTO Usuario_Perfiles (IdUsuario, IdPerfil, EstadoRegistro) VALUES (LAST_INSERT_ID(), ?, 1)";
                     ps = con.prepareStatement(query);
                     ps.setInt(1, perfil);
                     ps.executeUpdate();
                     response.sendRedirect("mantenimiento.jsp?success=usuarioRegistrado");
-                        break;
-                    }
+                    break;
+                }
+
                 case "registrarPerfil":{
                     // Lógica para registrar un nuevo perfil
                     String nombrePerfil = request.getParameter("nombrePerfil");
@@ -64,8 +58,8 @@ public class MantenimientoServlet extends HttpServlet {
                     ps.setString(2, descripcionPerfil);
                     ps.executeUpdate();
                     response.sendRedirect("mantenimiento.jsp?success=perfilRegistrado");
-                        break;
-                    }
+                    break;
+                }
 
                 case "editarPerfil": {
                     int idPerfil = Integer.parseInt(request.getParameter("idPerfil"));
@@ -73,22 +67,16 @@ public class MantenimientoServlet extends HttpServlet {
                     String descripcionPerfil = request.getParameter("descripcionPerfil");
 
                     String query = "UPDATE Perfiles SET Nombre=?, Descripcion=? WHERE IdPerfil=?";
-                    try (PreparedStatement psUpdatePerfil = con.prepareStatement(query)) {
-                        psUpdatePerfil.setString(1, nombrePerfil);
-                        psUpdatePerfil.setString(2, descripcionPerfil);
-                        psUpdatePerfil.setInt(3, idPerfil);
-                        psUpdatePerfil.executeUpdate();
-                    }
+                    ps = con.prepareStatement(query);
+                    ps.setString(1, nombrePerfil);
+                    ps.setString(2, descripcionPerfil);
+                    ps.setInt(3, idPerfil);
+                    ps.executeUpdate();
 
                     response.sendRedirect("mantenimiento.jsp?success=perfilEditado");
                     break;
                 }
 
-                
-                
-
-
-                
                 case "editarUsuario":{
                     // Editar un usuario existente
                     int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
@@ -96,8 +84,8 @@ public class MantenimientoServlet extends HttpServlet {
                     String nombres = request.getParameter("nombres");
                     String apellidoPaterno = request.getParameter("apellidoPaterno");
                     String correo = request.getParameter("correo");
-                    int perfil = Integer.parseInt(request.getParameter("perfil"));  // Obtener el perfil actualizado
-                    // Actualizar los datos del usuario
+                    int perfil = Integer.parseInt(request.getParameter("perfil"));
+
                     String query = "UPDATE Usuario SET DNI=?, Nombres=?, ApellidoPaterno=?, CorreoElectronico=?, FechaModificacion=NOW() WHERE IdUsuario=?";
                     ps = con.prepareStatement(query);
                     ps.setString(1, dni);
@@ -106,36 +94,67 @@ public class MantenimientoServlet extends HttpServlet {
                     ps.setString(4, correo);
                     ps.setInt(5, idUsuario);
                     ps.executeUpdate();
-                    // Actualizar el perfil del usuario en la tabla Usuario_Perfiles
+
                     query = "UPDATE Usuario_Perfiles SET IdPerfil=? WHERE IdUsuario=?";
                     ps = con.prepareStatement(query);
-                    ps.setInt(1, perfil);  // Actualizar con el nuevo perfil
+                    ps.setInt(1, perfil);
                     ps.setInt(2, idUsuario);
                     ps.executeUpdate();
-                    // Actualizar la sesión si es el usuario actual
-                    HttpSession session = request.getSession();
-                    Integer idUsuarioSesion = (Integer) session.getAttribute("idUsuario");
-                    if (idUsuarioSesion != null && idUsuarioSesion == idUsuario) {
-                        session.setAttribute("nombre", nombres);  // Actualiza el nombre en la sesión
-                    }       response.sendRedirect("mantenimiento.jsp?success=usuarioEditado");
-                        break;
-                    }
+                    
+                    response.sendRedirect("mantenimiento.jsp?success=usuarioEditado");
+                    break;
+                }
+
                 case "eliminarUsuario": {
                     int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
-                 
                     String query = "DELETE FROM Usuario_Perfiles WHERE IdUsuario = ?";
                     ps = con.prepareStatement(query);
                     ps.setInt(1, idUsuario);
                     ps.executeUpdate();
 
-                    
                     query = "DELETE FROM Usuario WHERE IdUsuario = ?";
                     ps = con.prepareStatement(query);
                     ps.setInt(1, idUsuario);
                     ps.executeUpdate();
 
                     response.sendRedirect("mantenimiento.jsp?success=usuarioEliminado");
+                    break;
+                }
+
+                // NUEVO CRUD PARA GRADOS ACADÉMICOS
+                case "registrarGrado": {
+                    // Lógica para registrar un nuevo grado académico
+                    String nombreGrado = request.getParameter("nombreGrado");
+                    String query = "INSERT INTO GradoAcademico (Nombre, EstadoRegistro) VALUES (?, 1)";
+                    ps = con.prepareStatement(query);
+                    ps.setString(1, nombreGrado);
+                    ps.executeUpdate();
+                    response.sendRedirect("mantenimiento.jsp?success=gradoRegistrado");
+                    break;
+                }
+
+                case "editarGrado": {
+                    // Lógica para editar un grado académico existente
+                    int idGrado = Integer.parseInt(request.getParameter("idGrado"));
+                    String nombreGrado = request.getParameter("nombreGrado");
+                    String query = "UPDATE GradoAcademico SET Nombre=? WHERE IdGradoAcademico=?";
+                    ps = con.prepareStatement(query);
+                    ps.setString(1, nombreGrado);
+                    ps.setInt(2, idGrado);
+                    ps.executeUpdate();
+                    response.sendRedirect("mantenimiento.jsp?success=gradoEditado");
+                    break;
+                }
+
+                case "eliminarGrado": {
+                    // Lógica para eliminar un grado académico
+                    int idGrado = Integer.parseInt(request.getParameter("idGrado"));
+                    String query = "UPDATE GradoAcademico SET EstadoRegistro=0 WHERE IdGradoAcademico=?";
+                    ps = con.prepareStatement(query);
+                    ps.setInt(1, idGrado);
+                    ps.executeUpdate();
+                    response.sendRedirect("mantenimiento.jsp?success=gradoEliminado");
                     break;
                 }
 
