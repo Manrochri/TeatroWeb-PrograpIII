@@ -74,6 +74,60 @@ CREATE TABLE Docente (
 );
 
 
+-- Crear tablas maestras de CURSO
+CREATE TABLE CategoriaCurso (
+    IdCategoria INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(50) NOT NULL,
+    EstadoRegistro BOOLEAN NOT NULL
+);
+
+CREATE TABLE DuracionCurso (
+    IdDuracion INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(50) NOT NULL,
+    EstadoRegistro BOOLEAN NOT NULL
+);
+
+CREATE TABLE IdiomaCurso (
+    IdIdioma INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(50) NOT NULL,
+    EstadoRegistro BOOLEAN NOT NULL
+);
+
+CREATE TABLE RangoEdadesCurso (
+    IdRango INT AUTO_INCREMENT PRIMARY KEY,
+    Descripcion VARCHAR(50) NOT NULL,
+    EstadoRegistro BOOLEAN NOT NULL
+);
+
+-- Crear tabla Curso
+CREATE TABLE Curso (
+    IdCurso INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL,
+    FechaRegistro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Capacidad INT NOT NULL,
+    FechaInicio DATE NOT NULL,
+    FechaFin DATE NOT NULL,
+    Precio DECIMAL(10, 2) NOT NULL,
+    IdCategoria INT NOT NULL,
+    IdDuracion INT NOT NULL,
+    IdIdioma INT NOT NULL,
+    IdRango INT NOT NULL,
+    EstadoRegistro BOOLEAN NOT NULL,
+    FOREIGN KEY (IdCategoria) REFERENCES CategoriaCurso(IdCategoria),
+    FOREIGN KEY (IdDuracion) REFERENCES DuracionCurso(IdDuracion),
+    FOREIGN KEY (IdIdioma) REFERENCES IdiomaCurso(IdIdioma),
+    FOREIGN KEY (IdRango) REFERENCES RangoEdadesCurso(IdRango)
+);
+
+-- Crear tabla intermedia para relación muchos a muchos entre Curso y Docentes
+CREATE TABLE Curso_Docentes (
+    IdCurso INT NOT NULL,
+    IdDocente INT NOT NULL,
+    PRIMARY KEY (IdCurso, IdDocente),
+    FOREIGN KEY (IdCurso) REFERENCES Curso(IdCurso),
+    FOREIGN KEY (IdDocente) REFERENCES Docentes(IdDocente)
+);
+
 -- Inserción de datos en la tabla Perfiles
 INSERT INTO Perfiles (Nombre, Descripcion, EstadoRegistro)
 VALUES
