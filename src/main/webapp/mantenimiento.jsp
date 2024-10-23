@@ -272,6 +272,30 @@ ResultSet rsRangos = psRangos.executeQuery();
         </div>
     </div>
 </div>
+<!-- MODAL DURACIÓN CURSO -->
+<div class="modal fade" id="duracionModal" tabindex="-1" aria-labelledby="duracionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="duracionModalLabel">Gestionar Duración Curso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formDuracion">
+                    <input type="hidden" name="idDuracion" id="idDuracion">
+                    <div class="mb-3">
+                        <label for="nombreDuracion" class="form-label">Duración (ej. 3 meses)</label>
+                        <input type="text" class="form-control" id="nombreDuracion" name="nombreDuracion" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarDuracion" class="btn btn-primary">Guardar Duración</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
  
  <!-- MODAL RANDO-CURSOS-->
@@ -413,6 +437,36 @@ ResultSet rsRangos = psRangos.executeQuery();
         </table>
     `;
 }
+else if (tipo === 'duraciones') {
+    contenido = `
+        <h5>Gestión de Duraciones</h5>
+        <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#duracionModal">Nueva Duración</button>
+        <h5 class="mt-4">Duraciones Registradas</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre de la Duración</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsDuraciones.next()) { %>
+                <tr>
+                    <td><%= rsDuraciones.getString("Nombre") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarDuracion(<%= rsDuraciones.getInt("IdDuracion") %>, '<%= rsDuraciones.getString("Nombre") %>')">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idDuracion" value="<%= rsDuraciones.getInt("IdDuracion") %>">
+                            <button type="submit" name="accion" value="eliminarDuracion" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
+}
+
 
          
             
@@ -518,6 +572,34 @@ categoriaModal.addEventListener('hidden.bs.modal', function () {
             document.querySelector('#formGrado button[type="submit"]').innerText = "Guardar Grado";
             document.querySelector('#formGrado button[type="submit"]').value = "registrarGrado";
         });
+        
+        
+        
+        function editarDuracion(idDuracion, nombreDuracion) {
+    document.getElementById('idDuracion').value = idDuracion;
+    document.getElementById('nombreDuracion').value = nombreDuracion;
+
+    // Cambiar el botón a "Actualizar"
+    document.querySelector('#formDuracion button[type="submit"]').innerText = "Actualizar Duración";
+    document.querySelector('#formDuracion button[type="submit"]').value = "editarDuracion";
+
+    // Abrir el modal
+    var modal = new bootstrap.Modal(document.getElementById('duracionModal'));
+    modal.show();
+}
+
+// Limpiar el formulario al cerrar el modal
+var duracionModal = document.getElementById('duracionModal');
+duracionModal.addEventListener('hidden.bs.modal', function () {
+    document.getElementById('formDuracion').reset();
+    document.getElementById('idDuracion').value = '';
+    document.querySelector('#formDuracion button[type="submit"]').innerText = "Guardar Duración";
+    document.querySelector('#formDuracion button[type="submit"]').value = "registrarDuracion";
+});
+
+        
+        
+        
     </script>
 </body>
 </html>
