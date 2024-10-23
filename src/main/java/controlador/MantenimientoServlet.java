@@ -23,30 +23,33 @@ public class MantenimientoServlet extends HttpServlet {
             PreparedStatement ps;
 
             if (null != accion) switch (accion) {
-                case "registrarUsuario":{
-                    // Lógica para registrar un nuevo usuario
-                    String dni = request.getParameter("dni");
-                    String nombres = request.getParameter("nombres");
-                    String apellidoPaterno = request.getParameter("apellidoPaterno");
-                    String correo = request.getParameter("correo");
-                    int perfil = Integer.parseInt(request.getParameter("perfil"));
-                    String query = "INSERT INTO Usuario (DNI, Nombres, ApellidoPaterno, CorreoElectronico, Clave, FechaCreacion, EstadoRegistro) "
-                            + "VALUES (?, ?, ?, ?, ?, NOW(), 1)";
-                    ps = con.prepareStatement(query);
-                    ps.setString(1, dni);
-                    ps.setString(2, nombres);
-                    ps.setString(3, apellidoPaterno);
-                    ps.setString(4, correo);
-                    ps.setString(5, "clave_generica");
-                    ps.executeUpdate();
+                case "registrarUsuario": {
+                        // Para registrar Usuario en la BD
+                        String dni = request.getParameter("dni");
+                        String nombres = request.getParameter("nombres");
+                        String apellidoPaterno = request.getParameter("apellidoPaterno");
+                        String apellidoMaterno = request.getParameter("apellidoMaterno"); // Nuevo campo
+                        String correo = request.getParameter("correo");
+                        int perfil = Integer.parseInt(request.getParameter("perfil"));
 
-                    query = "INSERT INTO Usuario_Perfiles (IdUsuario, IdPerfil, EstadoRegistro) VALUES (LAST_INSERT_ID(), ?, 1)";
-                    ps = con.prepareStatement(query);
-                    ps.setInt(1, perfil);
-                    ps.executeUpdate();
-                    response.sendRedirect("mantenimiento.jsp?success=usuarioRegistrado");
-                    break;
-                }
+                        String query = "INSERT INTO Usuario (DNI, Nombres, ApellidoPaterno, ApellidoMaterno, CorreoElectronico, Clave, FechaCreacion, EstadoRegistro) "
+                                     + "VALUES (?, ?, ?, ?, ?, ?, NOW(), 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, dni);
+                        ps.setString(2, nombres);
+                        ps.setString(3, apellidoPaterno);
+                        ps.setString(4, apellidoMaterno); // Asignar el valor de ApellidoMaterno
+                        ps.setString(5, correo);
+                        ps.setString(6, "clave_generica");
+                        ps.executeUpdate();
+
+                        query = "INSERT INTO Usuario_Perfiles (IdUsuario, IdPerfil, EstadoRegistro) VALUES (LAST_INSERT_ID(), ?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, perfil);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=usuarioRegistrado");
+                        break;
+                    }
 
                 case "registrarPerfil":{
                     // Lógica para registrar un nuevo perfil
@@ -76,23 +79,25 @@ public class MantenimientoServlet extends HttpServlet {
                     response.sendRedirect("mantenimiento.jsp?success=perfilEditado");
                     break;
                 }
-
-                case "editarUsuario":{
+                
+                case "editarUsuario": {
                     // Editar un usuario existente
                     int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
                     String dni = request.getParameter("dni");
                     String nombres = request.getParameter("nombres");
                     String apellidoPaterno = request.getParameter("apellidoPaterno");
+                    String apellidoMaterno = request.getParameter("apellidoMaterno"); // Nuevo campo
                     String correo = request.getParameter("correo");
                     int perfil = Integer.parseInt(request.getParameter("perfil"));
 
-                    String query = "UPDATE Usuario SET DNI=?, Nombres=?, ApellidoPaterno=?, CorreoElectronico=?, FechaModificacion=NOW() WHERE IdUsuario=?";
+                    String query = "UPDATE Usuario SET DNI=?, Nombres=?, ApellidoPaterno=?, ApellidoMaterno=?, CorreoElectronico=?, FechaModificacion=NOW() WHERE IdUsuario=?";
                     ps = con.prepareStatement(query);
                     ps.setString(1, dni);
                     ps.setString(2, nombres);
                     ps.setString(3, apellidoPaterno);
-                    ps.setString(4, correo);
-                    ps.setInt(5, idUsuario);
+                    ps.setString(4, apellidoMaterno);
+                    ps.setString(5, correo);
+                    ps.setInt(6, idUsuario);
                     ps.executeUpdate();
 
                     query = "UPDATE Usuario_Perfiles SET IdPerfil=? WHERE IdUsuario=?";
@@ -100,10 +105,11 @@ public class MantenimientoServlet extends HttpServlet {
                     ps.setInt(1, perfil);
                     ps.setInt(2, idUsuario);
                     ps.executeUpdate();
-                    
+
                     response.sendRedirect("mantenimiento.jsp?success=usuarioEditado");
                     break;
                 }
+
 
                 case "eliminarUsuario": {
                     int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
