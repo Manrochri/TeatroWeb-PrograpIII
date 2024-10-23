@@ -356,24 +356,75 @@ ResultSet rsRangos = psRangos.executeQuery();
     </div>
 </div>
  
- <!-- MODAL CURSOS-->
-  <div class="modal fade" id="cursosModal" tabindex="-1" aria-labelledby="rangoModalLabel" aria-hidden="true">
+<!-- MODAL CURSOS -->
+<div class="modal fade" id="cursosModal" tabindex="-1" aria-labelledby="cursosModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="rangoModalLabel">Gestionar Cursos</h5>
+                <h5 class="modal-title" id="cursosModalLabel">Gestionar Cursos</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="MantenimientoServlet" method="post" id="formCurso">
-                    <input type="hidden" name="idRango" id="idRango">
+                    <input type="hidden" name="idCurso" id="idCurso">
                     <div class="mb-3">
-                        <label for="descripcionRango" class="form-label">Registre un curso de teatro (Ej. clown, vocalización)</label>
-                        <input type="text" class="form-control" id="descripcionRango" name="descripcionRango" required>
+                        <label for="nombreCurso" class="form-label">Nombre del Curso</label>
+                        <input type="text" class="form-control" id="nombreCurso" name="nombreCurso" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="capacidad" class="form-label">Capacidad</label>
+                        <input type="number" class="form-control" id="capacidad" name="capacidad" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                        <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="precio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria" name="categoria" required>
+                            <option value="" disabled selected>Seleccionar Categoría</option>
+                            <!-- Aquí debes llenar las opciones de categoría -->
+                            <%
+                                    PreparedStatement psCategoria2 = con.prepareStatement("SELECT IdCategoria, Nombre FROM categoriacurso WHERE EstadoRegistro = 1");
+                                    ResultSet rsCategoria2 = psCategoria2.executeQuery();
+                                    while (rsCategoria2.next()) {
+                                %>
+                                <option value="<%= rsCategoria2.getInt("IdCategoria")%>"><%= rsCategoria2.getString("Nombre")%></option>
+                                <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="duracion" class="form-label">Duración</label>
+                        <select class="form-select" id="duracion" name="duracion" required>
+                            <option value="" disabled selected>Seleccionar Duración</option>
+                            <!-- Aquí debes llenar las opciones de duración -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="idioma" class="form-label">Idioma</label>
+                        <select class="form-select" id="idioma" name="idioma" required>
+                            <option value="" disabled selected>Seleccionar Idioma</option>
+                            <!-- Aquí debes llenar las opciones de idioma -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rango" class="form-label">Rango de Edades</label>
+                        <select class="form-select" id="rango" name="rango" required>
+                            <option value="" disabled selected>Seleccionar Rango</option>
+                            <!-- Aquí debes llenar las opciones de rango -->
+                        </select>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" name="accion" value="registrarRango" class="btn btn-primary">Guardar Rango</button>
+                        <button type="submit" name="accion" value="registrarCurso" class="btn btn-primary">Guardar Curso</button>
                     </div>
                 </form>
             </div>
@@ -619,7 +670,16 @@ else if (tipo === 'cursos') {
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Descripcion del Rango</th>
+                    <th>Nombre del curso</th>
+                    <th>Fecha de creación</th>
+                    <th>Capacidad</th>
+                    <th>Fecha de inicio</th>
+                    <th>Fecha de fin</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Duracion</th>
+                    <th>Idioma</th>
+                    <th>Rango</th>
                     <th>Acciones</th>
                 </tr>
             </thead>

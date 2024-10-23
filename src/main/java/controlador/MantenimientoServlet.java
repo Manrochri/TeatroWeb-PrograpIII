@@ -300,7 +300,53 @@ public class MantenimientoServlet extends HttpServlet {
                         response.sendRedirect("mantenimiento.jsp?success=rangoEliminado");
                         break;
                     }
+                    
+                    //FALTA COMPLETAR DARLE FORMA
+                    /*
+                    case "registrarCurso":{
+                        int Idcurso= Integer.parseInt(request.getParameter("idRango"));
+                        String query = "INSERT INTO Curso (Idcurso,Nombre,FechaRegistro,Capacidad,FechaInicio,FechaFin,Precio,IdCategoria,IdDuracion,IdIdioma,IdRango,EstadoRegistro)"
+                                + "values (?,?,NOW(),?,?,?,?,?,?,?,1)";
+                        
+                        ps = con.prepareStatement(query);
+                        ps.setString(1,idcurso);
+                        response.sendRedirect("mantenimiento.jsp?success=rangoEliminado");
+                        break;
+                    }
+                    */
+                    
+                    // -TEMPORAL! FALTA COMPROBAR FUNCIONA Y AGREGAR EDICION Y ELIMIAR PARA CURSO-
+                    case "registrarCurso": {
+                        // Obtener parámetros del formulario
+                        String nombreCurso = request.getParameter("nombreCurso");
+                        int capacidad = Integer.parseInt(request.getParameter("capacidad"));
+                        String fechaInicio = request.getParameter("fechaInicio");
+                        String fechaFin = request.getParameter("fechaFin");
+                        double precio = Double.parseDouble(request.getParameter("precio"));
+                        int idCategoria = Integer.parseInt(request.getParameter("categoria"));
+                        int idDuracion = Integer.parseInt(request.getParameter("duracion"));
+                        int idIdioma = Integer.parseInt(request.getParameter("idioma"));
+                        int idRango = Integer.parseInt(request.getParameter("rango"));
 
+                        // Lógica para insertar el nuevo curso
+                        String query = "INSERT INTO Curso (Nombre, Capacidad, FechaRegistro, FechaInicio, FechaFin, Precio, IdCategoria, IdDuracion, IdIdioma, IdRango, EstadoRegistro) "
+                                     + "VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, nombreCurso);
+                        ps.setInt(2, capacidad);
+                        ps.setString(3, fechaInicio);
+                        ps.setString(4, fechaFin);
+                        ps.setDouble(5, precio);
+                        ps.setInt(6, idCategoria);
+                        ps.setInt(7, idDuracion);
+                        ps.setInt(8, idIdioma);
+                        ps.setInt(9, idRango);
+
+                        // Ejecutar la inserción
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=cursoRegistrado");
+                        break;
+                    }
                     default:
                         response.sendRedirect("error.jsp?msg=Acción no válida");
                         break;
