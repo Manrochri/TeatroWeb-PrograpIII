@@ -480,7 +480,7 @@ ResultSet rsRangos = psRangos.executeQuery();
         }
 
 
-// Limpiar el formulario al cerrar el modal
+// Limpiar el formulario al cerrar el modal de Categoría
 
 var categoriaModal = document.getElementById('categoriaModal');
 categoriaModal.addEventListener('hidden.bs.modal', function () {
