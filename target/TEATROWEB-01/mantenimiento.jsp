@@ -80,12 +80,8 @@
                     <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('usuarios')">Gestionar Usuarios</button>
                     <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('perfiles')">Gestionar Perfiles</button>
                     <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('grados')">Gestionar Grado Académico</button>
-                    <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('categorias')">Gestionar Categoría Curso</button>
-                    <button class="btn btn-warning w-100 my-2" onclick="mostrarCRUD('duraciones')">Gestionar Duración Curso</button>
-                    <button class="btn btn-danger w-100 my-2" onclick="mostrarCRUD('idiomas')">Gestionar Idioma Curso</button>
-                    <button class="btn btn-dark w-100 my-2" onclick="mostrarCRUD('rangos')">Gestionar Rango Edades Curso</button>
-
                 </div>
+
 
                 <!-- Contenido a la derecha -->
                 <div class="col-md-9">
@@ -149,108 +145,10 @@
         </div>
     </div>
 </div>
-<!-- Otros modales -->
-<!-- MODAL CATEGORÍA CURSO -->
-<div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="categoriaModalLabel">Gestionar Categoría Curso</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="MantenimientoServlet" method="post" id="formCategoria">
-                    <input type="hidden" name="idCategoria" id="idCategoria">
-                    <div class="mb-3">
-                        <label for="nombreCategoria" class="form-label">Nombre de la Categoría</label>
-                        <input type="text" class="form-control" id="nombreCategoria" name="nombreCategoria" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" name="accion" value="registrarCategoria" class="btn btn-primary">Guardar Categoría</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- MODAL DURACIÓN CURSO -->
-<div class="modal fade" id="duracionModal" tabindex="-1" aria-labelledby="duracionModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="duracionModalLabel">Gestionar Duración Curso</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="MantenimientoServlet" method="post" id="formDuracion">
-                    <input type="hidden" name="idDuracion" id="idDuracion">
-                    <div class="mb-3">
-                        <label for="nombreDuracion" class="form-label">Duración (ej. 3 meses)</label>
-                        <input type="text" class="form-control" id="nombreDuracion" name="nombreDuracion" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" name="accion" value="registrarDuracion" class="btn btn-primary">Guardar Duración</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                      
 
-<!-- MODAL IDIOMA CURSO -->
-<div class="modal fade" id="idiomaModal" tabindex="-1" aria-labelledby="idiomaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="idiomaModalLabel">Gestionar Idioma Curso</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="MantenimientoServlet" method="post" id="formIdioma">
-                    <input type="hidden" name="idIdioma" id="idIdioma">
-                    <div class="mb-3">
-                        <label for="nombreIdioma" class="form-label">Idioma</label>
-                        <input type="text" class="form-control" id="nombreIdioma" name="nombreIdioma" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" name="accion" value="registrarIdioma" class="btn btn-primary">Guardar Idioma</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- MODAL RANGO EDADES CURSO -->
-<div class="modal fade" id="rangoModal" tabindex="-1" aria-labelledby="rangoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="rangoModalLabel">Gestionar Rango Edades Curso</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="MantenimientoServlet" method="post" id="formRango">
-                    <input type="hidden" name="idRango" id="idRango">
-                    <div class="mb-3">
-                        <label for="nombreRango" class="form-label">Rango de Edades</label>
-                        <input type="text" class="form-control" id="nombreRango" name="nombreRango" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" name="accion" value="registrarRango" class="btn btn-primary">Guardar Rango</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
- <!-- Otros modales -->
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -432,61 +330,6 @@ usuarioModal.addEventListener('hidden.bs.modal', function () {
                 document.querySelector('#formGrado button[type="submit"]').innerText = "Actualizar Grado";
                 document.querySelector('#formGrado button[type="submit"]').value = "editarGrado";
             }
-            
-            function editarCategoria(idCategoria, nombreCategoria) {
-    document.getElementById('idCategoria').value = idCategoria;
-    document.getElementById('nombreCategoria').value = nombreCategoria;
-
-    var modal = new bootstrap.Modal(document.getElementById('categoriaModal'));
-    modal.show();
-}
-
-function editarDuracion(idDuracion, nombreDuracion) {
-    document.getElementById('idDuracion').value = idDuracion;
-    document.getElementById('nombreDuracion').value = nombreDuracion;
-
-    var modal = new bootstrap.Modal(document.getElementById('duracionModal'));
-    modal.show();
-}
-
-function editarIdioma(idIdioma, nombreIdioma) {
-    document.getElementById('idIdioma').value = idIdioma;
-    document.getElementById('nombreIdioma').value = nombreIdioma;
-
-    var modal = new bootstrap.Modal(document.getElementById('idiomaModal'));
-    modal.show();
-}
-
-function editarRango(idRango, nombreRango) {
-    document.getElementById('idRango').value = idRango;
-    document.getElementById('nombreRango').value = nombreRango;
-
-    var modal = new bootstrap.Modal(document.getElementById('rangoModal'));
-    modal.show();
-}
-var categoriaModal = document.getElementById('categoriaModal');
-categoriaModal.addEventListener('hidden.bs.modal', function () {
-    document.getElementById('formCategoria').reset();
-    document.getElementById('idCategoria').value = '';
-});
-
-var duracionModal = document.getElementById('duracionModal');
-duracionModal.addEventListener('hidden.bs.modal', function () {
-    document.getElementById('formDuracion').reset();
-    document.getElementById('idDuracion').value = '';
-});
-
-var idiomaModal = document.getElementById('idiomaModal');
-idiomaModal.addEventListener('hidden.bs.modal', function () {
-    document.getElementById('formIdioma').reset();
-    document.getElementById('idIdioma').value = '';
-});
-
-var rangoModal = document.getElementById('rangoModal');
-rangoModal.addEventListener('hidden.bs.modal', function () {
-    document.getElementById('formRango').reset();
-    document.getElementById('idRango').value = '';
-});
 
         </script>
         
