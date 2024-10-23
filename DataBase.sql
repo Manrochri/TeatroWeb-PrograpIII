@@ -60,7 +60,7 @@ CREATE TABLE OpcionesMenu_Perfiles (
 -- Creación de tabla GradoAcademico
 CREATE TABLE GradoAcademico (
     IdGradoAcademico INT AUTO_INCREMENT PRIMARY KEY,
-    Nombre VARCHAR(50) NOT NULL
+    Nombre VARCHAR(50) NOT NULL,
     EstadoRegistro BOOLEAN NOT NULL
 );
 -- Creación de tabla Docente

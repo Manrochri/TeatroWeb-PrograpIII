@@ -134,7 +134,12 @@ ResultSet rsRangos = psRangos.executeQuery();
                 <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('categorias')">Gestionar Categorías de cursos</button>
                 <button class="btn btn-warning w-100 my-2" onclick="mostrarCRUD('duraciones')">Gestionar Duración Curso</button>
                 <button class="btn btn-danger w-100 my-2" onclick="mostrarCRUD('idiomas')">Gestionar Idioma Curso</button>
-                <button class="btn btn-dark w-100 my-2" onclick="mostrarCRUD('rangos')">Gestionar Rango Edades Curso</button>
+                <button class="btn btn-dark w-100 my-2" onclick="mostrarCRUD('rangos')">Gestionar Rango Edades Curso</button
+                
+                <!-- Cerrar sesion -->
+                <form action="LogoutServlet" method="post" class="mt-3">
+                <button type="submit" class="btn btn-danger w-100">Cerrar Sesión</button>
+                </form>
             </div>
 
             <!-- Contenido a la derecha -->
