@@ -126,7 +126,7 @@ CREATE TABLE Curso_Docentes (
     IdDocente INT NOT NULL,
     PRIMARY KEY (IdCurso, IdDocente),
     FOREIGN KEY (IdCurso) REFERENCES Curso(IdCurso),
-    FOREIGN KEY (IdDocente) REFERENCES Docentes(IdDocente)
+    FOREIGN KEY (IdDocente) REFERENCES Docente(IdDocente)
 );
 
 -- Inserción de datos en la tabla Perfiles
