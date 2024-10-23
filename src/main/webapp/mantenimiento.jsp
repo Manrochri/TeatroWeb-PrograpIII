@@ -27,6 +27,23 @@
     // Obtener grados académicos
     PreparedStatement psGrados = con.prepareStatement("SELECT IdGradoAcademico, Nombre FROM GradoAcademico WHERE EstadoRegistro = 1 ");
     ResultSet rsGrados = psGrados.executeQuery();
+    
+    // Obtener categorías
+PreparedStatement psCategorias = con.prepareStatement("SELECT IdCategoria, Nombre FROM CategoriaCurso WHERE EstadoRegistro = 1");
+ResultSet rsCategorias = psCategorias.executeQuery();
+
+// Obtener duraciones
+PreparedStatement psDuraciones = con.prepareStatement("SELECT IdDuracion, Nombre FROM DuracionCurso WHERE EstadoRegistro = 1");
+ResultSet rsDuraciones = psDuraciones.executeQuery();
+
+// Obtener idiomas
+PreparedStatement psIdiomas = con.prepareStatement("SELECT IdIdioma, Nombre FROM IdiomaCurso WHERE EstadoRegistro = 1");
+ResultSet rsIdiomas = psIdiomas.executeQuery();
+
+// Obtener rangos
+PreparedStatement psRangos = con.prepareStatement("SELECT IdRango, Descripcion FROM RangoEdadesCurso WHERE EstadoRegistro = 1");
+ResultSet rsRangos = psRangos.executeQuery();
+
 %>
 
 <!-- Aquí se agregan los mensajes de éxito o error -->
@@ -55,6 +72,32 @@
             } else if ("gradoEliminado".equals(successMessage)) {
                 out.print("¡Grado académico eliminado exitosamente!");
             }
+            else if ("categoriaRegistrada".equals(successMessage)) {
+    out.print("¡Categoría registrada exitosamente!");
+} else if ("categoriaEditada".equals(successMessage)) {
+    out.print("¡Categoría editada exitosamente!");
+} else if ("categoriaEliminada".equals(successMessage)) {
+    out.print("¡Categoría eliminada exitosamente!");
+} else if ("duracionRegistrada".equals(successMessage)) {
+    out.print("¡Duración registrada exitosamente!");
+} else if ("duracionEditada".equals(successMessage)) {
+    out.print("¡Duración editada exitosamente!");
+} else if ("duracionEliminada".equals(successMessage)) {
+    out.print("¡Duración eliminada exitosamente!");
+} else if ("idiomaRegistrado".equals(successMessage)) {
+    out.print("¡Idioma registrado exitosamente!");
+} else if ("idiomaEditado".equals(successMessage)) {
+    out.print("¡Idioma editado exitosamente!");
+} else if ("idiomaEliminado".equals(successMessage)) {
+    out.print("¡Idioma eliminado exitosamente!");
+} else if ("rangoRegistrado".equals(successMessage)) {
+    out.print("¡Rango registrado exitosamente!");
+} else if ("rangoEditado".equals(successMessage)) {
+    out.print("¡Rango editado exitosamente!");
+} else if ("rangoEliminado".equals(successMessage)) {
+    out.print("¡Rango eliminado exitosamente!");
+}
+
         %>
     </div>
 <% } %>
@@ -80,6 +123,10 @@
                 <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('usuarios')">Gestionar Usuarios</button>
                 <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('perfiles')">Gestionar Perfiles</button>
                 <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('grados')">Gestionar Grado Académico</button>
+                <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('categorias')">Gestionar Categorías de cursos</button>
+                <button class="btn btn-warning w-100 my-2" onclick="mostrarCRUD('duraciones')">Gestionar Duración Curso</button>
+                <button class="btn btn-danger w-100 my-2" onclick="mostrarCRUD('idiomas')">Gestionar Idioma Curso</button>
+                <button class="btn btn-dark w-100 my-2" onclick="mostrarCRUD('rangos')">Gestionar Rango Edades Curso</button>
             </div>
 
             <!-- Contenido a la derecha -->
@@ -200,6 +247,34 @@
         </div>
     </div>
 
+
+ <!-- MODAL CATEGORÍA CURSO -->
+<div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoriaModalLabel">Gestionar Categoría Curso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formCategoria">
+                    <input type="hidden" name="idCategoria" id="idCategoria">
+                    <div class="mb-3">
+                        <label for="nombreCategoria" class="form-label">Nombre de la Categoría</label>
+                        <input type="text" class="form-control" id="nombreCategoria" name="nombreCategoria" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarCategoria" class="btn btn-primary">Guardar Categoría</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+ 
+ <!-- MODAL RANDO-CURSOS-->
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -309,7 +384,39 @@
                         </tbody>
                     </table>
                 `;
-            }
+            } else if (tipo === 'categorias') {
+    contenido = `
+        <h5>Gestión de Categorías</h5>
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#categoriaModal">Nueva Categoría</button>
+        <h5 class="mt-4">Categorías Registradas</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre de la Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsCategorias.next()) { %>
+                <tr>
+                    <td><%= rsCategorias.getString("Nombre") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarCategoria(<%= rsCategorias.getInt("IdCategoria") %>, '<%= rsCategorias.getString("Nombre") %>')">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idCategoria" value="<%= rsCategorias.getInt("IdCategoria") %>">
+                            <button type="submit" name="accion" value="eliminarCategoria" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
+}
+
+         
+            
+            
             seccionCRUD.innerHTML = contenido;
             seccionCRUD.style.display = 'block';
         }
@@ -359,6 +466,31 @@
             var modal = new bootstrap.Modal(document.getElementById('gradoModal'));
             modal.show();
         }
+        function editarCategoria(idCategoria, nombreCategoria) {
+            document.getElementById('idCategoria').value = idCategoria;
+            document.getElementById('nombreCategoria').value = nombreCategoria;
+
+            // Cambiar el botón a "Actualizar"
+            document.querySelector('#formCategoria button[type="submit"]').innerText = "Actualizar Categoría";
+            document.querySelector('#formCategoria button[type="submit"]').value = "editarCategoria";
+
+            // Abrir el modal
+            var modal = new bootstrap.Modal(document.getElementById('categoriaModal'));
+            modal.show();
+        }
+
+
+// Limpiar el formulario al cerrar el modal de Categoría
+
+var categoriaModal = document.getElementById('categoriaModal');
+categoriaModal.addEventListener('hidden.bs.modal', function () {
+    document.getElementById('formCategoria').reset();
+    document.getElementById('idCategoria').value = '';
+    document.querySelector('#formCategoria button[type="submit"]').innerText = "Guardar Categoría";
+    document.querySelector('#formCategoria button[type="submit"]').value = "registrarCategoria";
+});
+
+
 
         // Limpiar el formulario del modal de usuario al cerrarse
         var usuarioModal = document.getElementById('usuarioModal');
