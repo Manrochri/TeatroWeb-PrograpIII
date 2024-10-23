@@ -61,6 +61,7 @@ CREATE TABLE OpcionesMenu_Perfiles (
 CREATE TABLE GradoAcademico (
     IdGradoAcademico INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(50) NOT NULL
+    EstadoRegistro BOOLEAN NOT NULL
 );
 -- Creación de tabla Docente
 
@@ -138,9 +139,9 @@ VALUES
 
 -- Inserción de grado académico
 
-INSERT INTO GradoAcademico (Nombre)
+INSERT INTO GradoAcademico (Nombre, EstadoRegistro)
 VALUES
-('Bachiller'),
-('Licenciado'),
-('Magíster'),
-('Doctorado');
+('Bachiller', 1),
+('Licenciado', 1),
+('Magíster', 1),
+('Doctorado', 1);
