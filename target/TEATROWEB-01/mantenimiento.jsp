@@ -445,7 +445,7 @@ else if (tipo === 'duraciones') {
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Nombre de la Duración</th>
+                    <th>Duración de los cursos</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
