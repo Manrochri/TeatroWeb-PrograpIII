@@ -298,7 +298,56 @@ ResultSet rsRangos = psRangos.executeQuery();
 </div>
 
  
- <!-- MODAL RANDO-CURSOS-->
+ <!-- MODAL Idioma-CURSOS-->
+ <div class="modal fade" id="idiomaModal" tabindex="-1" aria-labelledby="idiomaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="idiomaModalLabel">Gestionar Idiomas Curso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formIdioma">
+                    <input type="hidden" name="idIdioma" id="idIdioma">
+                    <div class="mb-3">
+                        <label for="nombreIdioma" class="form-label">Idioma (ej. Ingles)</label>
+                        <input type="text" class="form-control" id="nombreIdioma" name="nombreIdioma" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarIdioma" class="btn btn-primary">Guardar Idioma</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+ <!-- MODAL rangos-CURSOS-->
+ <div class="modal fade" id="rangoModal" tabindex="-1" aria-labelledby="rangoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rangoModalLabel">Gestionar Rango Edades Curso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formRango">
+                    <input type="hidden" name="idRango" id="idRango">
+                    <div class="mb-3">
+                        <label for="descripcionRango" class="form-label">Rango (ej. 18 - 25 años)</label>
+                        <input type="text" class="form-control" id="descripcionRango" name="descripcionRango" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarRango" class="btn btn-primary">Guardar Rango</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+ 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -467,8 +516,66 @@ else if (tipo === 'duraciones') {
     `;
 }
 
+else if (tipo === 'idiomas') {
+    contenido = `
+        <h5>Gestión de Idiomas</h5>
+        <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#idiomaModal">Nuevo Idioma</button>
+        <h5 class="mt-4">Idiomas Registradas</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre del Idioma</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsIdiomas.next()) { %>
+                <tr>
+                    <td><%= rsIdiomas.getString("Nombre") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarIdioma(<%= rsIdiomas.getInt("IdIdioma") %>, '<%= rsIdiomas.getString("Nombre") %>')">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idIdioma" value="<%= rsIdiomas.getInt("IdIdioma") %>">
+                            <button type="submit" name="accion" value="eliminarIdioma" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
+}
 
-         
+
+else if (tipo === 'rangos') {
+    contenido = `
+        <h5>Gestión de Rango de Edades</h5>
+        <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#rangoModal">Nuevo Rango</button>
+        <h5 class="mt-4">Rango de Edades Registradas</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Descripcion del Rango</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsRangos.next()) { %>
+                <tr>
+                    <td><%= rsRangos.getString("Descripcion") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarRango(<%= rsRangos.getInt("IdRango") %>, '<%= rsRangos.getString("Descripcion") %>')">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idRango" value="<%= rsRangos.getInt("IdRango") %>">
+                            <button type="submit" name="accion" value="eliminarRango" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
+}
             
             
             seccionCRUD.innerHTML = contenido;
@@ -532,17 +639,45 @@ else if (tipo === 'duraciones') {
             var modal = new bootstrap.Modal(document.getElementById('categoriaModal'));
             modal.show();
         }
+        
+        function editarDuracion(idDuracion, nombreDuracion) {
+            document.getElementById('idDuracion').value = idDuracion;
+            document.getElementById('nombreDuracion').value = nombreDuracion;
 
+            // Cambiar el botón a "Actualizar"
+            document.querySelector('#formDuracion button[type="submit"]').innerText = "Actualizar Duración";
+            document.querySelector('#formDuracion button[type="submit"]').value = "editarDuracion";
 
-// Limpiar el formulario al cerrar el modal de Categoría
+            // Abrir el modal
+            var modal = new bootstrap.Modal(document.getElementById('duracionModal'));
+            modal.show();
+        }
+        
+        function editarIdioma(idIdioma  , nombreIdioma) {
+            document.getElementById('idIdioma').value = idIdioma;
+            document.getElementById('nombreIdioma').value = nombreIdioma;
 
-var categoriaModal = document.getElementById('categoriaModal');
-categoriaModal.addEventListener('hidden.bs.modal', function () {
-    document.getElementById('formCategoria').reset();
-    document.getElementById('idCategoria').value = '';
-    document.querySelector('#formCategoria button[type="submit"]').innerText = "Guardar Categoría";
-    document.querySelector('#formCategoria button[type="submit"]').value = "registrarCategoria";
-});
+            // Cambiar el botón a "Actualizar"
+            document.querySelector('#formIdioma button[type="submit"]').innerText = "Actualizar Idioma";
+            document.querySelector('#formIdioma button[type="submit"]').value = "editarIdioma";
+
+            // Abrir el modal
+            var modal = new bootstrap.Modal(document.getElementById('idiomaModal'));
+            modal.show();
+        } 
+        
+        function editarRango(idRango  , descripcionRango) {
+            document.getElementById('idRango').value = idRango;
+            document.getElementById('descripcionRango').value = descripcionRango;
+
+            // Cambiar el botón a "Actualizar"
+            document.querySelector('#formRango button[type="submit"]').innerText = "Actualizar Rango";
+            document.querySelector('#formRango button[type="submit"]').value = "editarRango";
+
+            // Abrir el modal
+            var modal = new bootstrap.Modal(document.getElementById('rangoModal'));
+            modal.show();
+        }
 
 
 
@@ -573,32 +708,44 @@ categoriaModal.addEventListener('hidden.bs.modal', function () {
             document.querySelector('#formGrado button[type="submit"]').value = "registrarGrado";
         });
         
-        
-        
-        function editarDuracion(idDuracion, nombreDuracion) {
-    document.getElementById('idDuracion').value = idDuracion;
-    document.getElementById('nombreDuracion').value = nombreDuracion;
+        // Limpiar el formulario al cerrar el modal de Categoría
 
-    // Cambiar el botón a "Actualizar"
-    document.querySelector('#formDuracion button[type="submit"]').innerText = "Actualizar Duración";
-    document.querySelector('#formDuracion button[type="submit"]').value = "editarDuracion";
-
-    // Abrir el modal
-    var modal = new bootstrap.Modal(document.getElementById('duracionModal'));
-    modal.show();
-}
-
-// Limpiar el formulario al cerrar el modal
-var duracionModal = document.getElementById('duracionModal');
-duracionModal.addEventListener('hidden.bs.modal', function () {
-    document.getElementById('formDuracion').reset();
-    document.getElementById('idDuracion').value = '';
-    document.querySelector('#formDuracion button[type="submit"]').innerText = "Guardar Duración";
-    document.querySelector('#formDuracion button[type="submit"]').value = "registrarDuracion";
-});
-
+        var categoriaModal = document.getElementById('categoriaModal');
+        categoriaModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('formCategoria').reset();
+            document.getElementById('idCategoria').value = '';
+            document.querySelector('#formCategoria button[type="submit"]').innerText = "Guardar Categoría";
+            document.querySelector('#formCategoria button[type="submit"]').value = "registrarCategoria";
+        });
         
+    
+
+        // Limpiar el formulario al cerrar el modal de duracion
+        var duracionModal = document.getElementById('duracionModal');
+        duracionModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('formDuracion').reset();
+            document.getElementById('idDuracion').value = '';
+            document.querySelector('#formDuracion button[type="submit"]').innerText = "Guardar Duración";
+            document.querySelector('#formDuracion button[type="submit"]').value = "registrarDuracion";
+        });
+
+        // Limpiar el formulario al cerrar el modal-idioma
+        var idiomaModal = document.getElementById('idiomaModal');
+        duracionModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('formIdioma').reset();
+            document.getElementById('idIdioma').value = '';
+            document.querySelector('#formIdioma button[type="submit"]').innerText = "Guardar Idioma";
+            document.querySelector('#formIdioma button[type="submit"]').value = "registrarIdioma";
+        });       
         
+        // Limpiar el formulario al cerrar el modal-rango
+        var rangoModal = document.getElementById('rangoModal');
+        duracionModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('formRango').reset();
+            document.getElementById('idRango').value = '';
+            document.querySelector('#formRango button[type="submit"]').innerText = "Guardar Rango";
+            document.querySelector('#formRango button[type="submit"]').value = "registrarRango";
+        }); 
         
     </script>
 </body>
