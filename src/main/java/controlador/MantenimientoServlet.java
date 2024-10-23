@@ -165,6 +165,136 @@ public class MantenimientoServlet extends HttpServlet {
                         response.sendRedirect("mantenimiento.jsp?success=gradoEliminado");
                         break;
                     }
+                    
+                     case "registrarCategoria": {
+                        String nombreCategoria = request.getParameter("nombreCategoria");
+                        String query = "INSERT INTO CategoriaCurso (Nombre, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, nombreCategoria);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=categoriaRegistrada");
+                        break;
+                    }
+
+                    case "editarCategoria": {
+                        int idCategoria = Integer.parseInt(request.getParameter("idCategoria"));
+                        String nombreCategoria = request.getParameter("nombreCategoria");
+                        String query = "UPDATE CategoriaCurso SET Nombre=? WHERE IdCategoria=?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, nombreCategoria);
+                        ps.setInt(2, idCategoria);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=categoriaEditada");
+                        break;
+                    }
+
+                    case "eliminarCategoria": {
+                        int idCategoria = Integer.parseInt(request.getParameter("idCategoria"));
+                        String query = "DELETE FROM CategoriaCurso WHERE IdCategoria=?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idCategoria);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=categoriaEliminada");
+                        break;
+                    }
+                    // CRUD DuracionCurso
+                    case "registrarDuracion": {
+                        String nombreDuracion = request.getParameter("nombreDuracion");
+                        String query = "INSERT INTO DuracionCurso (Nombre, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, nombreDuracion);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=duracionRegistrada");
+                        break;
+                    }
+
+                    case "editarDuracion": {
+                        int idDuracion = Integer.parseInt(request.getParameter("idDuracion"));
+                        String nombreDuracion = request.getParameter("nombreDuracion");
+                        String query = "UPDATE DuracionCurso SET Nombre=? WHERE IdDuracion=?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, nombreDuracion);
+                        ps.setInt(2, idDuracion);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=duracionEditada");
+                        break;
+                    }
+
+                    case "eliminarDuracion": {
+                        int idDuracion = Integer.parseInt(request.getParameter("idDuracion"));
+                        String query = "DELETE FROM DuracionCurso WHERE IdDuracion=?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idDuracion);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=duracionEliminada");
+                        break;
+                    }
+
+                    // NUEVO CRUD PARA IDIOMA CURSO
+                    case "registrarIdioma": {
+                        String nombreIdioma = request.getParameter("nombreIdioma");
+                        String query = "INSERT INTO IdiomaCurso (Nombre, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, nombreIdioma);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=idiomaRegistrado");
+                        break;
+                    }
+
+                    case "editarIdioma": {
+                        int idIdioma = Integer.parseInt(request.getParameter("idIdioma"));
+                        String nombreIdioma = request.getParameter("nombreIdioma");
+                        String query = "UPDATE IdiomaCurso SET Nombre=? WHERE IdIdioma=?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, nombreIdioma);
+                        ps.setInt(2, idIdioma);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=idiomaEditado");
+                        break;
+                    }
+
+                    case "eliminarIdioma": {
+                        int idIdioma = Integer.parseInt(request.getParameter("idIdioma"));
+                        String query = "DELETE FROM IdiomaCurso WHERE IdIdioma=?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idIdioma);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=idiomaEliminado");
+                        break;
+                    }
+
+                    // NUEVO CRUD PARA RANGO EDADES CURSO
+                    case "registrarRango": {
+                        String descripcionRango = request.getParameter("descripcionRango");
+                        String query = "INSERT INTO RangoEdadesCurso (Descripcion, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, descripcionRango);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=rangoRegistrado");
+                        break;
+                    }
+
+                    case "editarRango": {
+                        int idRango = Integer.parseInt(request.getParameter("idRango"));
+                        String descripcionRango = request.getParameter("descripcionRango");
+                        String query = "UPDATE RangoEdadesCurso SET Descripcion=? WHERE IdRango=?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, descripcionRango);
+                        ps.setInt(2, idRango);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=rangoEditado");
+                        break;
+                    }
+
+                    case "eliminarRango": {
+                        int idRango = Integer.parseInt(request.getParameter("idRango"));
+                        String query = "DELETE FROM RangoEdadesCurso WHERE IdRango=?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idRango);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=rangoEliminado");
+                        break;
+                    }
 
                     default:
                         response.sendRedirect("error.jsp?msg=Acción no válida");
