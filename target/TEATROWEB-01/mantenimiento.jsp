@@ -44,6 +44,7 @@ ResultSet rsIdiomas = psIdiomas.executeQuery();
 PreparedStatement psRangos = con.prepareStatement("SELECT IdRango, Descripcion FROM RangoEdadesCurso WHERE EstadoRegistro = 1");
 ResultSet rsRangos = psRangos.executeQuery();
 
+
 %>
 
 <!-- Aquí se agregan los mensajes de éxito o error -->
@@ -120,9 +121,16 @@ ResultSet rsRangos = psRangos.executeQuery();
                 <p>Rol: <strong><%= rolUsuario %></strong></p>
                 <hr>
                 <h6>Opciones</h6>
+                <h5>Gestión para Usuarios</h5>
+                <hr>
                 <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('usuarios')">Gestionar Usuarios</button>
                 <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('perfiles')">Gestionar Perfiles</button>
+                <h5>Gestión para Docentes</h5>
+                <hr>
                 <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('grados')">Gestionar Grado Académico</button>
+                <h5>Gestión para Cursos</h5>
+                <hr>
+                <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('cursos')">Gestionar Cursos</button>
                 <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('categorias')">Gestionar Categorías de cursos</button>
                 <button class="btn btn-warning w-100 my-2" onclick="mostrarCRUD('duraciones')">Gestionar Duración Curso</button>
                 <button class="btn btn-danger w-100 my-2" onclick="mostrarCRUD('idiomas')">Gestionar Idioma Curso</button>
@@ -348,6 +356,84 @@ ResultSet rsRangos = psRangos.executeQuery();
     </div>
 </div>
  
+<!-- MODAL CURSOS -->
+<div class="modal fade" id="cursosModal" tabindex="-1" aria-labelledby="cursosModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cursosModalLabel">Gestionar Cursos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formCurso">
+                    <input type="hidden" name="idCurso" id="idCurso">
+                    <div class="mb-3">
+                        <label for="nombreCurso" class="form-label">Nombre del Curso</label>
+                        <input type="text" class="form-control" id="nombreCurso" name="nombreCurso" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="capacidad" class="form-label">Capacidad</label>
+                        <input type="number" class="form-control" id="capacidad" name="capacidad" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                        <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="precio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria" name="categoria" required>
+                            <option value="" disabled selected>Seleccionar Categoría</option>
+                            <!-- Aquí debes llenar las opciones de categoría -->
+                            <%
+                                    PreparedStatement psCategoria2 = con.prepareStatement("SELECT IdCategoria, Nombre FROM categoriacurso WHERE EstadoRegistro = 1");
+                                    ResultSet rsCategoria2 = psCategoria2.executeQuery();
+                                    while (rsCategoria2.next()) {
+                                %>
+                                <option value="<%= rsCategoria2.getInt("IdCategoria")%>"><%= rsCategoria2.getString("Nombre")%></option>
+                                <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="duracion" class="form-label">Duración</label>
+                        <select class="form-select" id="duracion" name="duracion" required>
+                            <option value="" disabled selected>Seleccionar Duración</option>
+                            <!-- Aquí debes llenar las opciones de duración -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="idioma" class="form-label">Idioma</label>
+                        <select class="form-select" id="idioma" name="idioma" required>
+                            <option value="" disabled selected>Seleccionar Idioma</option>
+                            <!-- Aquí debes llenar las opciones de idioma -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rango" class="form-label">Rango de Edades</label>
+                        <select class="form-select" id="rango" name="rango" required>
+                            <option value="" disabled selected>Seleccionar Rango</option>
+                            <!-- Aquí debes llenar las opciones de rango -->
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarCurso" class="btn btn-primary">Guardar Curso</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+ 
+ 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -494,7 +580,7 @@ else if (tipo === 'duraciones') {
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Nombre de la Duración</th>
+                    <th>Duración de los cursos</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -576,6 +662,45 @@ else if (tipo === 'rangos') {
         </table>
     `;
 }
+else if (tipo === 'cursos') {
+    contenido = `
+        <h5>Gestión Cursos</h5>
+        <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#cursosModal">Registrar nuevo curso</button>
+        <h5 class="mt-4">Cursos Registrador</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre del curso</th>
+                    <th>Fecha de creación</th>
+                    <th>Capacidad</th>
+                    <th>Fecha de inicio</th>
+                    <th>Fecha de fin</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Duracion</th>
+                    <th>Idioma</th>
+                    <th>Rango</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsRangos.next()) { %>
+                <tr>
+                    <td><%= rsRangos.getString("Descripcion") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarRango(<%= rsRangos.getInt("IdRango") %>, '<%= rsRangos.getString("Descripcion") %>')">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idRango" value="<%= rsRangos.getInt("IdRango") %>">
+                            <button type="submit" name="accion" value="eliminarRango" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
+}
+
             
             
             seccionCRUD.innerHTML = contenido;
