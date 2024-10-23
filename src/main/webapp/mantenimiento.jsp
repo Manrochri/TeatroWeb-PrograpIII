@@ -91,6 +91,60 @@
                 </div>
             </div>
         </div>
+<!-- MODAL USUARIOS -->
+<div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="usuarioModalLabel">Gestionar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formUsuario">
+                    <input type="hidden" name="idUsuario" id="idUsuario">
+                    <div class="mb-3">
+                        <label for="dni" class="form-label">DNI</label>
+                        <input type="text" class="form-control" id="dni" name="dni" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombres" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="nombres" name="nombres" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno">
+                    </div>
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="correo" name="correo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="perfil" class="form-label">Perfil</label>
+                        <select class="form-select" id="perfil" name="perfil" required>
+                            <option value="" disabled selected>Seleccionar Perfil</option>
+                            <%
+                                PreparedStatement psPerfiles2 = con.prepareStatement("SELECT IdPerfil, Nombre FROM Perfiles WHERE EstadoRegistro = 1");
+                                ResultSet rsPerfiles2 = psPerfiles2.executeQuery();
+                                while (rsPerfiles2.next()) {
+                            %>
+                            <option value="<%= rsPerfiles2.getInt("IdPerfil")%>"><%= rsPerfiles2.getString("Nombre")%></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarUsuario" class="btn btn-primary">Guardar Usuario</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+                      
 
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -104,44 +158,11 @@
                 if (tipo === 'usuarios') {
                     contenido = `
                         <h5>Gestión de Usuarios</h5>
-                        <form action="MantenimientoServlet" method="post" id="formUsuario">
-                            <input type="hidden" name="idUsuario" id="idUsuario">
-                            <div class="mb-3">
-                                <label for="dni" class="form-label">DNI</label>
-                                <input type="text" class="form-control" id="dni" name="dni" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" class="form-control" id="nombres" name="nombres" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
-                                <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
-                                <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno">
-                            </div>
-                            <div class="mb-3">
-                                <label for="correo" class="form-label">Correo Electrónico</label>
-                                <input type="email" class="form-control" id="correo" name="correo" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="perfil" class="form-label">Perfil</label>
-                                <select class="form-select" id="perfil" name="perfil" required>
-                                    <option value="" disabled selected>Seleccionar Perfil</option>
-                                    <%
-                                        PreparedStatement psPerfiles2 = con.prepareStatement("SELECT IdPerfil, Nombre FROM Perfiles WHERE EstadoRegistro = 1");
-                                        ResultSet rsPerfiles2 = psPerfiles2.executeQuery();
-                                        while (rsPerfiles2.next()) {
-                                    %>
-                                    <option value="<%= rsPerfiles2.getInt("IdPerfil")%>"><%= rsPerfiles2.getString("Nombre")%></option>
-                                    <% } %>
-                                </select>
-                            </div>
-                            <button type="submit" name="accion" value="registrarUsuario" class="btn btn-primary">Guardar Usuario</button>
-                        </form>
-
+                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#usuarioModal">
+                            Nuevo Usuario
+                        </button>
+                            
+                        
                         <h5 class="mt-4">Usuarios Registrados</h5>
                         <table class="table table-bordered">
                             <thead>
@@ -259,19 +280,34 @@
                 seccionCRUD.style.display = 'block';
             }
 
-            function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, apellidoMaterno, correo, perfil) {
-                document.getElementById('idUsuario').value = idUsuario;
-                document.getElementById('dni').value = dni;
-                document.getElementById('nombres').value = nombres;
-                document.getElementById('apellidoPaterno').value = apellidoPaterno;
-                document.getElementById('apellidoMaterno').value = apellidoMaterno;
-                document.getElementById('correo').value = correo;
-                document.getElementById('perfil').value = perfil;
+function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, apellidoMaterno, correo, perfil) {
+    document.getElementById('idUsuario').value = idUsuario;
+    document.getElementById('dni').value = dni;
+    document.getElementById('nombres').value = nombres;
+    document.getElementById('apellidoPaterno').value = apellidoPaterno;
+    document.getElementById('apellidoMaterno').value = apellidoMaterno;
+    document.getElementById('correo').value = correo;
+    document.getElementById('perfil').value = perfil;
 
-                // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
-                document.querySelector('#formUsuario button[type="submit"]').innerText = "Actualizar Usuario";
-                document.querySelector('#formUsuario button[type="submit"]').value = "editarUsuario";
-            }
+    // Cambiar el valor del botón a "Actualizar" en lugar de "Registrar"
+    document.querySelector('#formUsuario button[type="submit"]').innerText = "Actualizar Usuario";
+    document.querySelector('#formUsuario button[type="submit"]').value = "editarUsuario";
+    
+    // Abrir el modal
+    var modal = new bootstrap.Modal(document.getElementById('usuarioModal'));
+    modal.show();
+}
+
+// Manejador de eventos para limpiar el formulario al cerrar el modal
+var usuarioModal = document.getElementById('usuarioModal');
+usuarioModal.addEventListener('hidden.bs.modal', function () {
+    document.getElementById('formUsuario').reset();
+    document.getElementById('idUsuario').value = '';
+    document.querySelector('#formUsuario button[type="submit"]').innerText = "Guardar Usuario";
+    document.querySelector('#formUsuario button[type="submit"]').value = "registrarUsuario";
+});
+
+
 
             function editarPerfil(idPerfil, nombrePerfil, descripcionPerfil) {
                 document.getElementById('idPerfil').value = idPerfil;
