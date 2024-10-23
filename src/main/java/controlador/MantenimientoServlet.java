@@ -178,16 +178,20 @@ public class MantenimientoServlet extends HttpServlet {
                     }
 
                     case "editarCategoria": {
+                        // Lógica para editar una categoría existente
                         int idCategoria = Integer.parseInt(request.getParameter("idCategoria"));
                         String nombreCategoria = request.getParameter("nombreCategoria");
+
                         String query = "UPDATE CategoriaCurso SET Nombre=? WHERE IdCategoria=?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreCategoria);
                         ps.setInt(2, idCategoria);
                         ps.executeUpdate();
+
                         response.sendRedirect("mantenimiento.jsp?success=categoriaEditada");
                         break;
                     }
+
 
                     case "eliminarCategoria": {
                         int idCategoria = Integer.parseInt(request.getParameter("idCategoria"));
