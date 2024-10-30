@@ -56,7 +56,7 @@
             + "WHERE c.EstadoRegistro = 1"
     );
     ResultSet rsCursos = psCursos.executeQuery();
-
+//prueba
 // Obtener docentes
 PreparedStatement psDocentes = con.prepareStatement(
     "SELECT d.IdDocente, d.Nombres AS NombreDocente, g.Nombre AS GradoAcademico, d.Descripcion, d.IdUsuario, d.IdGradoAcademico " +
