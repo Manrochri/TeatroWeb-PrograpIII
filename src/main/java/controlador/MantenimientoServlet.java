@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import modelo.Conexion;
 
 @WebServlet("/MantenimientoServlet")
@@ -482,6 +483,39 @@ case "eliminarDocente": {
         response.sendRedirect("mantenimiento.jsp?success=docenteEliminado");
     } else {
         response.sendRedirect("mantenimiento.jsp?error=docenteNoEliminado");
+    }
+    break;
+}
+case "asignarDocenteCurso": {
+    // Obtener los parámetros del formulario de asignación
+    int idDocente = Integer.parseInt(request.getParameter("idDocente"));
+    int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+
+    try {
+        // Verificar si la asignación ya existe
+        String checkQuery = "SELECT COUNT(*) FROM Curso_Docente WHERE IdCurso = ? AND IdDocente = ?";
+        ps = con.prepareStatement(checkQuery);
+        ps.setInt(1, idCurso);
+        ps.setInt(2, idDocente);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int count = rs.getInt(1);
+
+        if (count == 0) {
+            // Insertar la nueva asignación si no existe
+            String insertQuery = "INSERT INTO Curso_Docente (IdCurso, IdDocente) VALUES (?, ?)";
+            ps = con.prepareStatement(insertQuery);
+            ps.setInt(1, idCurso);
+            ps.setInt(2, idDocente);
+            ps.executeUpdate();
+            response.sendRedirect("mantenimiento.jsp?success=docenteAsignado");
+        } else {
+            // Si la asignación ya existe, redirigir con mensaje de advertencia
+            response.sendRedirect("mantenimiento.jsp?error=asignacionYaExiste");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("mantenimiento.jsp?error=errorAsignacionDocente");
     }
     break;
 }

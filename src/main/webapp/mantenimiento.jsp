@@ -78,62 +78,69 @@ ResultSet rsDocentes = psDocentes.executeQuery();
 %>
 <div class="alert alert-success mt-3">
     <%
-        if ("usuarioRegistrado".equals(successMessage)) {
-            out.print("¡Usuario registrado exitosamente!");
-        } else if ("usuarioEditado".equals(successMessage)) {
-            out.print("¡Usuario editado exitosamente!");
-        } else if ("usuarioEliminado".equals(successMessage)) {
-            out.print("¡Usuario eliminado exitosamente!");
-        } else if ("perfilRegistrado".equals(successMessage)) {
-            out.print("¡Perfil registrado exitosamente!");
-        } else if ("perfilEditado".equals(successMessage)) {
-            out.print("¡Perfil editado exitosamente!");
-        } else if ("perfilEliminado".equals(successMessage)) {
-            out.print("¡Perfil eliminado exitosamente!");
-        } else if ("gradoRegistrado".equals(successMessage)) {
-            out.print("¡Grado académico registrado exitosamente!");
-        } else if ("gradoEditado".equals(successMessage)) {
-            out.print("¡Grado académico actualizado exitosamente!");
-        } else if ("gradoEliminado".equals(successMessage)) {
-            out.print("¡Grado académico eliminado exitosamente!");
-        } else if ("categoriaRegistrada".equals(successMessage)) {
-            out.print("¡Categoría registrada exitosamente!");
-        } else if ("categoriaEditada".equals(successMessage)) {
-            out.print("¡Categoría editada exitosamente!");
-        } else if ("categoriaEliminada".equals(successMessage)) {
-            out.print("¡Categoría eliminada exitosamente!");
-        } else if ("duracionRegistrada".equals(successMessage)) {
-            out.print("¡Duración registrada exitosamente!");
-        } else if ("duracionEditada".equals(successMessage)) {
-            out.print("¡Duración editada exitosamente!");
-        } else if ("duracionEliminada".equals(successMessage)) {
-            out.print("¡Duración eliminada exitosamente!");
-        } else if ("idiomaRegistrado".equals(successMessage)) {
-            out.print("¡Idioma registrado exitosamente!");
-        } else if ("idiomaEditado".equals(successMessage)) {
-            out.print("¡Idioma editado exitosamente!");
-        } else if ("idiomaEliminado".equals(successMessage)) {
-            out.print("¡Idioma eliminado exitosamente!");
-        } else if ("rangoRegistrado".equals(successMessage)) {
-            out.print("¡Rango registrado exitosamente!");
-        } else if ("rangoEditado".equals(successMessage)) {
-            out.print("¡Rango editado exitosamente!");
-        } else if ("rangoEliminado".equals(successMessage)) {
-            out.print("¡Rango eliminado exitosamente!");
-        } else if ("cursoRegistrado".equals(successMessage)) {
-            out.print("¡Curso registrado exitosamente!");
-        } else if ("cursoEditado".equals(successMessage)) {
-            out.print("¡Curso editado exitosamente!");
-        } else if ("cursoEliminado".equals(successMessage)) {
-            out.print("¡Curso eliminado exitosamente!");
-        } else if ("docenteRegistrado".equals(successMessage)) {
-            out.print("¡Docente registrado exitosamente!");
-        } else if ("docenteEditado".equals(successMessage)) {
-            out.print("¡Docente editado exitosamente!");
-        } else if ("docenteEliminado".equals(successMessage)) {
-            out.print("¡Docente eliminado exitosamente!");
-        }
-    %>
+    if ("usuarioRegistrado".equals(successMessage)) {
+        out.print("¡Usuario registrado exitosamente!");
+    } else if ("usuarioEditado".equals(successMessage)) {
+        out.print("¡Usuario editado exitosamente!");
+    } else if ("usuarioEliminado".equals(successMessage)) {
+        out.print("¡Usuario eliminado exitosamente!");
+    } else if ("perfilRegistrado".equals(successMessage)) {
+        out.print("¡Perfil registrado exitosamente!");
+    } else if ("perfilEditado".equals(successMessage)) {
+        out.print("¡Perfil editado exitosamente!");
+    } else if ("perfilEliminado".equals(successMessage)) {
+        out.print("¡Perfil eliminado exitosamente!");
+    } else if ("gradoRegistrado".equals(successMessage)) {
+        out.print("¡Grado académico registrado exitosamente!");
+    } else if ("gradoEditado".equals(successMessage)) {
+        out.print("¡Grado académico actualizado exitosamente!");
+    } else if ("gradoEliminado".equals(successMessage)) {
+        out.print("¡Grado académico eliminado exitosamente!");
+    } else if ("categoriaRegistrada".equals(successMessage)) {
+        out.print("¡Categoría registrada exitosamente!");
+    } else if ("categoriaEditada".equals(successMessage)) {
+        out.print("¡Categoría editada exitosamente!");
+    } else if ("categoriaEliminada".equals(successMessage)) {
+        out.print("¡Categoría eliminada exitosamente!");
+    } else if ("duracionRegistrada".equals(successMessage)) {
+        out.print("¡Duración registrada exitosamente!");
+    } else if ("duracionEditada".equals(successMessage)) {
+        out.print("¡Duración editada exitosamente!");
+    } else if ("duracionEliminada".equals(successMessage)) {
+        out.print("¡Duración eliminada exitosamente!");
+    } else if ("idiomaRegistrado".equals(successMessage)) {
+        out.print("¡Idioma registrado exitosamente!");
+    } else if ("idiomaEditado".equals(successMessage)) {
+        out.print("¡Idioma editado exitosamente!");
+    } else if ("idiomaEliminado".equals(successMessage)) {
+        out.print("¡Idioma eliminado exitosamente!");
+    } else if ("rangoRegistrado".equals(successMessage)) {
+        out.print("¡Rango registrado exitosamente!");
+    } else if ("rangoEditado".equals(successMessage)) {
+        out.print("¡Rango editado exitosamente!");
+    } else if ("rangoEliminado".equals(successMessage)) {
+        out.print("¡Rango eliminado exitosamente!");
+    } else if ("cursoRegistrado".equals(successMessage)) {
+        out.print("¡Curso registrado exitosamente!");
+    } else if ("cursoEditado".equals(successMessage)) {
+        out.print("¡Curso editado exitosamente!");
+    } else if ("cursoEliminado".equals(successMessage)) {
+        out.print("¡Curso eliminado exitosamente!");
+    } else if ("docenteRegistrado".equals(successMessage)) {
+        out.print("¡Docente registrado exitosamente!");
+    } else if ("docenteEditado".equals(successMessage)) {
+        out.print("¡Docente editado exitosamente!");
+    } else if ("docenteEliminado".equals(successMessage)) {
+        out.print("¡Docente eliminado exitosamente!");
+    } else if ("docenteAsignado".equals(successMessage)) {
+        out.print("¡Docente asignado al curso exitosamente!");
+    } else if ("asignacionYaExiste".equals(request.getParameter("error"))) {
+        out.print("La asignación ya existe.");
+    } else if ("errorAsignacionDocente".equals(request.getParameter("error"))) {
+        out.print("Error al asignar docente al curso.");
+    }
+%>
+
 </div>
 <% }%>
 
@@ -163,6 +170,8 @@ ResultSet rsDocentes = psDocentes.executeQuery();
                     <h5>Gestión para Docentes</h5>
                     <hr>
                     <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('docentes')">Gestionar Docentes</button>
+                    <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('asignacion')">Asignar Docente a Curso</button>
+
                     <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('grados')">Gestionar Grado Académico</button>
                     <h5>Gestión para Cursos</h5>
                     <hr>
@@ -549,6 +558,54 @@ ResultSet rsDocentes = psDocentes.executeQuery();
     </div>
 </div>
 
+<!-- MODAL ASIGNAR DOCENTE A CURSO -->
+<div class="modal fade" id="asignacionModal" tabindex="-1" aria-labelledby="asignacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="asignacionModalLabel">Asignar Docente a Curso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formAsignacion">
+                    <input type="hidden" name="accion" value="asignarDocenteCurso">
+                    <div class="mb-3">
+                        <label for="docente" class="form-label">Docente</label>
+                        <select class="form-select" id="docente" name="idDocente" required>
+                            <option value="" disabled selected>Seleccionar Docente</option>
+                            <% 
+                                // Consultar los docentes registrados
+                                PreparedStatement psDocentesAsignacion = con.prepareStatement("SELECT IdDocente, Nombres FROM docente WHERE EstadoRegistro = 1");
+                                ResultSet rsDocentesAsignacion = psDocentesAsignacion.executeQuery();
+                                while (rsDocentesAsignacion.next()) {
+                            %>
+                            <option value="<%= rsDocentesAsignacion.getInt("IdDocente") %>"><%= rsDocentesAsignacion.getString("Nombres") %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="curso" class="form-label">Curso</label>
+                        <select class="form-select" id="curso" name="idCurso" required>
+                            <option value="" disabled selected>Seleccionar Curso</option>
+                            <% 
+                                // Consultar los cursos registrados
+                                PreparedStatement psCursosAsignacion = con.prepareStatement("SELECT IdCurso, Nombre FROM curso WHERE EstadoRegistro = 1");
+                                ResultSet rsCursosAsignacion = psCursosAsignacion.executeQuery();
+                                while (rsCursosAsignacion.next()) {
+                            %>
+                            <option value="<%= rsCursosAsignacion.getInt("IdCurso") %>"><%= rsCursosAsignacion.getString("Nombre") %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Asignar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -852,33 +909,79 @@ ResultSet rsDocentes = psDocentes.executeQuery();
                 </tr>
             </thead>
             <tbody>
-                <% 
-                    while (rsDocentes.next()) { 
-                %>
+             <%
+                 while (rsDocentes.next()) {
+             %>
                 <tr>
-                    <td><%= rsDocentes.getString("NombreDocente") %></td>
-                    <td><%= rsDocentes.getString("GradoAcademico") %></td>
-                    <td><%= rsDocentes.getString("Descripcion") %></td>
+                    <td><%= rsDocentes.getString("NombreDocente")%></td>
+                    <td><%= rsDocentes.getString("GradoAcademico")%></td>
+                    <td><%= rsDocentes.getString("Descripcion")%></td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="editarDocente(
-                            <%= rsDocentes.getInt("IdDocente") %>, 
-                            <%= rsDocentes.getInt("IdUsuario") %>, 
-                            <%= rsDocentes.getInt("IdGradoAcademico") %>, 
-                            '<%= rsDocentes.getString("Descripcion") %>',
-                            '<%= rsDocentes.getString("NombreDocente") %>'
+             <%= rsDocentes.getInt("IdDocente")%>, 
+             <%= rsDocentes.getInt("IdUsuario")%>, 
+             <%= rsDocentes.getInt("IdGradoAcademico")%>, 
+                            '<%= rsDocentes.getString("Descripcion")%>',
+                            '<%= rsDocentes.getString("NombreDocente")%>'
                         )">Editar</button>
                         <form action="MantenimientoServlet" method="post" class="d-inline">
-                            <input type="hidden" name="idDocente" value="<%= rsDocentes.getInt("IdDocente") %>">
+                            <input type="hidden" name="idDocente" value="<%= rsDocentes.getInt("IdDocente")%>">
                             <button type="submit" name="accion" value="eliminarDocente" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este docente?');">Eliminar</button>
                         </form>
 
                     </td>
                 </tr>
-                <% } rsDocentes.close(); psDocentes.close(); %>
+             <% }
+                    rsDocentes.close();
+                    psDocentes.close();%>
+            </tbody>
+        </table>
+    `;
+} else if (tipo === 'asignacion') {
+    contenido = `
+        <h5>Asignación de Docentes a Cursos</h5>
+        <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#asignacionModal">
+            Asignar Docente a Curso
+        </button>
+        <h5 class="mt-4">Asignaciones Existentes</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Docente</th>
+                    <th>Curso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% 
+                    PreparedStatement psAsignaciones = con.prepareStatement(
+                        "SELECT d.Nombres AS DocenteNombre, c.Nombre AS CursoNombre, d.IdDocente, c.IdCurso " +
+                        "FROM curso_docente cd " +
+                        "JOIN docente d ON cd.IdDocente = d.IdDocente " +
+                        "JOIN curso c ON cd.IdCurso = c.IdCurso"
+                    );
+                    ResultSet rsAsignaciones = psAsignaciones.executeQuery();
+                    while (rsAsignaciones.next()) {
+                %>
+                <tr>
+                    <td><%= rsAsignaciones.getString("DocenteNombre") %></td>
+                    <td><%= rsAsignaciones.getString("CursoNombre") %></td>
+                    <td>
+                        <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta asignación?');">
+                            <input type="hidden" name="accion" value="eliminarAsignacion">
+                            <input type="hidden" name="idDocente" value="<%= rsAsignaciones.getInt("IdDocente") %>">
+                            <input type="hidden" name="idCurso" value="<%= rsAsignaciones.getInt("IdCurso") %>">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
             </tbody>
         </table>
     `;
 }
+
+
 
 
 
@@ -1115,6 +1218,11 @@ ResultSet rsDocentes = psDocentes.executeQuery();
         submitButton.innerText = "Guardar Docente";
         submitButton.value = "registrarDocente"; // Volver al valor por defecto
     });
+    var asignacionModal = document.getElementById('asignacionModal');
+asignacionModal.addEventListener('hidden.bs.modal', function () {
+    document.getElementById('formAsignacion').reset();
+});
+
 
         </script>
     </body>
