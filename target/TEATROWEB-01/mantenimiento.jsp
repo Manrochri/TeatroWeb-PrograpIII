@@ -489,8 +489,10 @@ ResultSet rsDocentes = psDocentes.executeQuery();
         </div>
     </div>
 </div>
+
 <!-- MODAL DOCENTES -->
- <div class="modal fade" id="docenteModal" tabindex="-1" aria-labelledby="docenteModalLabel" aria-hidden="true">
+<!-- MODAL DOCENTES -->
+<div class="modal fade" id="docenteModal" tabindex="-1" aria-labelledby="docenteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -499,41 +501,80 @@ ResultSet rsDocentes = psDocentes.executeQuery();
             </div>
             <form id="formDocente" action="MantenimientoServlet" method="post">
                 <div class="modal-body">
-                    <input type="hidden" id="idDocente" name="idDocente">
+                    <!-- Campo oculto para idDocente, necesario para editar -->
+                    <input type="hidden" name="idDocente" id="idDocente">
+
+                    <!-- Selector de usuario con perfil docente -->
                     <div class="mb-3">
-                        <label for="nombres" class="form-label">Nombres</label>
-                        <input type="text" class="form-control" id="nombres" name="nombres" required>
+                        <label for="idUsuario" class="form-label">Usuario</label>
+                        <select class="form-select" id="idUsuario" name="idUsuario" required>
+                            <option value="" disabled selected>Seleccionar Usuario</option>
+                            <% 
+                                // Consulta para obtener los usuarios con perfil docente
+                                PreparedStatement psUsuariosDocente = con.prepareStatement(
+                                    "SELECT u.IdUsuario, u.Nombres, u.ApellidoPaterno, u.ApellidoMaterno " +
+                                    "FROM usuario u " +
+                                    "JOIN usuario_perfiles up ON u.IdUsuario = up.IdUsuario " +
+                                    "JOIN perfiles p ON up.IdPerfil = p.IdPerfil " +
+                                    "WHERE p.Nombre = 'Docente' AND u.EstadoRegistro = 1"
+                                );
+                                ResultSet rsUsuariosDocente = psUsuariosDocente.executeQuery();
+                                while (rsUsuariosDocente.next()) {
+                            %>
+                            <option value="<%= rsUsuariosDocente.getInt("IdUsuario") %>">
+                                <%= rsUsuariosDocente.getString("Nombres") %> <%= rsUsuariosDocente.getString("ApellidoPaterno") %> <%= rsUsuariosDocente.getString("ApellidoMaterno") %>
+                            </option>
+                            <% } %>
+                        </select>
                     </div>
+
+                    <!-- Selector de Grado Académico -->
                     <div class="mb-3">
-                        <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
-                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
+                        <label for="gradoAcademico" class="form-label">Grado Académico</label>
+                        <select class="form-select" id="gradoAcademico" name="gradoAcademico" required>
+                            <option value="" disabled selected>Seleccionar Grado Académico</option>
+                            <% 
+                                PreparedStatement psGradoAcademico = con.prepareStatement("SELECT IdGradoAcademico, Nombre FROM gradoacademico WHERE EstadoRegistro = 1");
+                                ResultSet rsGradoAcademico = psGradoAcademico.executeQuery();
+                                while (rsGradoAcademico.next()) {
+                            %>
+                            <option value="<%= rsGradoAcademico.getInt("IdGradoAcademico") %>"><%= rsGradoAcademico.getString("Nombre") %></option>
+                            <% } %>
+                        </select>
                     </div>
+
+                    <!-- Campo para Descripción -->
                     <div class="mb-3">
-                        <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
-                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
                     </div>
-                    <div class="mb-3">
-                        <label for="correo" class="form-label">Correo Electrónico</label>
-                        <input type="email" class="form-control" id="correo" name="correo" required>
-                    </div>
+
+                    <!-- Selección de Curso Asignado -->
                     <div class="mb-3">
                         <label for="curso" class="form-label">Curso Asignado</label>
                         <select class="form-select" id="curso" name="curso">
-                            <% while (rsCursos.next()) { %>
-                                <option value="<%= rsCursos.getInt("IdCurso") %>"><%= rsCursos.getString("Nombre") %></option>
+                            <option value="" disabled selected>Seleccionar Curso</option>
+                            <% 
+                                PreparedStatement psCursosListado = con.prepareStatement("SELECT IdCurso, Nombre FROM curso WHERE EstadoRegistro = 1");
+                                ResultSet rsCursosListado = psCursosListado.executeQuery();
+                                while (rsCursosListado.next()) {
+                            %>
+                            <option value="<%= rsCursosListado.getInt("IdCurso") %>"><%= rsCursosListado.getString("Nombre") %></option>
                             <% } %>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Docente</button>
+                    <button type="submit" id="submitDocente" class="btn btn-primary">Guardar Docente</button>
                 </div>
-                <input type="hidden" name="accion" value="guardarDocente">
+                <input type="hidden" name="accion" id="accionDocente" value="registrarDocente">
             </form>
         </div>
     </div>
 </div>
+
+
 
  
  
@@ -993,20 +1034,34 @@ else if (tipo === 'docentes') {
     modal.show();
 }
 
-function editarDocente(idDocente, nombres, apellidoPaterno, apellidoMaterno, correo, cursoId) {
-    document.getElementById('idDocente').value = idDocente;
-    document.getElementById('nombres').value = nombres;
-    document.getElementById('apellidoPaterno').value = apellidoPaterno;
-    document.getElementById('apellidoMaterno').value = apellidoMaterno;
-    document.getElementById('correo').value = correo;
-    document.getElementById('curso').value = cursoId;
-    
-    document.querySelector('#formDocente button[type="submit"]').innerText = "Actualizar Docente";
-    document.querySelector('#formDocente input[name="accion"]').value = "editarDocente";
+function editarDocente(idDocente, idUsuario, idGradoAcademico, descripcion, cursoId) {
+    // Asigna los valores de los parámetros a los campos del formulario
+    document.getElementById("idDocente").value = idDocente;
+    document.getElementById("idUsuario").value = idUsuario;
+    document.getElementById("gradoAcademico").value = idGradoAcademico;
+    document.getElementById("descripcion").value = descripcion;
+    document.getElementById("curso").value = cursoId;
 
+    // Cambia el valor y el texto del botón de acción a "Editar Docente"
+    document.getElementById("accionDocente").value = "editarDocente";
+    document.getElementById("submitDocente").innerText = "Actualizar Docente";
+
+    // Abre el modal
     var modal = new bootstrap.Modal(document.getElementById('docenteModal'));
     modal.show();
 }
+
+function limpiarFormularioDocente() {
+    // Limpia el formulario del modal
+    document.getElementById("formDocente").reset();
+    document.getElementById("idDocente").value = '';
+    document.getElementById("accionDocente").value = "registrarDocente";
+    document.getElementById("submitDocente").innerText = "Guardar Docente";
+}
+
+// Asegura que se limpie el formulario al cerrar el modal
+document.getElementById("docenteModal").addEventListener("hidden.bs.modal", limpiarFormularioDocente);
+
 
 
 

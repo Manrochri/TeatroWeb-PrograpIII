@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import modelo.Conexion;
 
 @WebServlet("/MantenimientoServlet")
@@ -415,84 +416,86 @@ public class MantenimientoServlet extends HttpServlet {
                         response.sendRedirect("mantenimiento.jsp?success=cursoEliminado");
                         break;
                     }
+                    // DOCENTE
                     case "registrarDocente": {
-                        // 1. Capturar los parámetros de entrada del formulario.
-                        String nombres = request.getParameter("nombres");
-                        String apellidoPaterno = request.getParameter("apellidoPaterno");
-                        String apellidoMaterno = request.getParameter("apellidoMaterno");
-                        String correo = request.getParameter("correo");
-                        int idCurso = Integer.parseInt(request.getParameter("curso"));
+                        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+                        int idGradoAcademico = Integer.parseInt(request.getParameter("gradoAcademico"));
+                        String descripcion = request.getParameter("descripcion");
+                        String cursoId = request.getParameter("curso"); // ID del curso seleccionado (opcional)
 
-                        // 2. Registrar el nuevo docente en la tabla `Docente`.
-                        String queryDocente = "INSERT INTO Docente (IdUsuario, Descripcion, IdGradoAcademico) VALUES (?, ?, ?)";
-                        ps = con.prepareStatement(queryDocente, PreparedStatement.RETURN_GENERATED_KEYS);
-                        ps.setString(1, nombres);
-                        ps.setString(2, apellidoPaterno);
-                        ps.setString(3, apellidoMaterno);
-                        ps.setString(4, correo);
+                        // Insertar en la tabla Docente
+                        String docenteQuery = "INSERT INTO Docente (IdUsuario, IdGradoAcademico, Descripcion, EstadoRegistro) VALUES (?, ?, ?, 1)";
+                        ps = con.prepareStatement(docenteQuery, Statement.RETURN_GENERATED_KEYS);
+                        ps.setInt(1, idUsuario);
+                        ps.setInt(2, idGradoAcademico);
+                        ps.setString(3, descripcion);
                         ps.executeUpdate();
 
-                        // 3. Obtener el ID generado para el nuevo docente.
-                        ResultSet rs = ps.getGeneratedKeys();
+                        // Obtener el ID generado para el nuevo docente
+                        ResultSet generatedKeys = ps.getGeneratedKeys();
                         int idDocente = 0;
-                        if (rs.next()) {
-                            idDocente = rs.getInt(1);
+                        if (generatedKeys.next()) {
+                            idDocente = generatedKeys.getInt(1);
                         }
 
-                        // 4. Insertar en la tabla intermedia `Curso_Docentes` para asignar el curso.
-                        String queryCursoDocente = "INSERT INTO Curso_Docentes (IdCurso, IdDocente) VALUES (?, ?)";
-                        ps = con.prepareStatement(queryCursoDocente);
-                        ps.setInt(1, idCurso);
-                        ps.setInt(2, idDocente);
-                        ps.executeUpdate();
+                        // Si se seleccionó un curso, registrar en curso_docente
+                        if (cursoId != null && !cursoId.isEmpty()) {
+                            String cursoDocenteQuery = "INSERT INTO curso_docente (IdCurso, IdDocente) VALUES (?, ?)";
+                            ps = con.prepareStatement(cursoDocenteQuery);
+                            ps.setInt(1, Integer.parseInt(cursoId));
+                            ps.setInt(2, idDocente);
+                            ps.executeUpdate();
+                        }
 
                         response.sendRedirect("mantenimiento.jsp?success=docenteRegistrado");
                         break;
                     }
-
                     case "editarDocente": {
-                        // 1. Capturar los parámetros del formulario de edición.
                         int idDocente = Integer.parseInt(request.getParameter("idDocente"));
-                        String nombres = request.getParameter("nombres");
-                        String apellidoPaterno = request.getParameter("apellidoPaterno");
-                        String apellidoMaterno = request.getParameter("apellidoMaterno");
-                        String correo = request.getParameter("correo");
-                        int idCurso = Integer.parseInt(request.getParameter("curso"));
+                        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+                        int idGradoAcademico = Integer.parseInt(request.getParameter("gradoAcademico"));
+                        String descripcion = request.getParameter("descripcion");
+                        String cursoId = request.getParameter("curso");
 
-                        // 2. Actualizar el docente en la tabla `Docente`.
-                        String queryUpdateDocente = "UPDATE Docente SET Nombres=?, ApellidoPaterno=?, ApellidoMaterno=?, CorreoElectronico=? WHERE IdDocente=?";
-                        ps = con.prepareStatement(queryUpdateDocente);
-                        ps.setString(1, nombres);
-                        ps.setString(2, apellidoPaterno);
-                        ps.setString(3, apellidoMaterno);
-                        ps.setString(4, correo);
-                        ps.setInt(5, idDocente);
+                        // Actualizar datos del docente en la tabla Docente
+                        String updateDocenteQuery = "UPDATE Docente SET IdUsuario = ?, IdGradoAcademico = ?, Descripcion = ? WHERE IdDocente = ?";
+                        ps = con.prepareStatement(updateDocenteQuery);
+                        ps.setInt(1, idUsuario);
+                        ps.setInt(2, idGradoAcademico);
+                        ps.setString(3, descripcion);
+                        ps.setInt(4, idDocente);
                         ps.executeUpdate();
 
-                        // 3. Actualizar el curso asignado en la tabla `Curso_Docentes`.
-                        String queryUpdateCursoDocente = "UPDATE Curso_Docentes SET IdCurso=? WHERE IdDocente=?";
-                        ps = con.prepareStatement(queryUpdateCursoDocente);
-                        ps.setInt(1, idCurso);
-                        ps.setInt(2, idDocente);
+                        // Actualizar asignación de curso en la tabla curso_docente
+                        String deleteCursoDocenteQuery = "DELETE FROM curso_docente WHERE IdDocente = ?";
+                        ps = con.prepareStatement(deleteCursoDocenteQuery);
+                        ps.setInt(1, idDocente);
                         ps.executeUpdate();
+
+                        if (cursoId != null && !cursoId.isEmpty()) {
+                            String insertCursoDocenteQuery = "INSERT INTO curso_docente (IdCurso, IdDocente) VALUES (?, ?)";
+                            ps = con.prepareStatement(insertCursoDocenteQuery);
+                            ps.setInt(1, Integer.parseInt(cursoId));
+                            ps.setInt(2, idDocente);
+                            ps.executeUpdate();
+                        }
 
                         response.sendRedirect("mantenimiento.jsp?success=docenteEditado");
                         break;
                     }
-
+                    
                     case "eliminarDocente": {
-                        // 1. Capturar el ID del docente a eliminar.
                         int idDocente = Integer.parseInt(request.getParameter("idDocente"));
 
-                        // 2. Eliminar la asignación de cursos en `Curso_Docentes`.
-                        String queryDeleteCursoDocente = "DELETE FROM Curso_Docentes WHERE IdDocente=?";
-                        ps = con.prepareStatement(queryDeleteCursoDocente);
+                        // Eliminar la relación en la tabla curso_docente
+                        String deleteCursoDocenteQuery = "DELETE FROM curso_docente WHERE IdDocente = ?";
+                        ps = con.prepareStatement(deleteCursoDocenteQuery);
                         ps.setInt(1, idDocente);
                         ps.executeUpdate();
 
-                        // 3. Eliminar el docente de la tabla `Docente`.
-                        String queryDeleteDocente = "DELETE FROM Docente WHERE IdDocente=?";
-                        ps = con.prepareStatement(queryDeleteDocente);
+                        // Eliminar el docente de la tabla Docente
+                        String deleteDocenteQuery = "DELETE FROM Docente WHERE IdDocente = ?";
+                        ps = con.prepareStatement(deleteDocenteQuery);
                         ps.setInt(1, idDocente);
                         ps.executeUpdate();
 
@@ -500,9 +503,9 @@ public class MantenimientoServlet extends HttpServlet {
                         break;
                     }
 
+
                     
-                    
-                    // AGREGAR CASE EDITAR CURSO
+                      // AGREGAR CASE EDITAR CURSO
                     default:
                         response.sendRedirect("error.jsp?msg=Acción no válida");
                         break;
