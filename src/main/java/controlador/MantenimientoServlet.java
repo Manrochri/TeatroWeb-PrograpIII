@@ -83,6 +83,17 @@ public class MantenimientoServlet extends HttpServlet {
                         response.sendRedirect("mantenimiento.jsp?success=perfilEditado");
                         break;
                     }
+                    
+                    case "eliminarPerfil": {
+                        // Lógica para eliminar un perfil académico
+                        int idPerfil = Integer.parseInt(request.getParameter("idPerfil"));
+                        String query = "DELETE FROM perfiles WHERE IdPerfil = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idPerfil);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=perfilEliminado");
+                        break;
+                    }
 
                     case "editarUsuario": {
                         // Editar un usuario existente
@@ -347,6 +358,25 @@ public class MantenimientoServlet extends HttpServlet {
                         response.sendRedirect("mantenimiento.jsp?success=cursoRegistrado");
                         break;
                     }
+                    case "eliminarCurso": {
+                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+
+                        // Eliminar las relaciones en la tabla intermedia Curso_Docentes
+                        String query = "DELETE FROM Curso_Docentes WHERE IdCurso = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idCurso);
+                        ps.executeUpdate();
+
+                        // Ahora eliminar el curso
+                        query = "DELETE FROM Curso WHERE IdCurso = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idCurso);
+                        ps.executeUpdate();
+
+                        response.sendRedirect("mantenimiento.jsp?success=cursoEliminado");
+                        break;
+                    }
+                    // AGREGAR CASE EDITAR CURSO
                     default:
                         response.sendRedirect("error.jsp?msg=Acción no válida");
                         break;

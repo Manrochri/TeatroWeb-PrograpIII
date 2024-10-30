@@ -44,6 +44,9 @@ ResultSet rsIdiomas = psIdiomas.executeQuery();
 PreparedStatement psRangos = con.prepareStatement("SELECT IdRango, Descripcion FROM RangoEdadesCurso WHERE EstadoRegistro = 1");
 ResultSet rsRangos = psRangos.executeQuery();
 
+// Obtener curso
+    PreparedStatement psCursos = con.prepareStatement("SELECT IdCurso, Nombre, FechaRegistro, Capacidad, FechaInicio, FechaFin, Precio, IdCategoria, IdDuracion, IdIdioma, IdRango FROM Curso WHERE EstadoRegistro = 1");
+    ResultSet rsCursos = psCursos.executeQuery();
 
 %>
 
@@ -74,31 +77,36 @@ ResultSet rsRangos = psRangos.executeQuery();
                 out.print("¡Grado académico eliminado exitosamente!");
             }
             else if ("categoriaRegistrada".equals(successMessage)) {
-    out.print("¡Categoría registrada exitosamente!");
-} else if ("categoriaEditada".equals(successMessage)) {
-    out.print("¡Categoría editada exitosamente!");
-} else if ("categoriaEliminada".equals(successMessage)) {
-    out.print("¡Categoría eliminada exitosamente!");
-} else if ("duracionRegistrada".equals(successMessage)) {
-    out.print("¡Duración registrada exitosamente!");
-} else if ("duracionEditada".equals(successMessage)) {
-    out.print("¡Duración editada exitosamente!");
-} else if ("duracionEliminada".equals(successMessage)) {
-    out.print("¡Duración eliminada exitosamente!");
-} else if ("idiomaRegistrado".equals(successMessage)) {
-    out.print("¡Idioma registrado exitosamente!");
-} else if ("idiomaEditado".equals(successMessage)) {
-    out.print("¡Idioma editado exitosamente!");
-} else if ("idiomaEliminado".equals(successMessage)) {
-    out.print("¡Idioma eliminado exitosamente!");
-} else if ("rangoRegistrado".equals(successMessage)) {
-    out.print("¡Rango registrado exitosamente!");
-} else if ("rangoEditado".equals(successMessage)) {
-    out.print("¡Rango editado exitosamente!");
-} else if ("rangoEliminado".equals(successMessage)) {
-    out.print("¡Rango eliminado exitosamente!");
+                out.print("¡Categoría registrada exitosamente!");
+            } else if ("categoriaEditada".equals(successMessage)) {
+                out.print("¡Categoría editada exitosamente!");
+            } else if ("categoriaEliminada".equals(successMessage)) {
+                out.print("¡Categoría eliminada exitosamente!");
+            } else if ("duracionRegistrada".equals(successMessage)) {
+                out.print("¡Duración registrada exitosamente!");
+            } else if ("duracionEditada".equals(successMessage)) {
+                out.print("¡Duración editada exitosamente!");
+            } else if ("duracionEliminada".equals(successMessage)) {
+                out.print("¡Duración eliminada exitosamente!");
+            } else if ("idiomaRegistrado".equals(successMessage)) {
+                out.print("¡Idioma registrado exitosamente!");
+            } else if ("idiomaEditado".equals(successMessage)) {
+                out.print("¡Idioma editado exitosamente!");
+            } else if ("idiomaEliminado".equals(successMessage)) {
+                out.print("¡Idioma eliminado exitosamente!");
+            } else if ("rangoRegistrado".equals(successMessage)) {
+                out.print("¡Rango registrado exitosamente!");
+            } else if ("rangoEditado".equals(successMessage)) {
+                out.print("¡Rango editado exitosamente!");
+            } else if ("rangoEliminado".equals(successMessage)) {
+                out.print("¡Rango eliminado exitosamente!");
+            } else if ("cursoRegistrado".equals(successMessage)) {
+    out.print("¡Curso registrado exitosamente!");
+} else if ("cursoEditado".equals(successMessage)) {
+    out.print("¡Curso editado exitosamente!");
+} else if ("cursoEliminado".equals(successMessage)) {
+    out.print("¡Curso eliminado exitosamente!");
 }
-
         %>
     </div>
 <% } %>
@@ -411,6 +419,14 @@ ResultSet rsRangos = psRangos.executeQuery();
                         <select class="form-select" id="duracion" name="duracion" required>
                             <option value="" disabled selected>Seleccionar Duración</option>
                             <!-- Aquí debes llenar las opciones de duración -->
+                            <%
+                                PreparedStatement psDuracion = con.prepareStatement("SELECT IdDuracion, Nombre FROM DuracionCurso WHERE EstadoRegistro = 1");
+                                ResultSet rsDuracion = psDuracion.executeQuery();
+                                while (rsDuracion.next()) {
+                            %>
+                            <option value="<%= rsDuracion.getInt("IdDuracion") %>"><%= rsDuracion.getString("Nombre") %></option>
+                            <% } %>
+                            
                         </select>
                     </div>
                     <div class="mb-3">
@@ -418,6 +434,13 @@ ResultSet rsRangos = psRangos.executeQuery();
                         <select class="form-select" id="idioma" name="idioma" required>
                             <option value="" disabled selected>Seleccionar Idioma</option>
                             <!-- Aquí debes llenar las opciones de idioma -->
+                            <%
+                                PreparedStatement psIdioma = con.prepareStatement("SELECT IdIdioma, Nombre FROM IdiomaCurso WHERE EstadoRegistro = 1");
+                                ResultSet rsIdioma = psIdioma.executeQuery();
+                                while (rsIdioma.next()) {
+                            %>
+                            <option value="<%= rsIdioma.getInt("IdIdioma") %>"><%= rsIdioma.getString("Nombre") %></option>
+                            <% } %>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -425,6 +448,13 @@ ResultSet rsRangos = psRangos.executeQuery();
                         <select class="form-select" id="rango" name="rango" required>
                             <option value="" disabled selected>Seleccionar Rango</option>
                             <!-- Aquí debes llenar las opciones de rango -->
+                            <%
+                                PreparedStatement psRango = con.prepareStatement("SELECT IdRango, Descripcion FROM RangoEdadesCurso WHERE EstadoRegistro = 1");
+                                ResultSet rsRango = psRango.executeQuery();
+                                while (rsRango.next()) {
+                            %>
+                            <option value="<%= rsRango.getInt("IdRango") %>"><%= rsRango.getString("Descripcion") %></option>
+                            <% } %>
                         </select>
                     </div>
                     <div class="modal-footer">
@@ -436,6 +466,7 @@ ResultSet rsRangos = psRangos.executeQuery();
         </div>
     </div>
 </div>
+
  
  
  
@@ -671,7 +702,7 @@ else if (tipo === 'cursos') {
     contenido = `
         <h5>Gestión Cursos</h5>
         <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#cursosModal">Registrar nuevo curso</button>
-        <h5 class="mt-4">Cursos Registrador</h5>
+        <h5 class="mt-4">Cursos Registrados</h5>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -682,25 +713,49 @@ else if (tipo === 'cursos') {
                     <th>Fecha de fin</th>
                     <th>Precio</th>
                     <th>Categoría</th>
-                    <th>Duracion</th>
+                    <th>Duración</th>
                     <th>Idioma</th>
                     <th>Rango</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <% while (rsRangos.next()) { %>
-                <tr>
-                    <td><%= rsRangos.getString("Descripcion") %></td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarRango(<%= rsRangos.getInt("IdRango") %>, '<%= rsRangos.getString("Descripcion") %>')">Editar</button>
-                        <form action="MantenimientoServlet" method="post" class="d-inline">
-                            <input type="hidden" name="idRango" value="<%= rsRangos.getInt("IdRango") %>">
-                            <button type="submit" name="accion" value="eliminarRango" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                <% } %>
+                <% 
+                try {
+                    while (rsCursos.next()) { %>
+                        <tr>
+                            <td><%= rsCursos.getString("Nombre") %></td>
+                            <td><%= rsCursos.getString("FechaRegistro") %></td>
+                            <td><%= rsCursos.getString("Capacidad") %></td>
+                            <td><%= rsCursos.getString("FechaInicio") %></td>
+                            <td><%= rsCursos.getString("FechaFin") %></td>
+                            <td><%= rsCursos.getString("Precio") %></td>
+                            <td><%= rsCursos.getString("IdCategoria") %></td>
+                            <td><%= rsCursos.getString("IdDuracion") %></td>
+                            <td><%= rsCursos.getString("IdIdioma") %></td>
+                            <td><%= rsCursos.getString("IdRango") %></td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editarCurso(
+                                    <%= rsCursos.getInt("IdCurso") %>, 
+                                    '<%= rsCursos.getString("FechaRegistro") %>', 
+                                    '<%= rsCursos.getString("Capacidad") %>', 
+                                    '<%= rsCursos.getString("FechaInicio") %>', 
+                                    '<%= rsCursos.getString("FechaFin") %>', 
+                                    '<%= rsCursos.getString("Precio") %>', 
+                                    '<%= rsCursos.getString("IdCategoria") %>', 
+                                    '<%= rsCursos.getString("IdDuracion") %>', 
+                                    '<%= rsCursos.getString("IdIdioma") %>', 
+                                    '<%= rsCursos.getString("IdRango") %>')">Editar</button>
+                                <form action="MantenimientoServlet" method="post" class="d-inline">
+                                    <input type="hidden" name="idCurso" value="<%= rsCursos.getInt("IdCurso") %>">
+                                    <button type="submit" name="accion" value="eliminarCurso" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                <%   }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } %>
             </tbody>
         </table>
     `;
