@@ -57,6 +57,17 @@ ResultSet rsRangos = psRangos.executeQuery();
 );
 ResultSet rsCursos = psCursos.executeQuery();
 
+// Obtener docentes y sus cursos asignados
+PreparedStatement psDocentes = con.prepareStatement(
+    "SELECT d.IdDocente, u.Nombres, u.ApellidoPaterno, u.ApellidoMaterno, u.CorreoElectronico, c.Nombre AS CursoNombre " +
+    "FROM Docente d " +
+    "JOIN Usuario u ON d.IdUsuario = u.IdUsuario " +
+    "LEFT JOIN curso_docente cd ON d.IdDocente = cd.IdDocente " +
+    "LEFT JOIN Curso c ON cd.IdCurso = c.IdCurso " +
+    "WHERE d.EstadoRegistro = 1"
+);
+ResultSet rsDocentes = psDocentes.executeQuery();
+
 
 %>
 
@@ -145,7 +156,9 @@ ResultSet rsCursos = psCursos.executeQuery();
                 <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('perfiles')">Gestionar Perfiles</button>
                 <h5>Gestión para Docentes</h5>
                 <hr>
+                <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('docentes')">Gestionar Docentes</button>
                 <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('grados')">Gestionar Grado Académico</button>
+                
                 <h5>Gestión para Cursos</h5>
                 <hr>
                 <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('cursos')">Gestionar Cursos</button>
@@ -476,8 +489,52 @@ ResultSet rsCursos = psCursos.executeQuery();
         </div>
     </div>
 </div>
+<!-- MODAL DOCENTES -->
+ <div class="modal fade" id="docenteModal" tabindex="-1" aria-labelledby="docenteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="docenteModalLabel">Nuevo Docente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formDocente" action="MantenimientoServlet" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="idDocente" name="idDocente">
+                    <div class="mb-3">
+                        <label for="nombres" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="nombres" name="nombres" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno">
+                    </div>
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="correo" name="correo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="curso" class="form-label">Curso Asignado</label>
+                        <select class="form-select" id="curso" name="curso">
+                            <% while (rsCursos.next()) { %>
+                                <option value="<%= rsCursos.getInt("IdCurso") %>"><%= rsCursos.getString("Nombre") %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Docente</button>
+                </div>
+                <input type="hidden" name="accion" value="guardarDocente">
+            </form>
+        </div>
+    </div>
+</div>
 
- 
  
  
     <!-- Bootstrap JS -->
@@ -772,6 +829,42 @@ else if (tipo === 'cursos') {
 
     `;
 }
+else if (tipo === 'docentes') {
+    contenido = `
+        <h5>Gestión de Docentes</h5>
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#docenteModal">Nuevo Docente</button>
+        <h5 class="mt-4">Docentes Registrados</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Correo Electrónico</th>
+                    <th>Curso Asignado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsDocentes.next()) { %>
+                <tr>
+                    <td><%= rsDocentes.getString("Nombres") %></td>
+                    <td><%= rsDocentes.getString("ApellidoPaterno") + " " + rsDocentes.getString("ApellidoMaterno") %></td>
+                    <td><%= rsDocentes.getString("CorreoElectronico") %></td>
+                    <td><%= rsDocentes.getString("CursoNombre") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarDocente(<%= rsDocentes.getInt("IdDocente") %>, '<%= rsDocentes.getString("Nombres") %>', '<%= rsDocentes.getString("ApellidoPaterno") %>', '<%= rsDocentes.getString("ApellidoMaterno") %>', '<%= rsDocentes.getString("CorreoElectronico") %>', <%= rsDocentes.getInt("IdCurso") %>)">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idDocente" value="<%= rsDocentes.getInt("IdDocente") %>">
+                            <button type="submit" name="accion" value="eliminarDocente" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
+}
+
 
             
             
@@ -897,6 +990,21 @@ else if (tipo === 'cursos') {
 
     // Abrir el modal
     var modal = new bootstrap.Modal(document.getElementById('cursosModal'));
+    modal.show();
+}
+
+function editarDocente(idDocente, nombres, apellidoPaterno, apellidoMaterno, correo, cursoId) {
+    document.getElementById('idDocente').value = idDocente;
+    document.getElementById('nombres').value = nombres;
+    document.getElementById('apellidoPaterno').value = apellidoPaterno;
+    document.getElementById('apellidoMaterno').value = apellidoMaterno;
+    document.getElementById('correo').value = correo;
+    document.getElementById('curso').value = cursoId;
+    
+    document.querySelector('#formDocente button[type="submit"]').innerText = "Actualizar Docente";
+    document.querySelector('#formDocente input[name="accion"]').value = "editarDocente";
+
+    var modal = new bootstrap.Modal(document.getElementById('docenteModal'));
     modal.show();
 }
 
