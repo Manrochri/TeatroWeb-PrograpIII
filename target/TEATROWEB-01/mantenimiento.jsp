@@ -746,17 +746,17 @@ else if (tipo === 'cursos') {
                     <td><%= rsCursos.getString("Rango") %></td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="editarCurso(
-        <%= rsCursos.getInt("IdCurso") %>, 
-        '<%= rsCursos.getString("Nombre") %>', 
-        <%= rsCursos.getInt("Capacidad") %>, 
-        '<%= rsCursos.getString("FechaInicio") %>', 
-        '<%= rsCursos.getString("FechaFin") %>', 
-        <%= rsCursos.getDouble("Precio") %>, 
-        '<%= rsCursos.getString("Categoria") %>', 
-        '<%= rsCursos.getString("Duracion") %>', 
-        '<%= rsCursos.getString("Idioma") %>', 
-        '<%= rsCursos.getString("Rango") %>'
-    )">Editar</button>
+                        <%= rsCursos.getInt("IdCurso")%>, 
+                        '<%= rsCursos.getString("Nombre")%>', 
+                        <%= rsCursos.getInt("Capacidad")%>, 
+                        '<%= rsCursos.getString("FechaInicio")%>', 
+                        '<%= rsCursos.getString("FechaFin")%>', 
+                        <%= rsCursos.getDouble("Precio")%>, 
+                        '<%= rsCursos.getString("Categoria")%>', 
+                        '<%= rsCursos.getString("Duracion")%>', 
+                        '<%= rsCursos.getString("Idioma")%>', 
+                        '<%= rsCursos.getString("Rango")%>'
+                    )">Editar</button>
                         <form action="MantenimientoServlet" method="post" class="d-inline">
                             <input type="hidden" name="idCurso" value="<%= rsCursos.getInt("IdCurso") %>">
                             <button type="submit" name="accion" value="eliminarCurso" class="btn btn-danger btn-sm">Eliminar</button>
@@ -969,7 +969,7 @@ else if (tipo === 'cursos') {
         }); 
         
         // Limpiar el formulario al cerrar el modal-curso
-        var cursoModal = document.getElementById('cursoModal');
+        var cursoModal = document.getElementById('cursosModal');
         cursoModal.addEventListener('hidden.bs.modal', function () {
             document.getElementById('formCurso').reset();
             document.getElementById('idCurso').value = '';

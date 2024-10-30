@@ -22,7 +22,7 @@ public class PerfilServlet extends HttpServlet {
 
         String url = "jdbc:mysql://localhost:3306/teatroweb";
         String username = "root";
-        String password = "12345678";
+        String password = "";
 
         Connection conn = null;
         PreparedStatement stmt = null;
