@@ -45,18 +45,8 @@ PreparedStatement psRangos = con.prepareStatement("SELECT IdRango, Descripcion F
 ResultSet rsRangos = psRangos.executeQuery();
 
 // Obtener curso
-    PreparedStatement psCursos = con.prepareStatement(
-    "SELECT c.IdCurso, c.Nombre, c.FechaRegistro, c.Capacidad, c.FechaInicio, c.FechaFin, c.Precio, " +
-    "cc.Nombre AS Categoria, dc.Nombre AS Duracion, ic.Nombre AS Idioma, rc.Descripcion AS Rango " +
-    "FROM Curso c " +
-    "JOIN CategoriaCurso cc ON c.IdCategoria = cc.IdCategoria " +
-    "JOIN DuracionCurso dc ON c.IdDuracion = dc.IdDuracion " +
-    "JOIN IdiomaCurso ic ON c.IdIdioma = ic.IdIdioma " +
-    "JOIN RangoEdadesCurso rc ON c.IdRango = rc.IdRango " +
-    "WHERE c.EstadoRegistro = 1"
-);
-ResultSet rsCursos = psCursos.executeQuery();
-
+    PreparedStatement psCursos = con.prepareStatement("SELECT IdCurso, Nombre, FechaRegistro, Capacidad, FechaInicio, FechaFin, Precio, IdCategoria, IdDuracion, IdIdioma, IdRango FROM Curso WHERE EstadoRegistro = 1");
+    ResultSet rsCursos = psCursos.executeQuery();
 
 %>
 
@@ -714,62 +704,60 @@ else if (tipo === 'cursos') {
         <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#cursosModal">Registrar nuevo curso</button>
         <h5 class="mt-4">Cursos Registrados</h5>
         <table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Nombre del curso</th>
-            <th>Fecha de creación</th>
-            <th>Capacidad</th>
-            <th>Fecha de inicio</th>
-            <th>Fecha de fin</th>
-            <th>Precio</th>
-            <th>Categoría</th>
-            <th>Duración</th>
-            <th>Idioma</th>
-            <th>Rango</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% 
-        try {
-            while (rsCursos.next()) { %>
+            <thead>
                 <tr>
-                    <td><%= rsCursos.getString("Nombre") %></td>
-                    <td><%= rsCursos.getString("FechaRegistro") %></td>
-                    <td><%= rsCursos.getString("Capacidad") %></td>
-                    <td><%= rsCursos.getString("FechaInicio") %></td>
-                    <td><%= rsCursos.getString("FechaFin") %></td>
-                    <td><%= rsCursos.getString("Precio") %></td>
-                    <td><%= rsCursos.getString("Categoria") %></td>
-                    <td><%= rsCursos.getString("Duracion") %></td>
-                    <td><%= rsCursos.getString("Idioma") %></td>
-                    <td><%= rsCursos.getString("Rango") %></td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarCurso(
-        <%= rsCursos.getInt("IdCurso") %>, 
-        '<%= rsCursos.getString("Nombre") %>', 
-        <%= rsCursos.getInt("Capacidad") %>, 
-        '<%= rsCursos.getString("FechaInicio") %>', 
-        '<%= rsCursos.getString("FechaFin") %>', 
-        <%= rsCursos.getDouble("Precio") %>, 
-        '<%= rsCursos.getString("Categoria") %>', 
-        '<%= rsCursos.getString("Duracion") %>', 
-        '<%= rsCursos.getString("Idioma") %>', 
-        '<%= rsCursos.getString("Rango") %>'
-    )">Editar</button>
-                        <form action="MantenimientoServlet" method="post" class="d-inline">
-                            <input type="hidden" name="idCurso" value="<%= rsCursos.getInt("IdCurso") %>">
-                            <button type="submit" name="accion" value="eliminarCurso" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </td>
+                    <th>Nombre del curso</th>
+                    <th>Fecha de creación</th>
+                    <th>Capacidad</th>
+                    <th>Fecha de inicio</th>
+                    <th>Fecha de fin</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Duración</th>
+                    <th>Idioma</th>
+                    <th>Rango</th>
+                    <th>Acciones</th>
                 </tr>
-        <%   }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } %>
-    </tbody>
-</table>
-
+            </thead>
+            <tbody>
+                <% 
+                try {
+                    while (rsCursos.next()) { %>
+                        <tr>
+                            <td><%= rsCursos.getString("Nombre") %></td>
+                            <td><%= rsCursos.getString("FechaRegistro") %></td>
+                            <td><%= rsCursos.getString("Capacidad") %></td>
+                            <td><%= rsCursos.getString("FechaInicio") %></td>
+                            <td><%= rsCursos.getString("FechaFin") %></td>
+                            <td><%= rsCursos.getString("Precio") %></td>
+                            <td><%= rsCursos.getString("IdCategoria") %></td>
+                            <td><%= rsCursos.getString("IdDuracion") %></td>
+                            <td><%= rsCursos.getString("IdIdioma") %></td>
+                            <td><%= rsCursos.getString("IdRango") %></td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editarCurso(
+                                    <%= rsCursos.getInt("IdCurso") %>, 
+                                    '<%= rsCursos.getString("FechaRegistro") %>', 
+                                    '<%= rsCursos.getString("Capacidad") %>', 
+                                    '<%= rsCursos.getString("FechaInicio") %>', 
+                                    '<%= rsCursos.getString("FechaFin") %>', 
+                                    '<%= rsCursos.getString("Precio") %>', 
+                                    '<%= rsCursos.getString("IdCategoria") %>', 
+                                    '<%= rsCursos.getString("IdDuracion") %>', 
+                                    '<%= rsCursos.getString("IdIdioma") %>', 
+                                    '<%= rsCursos.getString("IdRango") %>')">Editar</button>
+                                <form action="MantenimientoServlet" method="post" class="d-inline">
+                                    <input type="hidden" name="idCurso" value="<%= rsCursos.getInt("IdCurso") %>">
+                                    <button type="submit" name="accion" value="eliminarCurso" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                <%   }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } %>
+            </tbody>
+        </table>
     `;
 }
 
@@ -875,30 +863,6 @@ else if (tipo === 'cursos') {
             var modal = new bootstrap.Modal(document.getElementById('rangoModal'));
             modal.show();
         }
-        
-        function editarCurso(idCurso, nombreCurso, capacidad, fechaInicio, fechaFin, precio, categoria, duracion, idioma, rango) {
-    // Asignar los valores al formulario del modal
-    document.getElementById('idCurso').value = idCurso;
-    document.getElementById('nombreCurso').value = nombreCurso;
-    document.getElementById('capacidad').value = capacidad;
-    document.getElementById('fechaInicio').value = fechaInicio;
-    document.getElementById('fechaFin').value = fechaFin;
-    document.getElementById('precio').value = precio;
-    
-    // Seleccionar las opciones correspondientes para categoría, duración, idioma y rango
-    document.getElementById('categoria').value = categoria;
-    document.getElementById('duracion').value = duracion;
-    document.getElementById('idioma').value = idioma;
-    document.getElementById('rango').value = rango;
-
-    // Cambiar el texto y valor del botón a "Actualizar Curso"
-    document.querySelector('#formCurso button[type="submit"]').innerText = "Actualizar Curso";
-    document.querySelector('#formCurso button[type="submit"]').value = "editarCurso";
-
-    // Abrir el modal
-    var modal = new bootstrap.Modal(document.getElementById('cursosModal'));
-    modal.show();
-}
 
 
 
@@ -968,14 +932,6 @@ else if (tipo === 'cursos') {
             document.querySelector('#formRango button[type="submit"]').value = "registrarRango";
         }); 
         
-        // Limpiar el formulario al cerrar el modal-curso
-        var cursoModal = document.getElementById('cursoModal');
-        cursoModal.addEventListener('hidden.bs.modal', function () {
-            document.getElementById('formCurso').reset();
-            document.getElementById('idCurso').value = '';
-            document.querySelector('#formCurso button[type="submit"]').innerText = "Guardar Curso";
-            document.querySelector('#formCurso button[type="submit"]').value = "registrarCurso";
-        });
     </script>
 </body>
 </html>
