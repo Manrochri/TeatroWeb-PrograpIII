@@ -70,6 +70,7 @@ CREATE TABLE Docente (
     IdUsuario INT NOT NULL,
     IdGradoAcademico INT NOT NULL,
     Descripcion TEXT,
+    Nombres VARCHAR(50) NOT NULL,
     FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario),
     FOREIGN KEY (IdGradoAcademico) REFERENCES GradoAcademico(IdGradoAcademico)
 );
