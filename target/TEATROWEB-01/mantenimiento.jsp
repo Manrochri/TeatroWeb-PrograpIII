@@ -56,7 +56,9 @@
             + "WHERE c.EstadoRegistro = 1"
     );
     ResultSet rsCursos = psCursos.executeQuery();
-//prueba
+// Obtener cursos disponibles con estado de registro 1
+PreparedStatement psCursosDisponibles = con.prepareStatement("SELECT IdCurso, Nombre FROM Curso WHERE EstadoRegistro = 1");
+ResultSet rsCursosDisponibles = psCursosDisponibles.executeQuery();
 // Obtener docentes
 PreparedStatement psDocentes = con.prepareStatement(
     "SELECT d.IdDocente, d.Nombres AS NombreDocente, g.Nombre AS GradoAcademico, d.Descripcion, d.IdUsuario, d.IdGradoAcademico " +
@@ -68,12 +70,31 @@ PreparedStatement psDocentes = con.prepareStatement(
 ResultSet rsDocentes = psDocentes.executeQuery();
 // Cierra el ResultSet y el PreparedStatement cuando termines
 
+// Obtener tipos de sesión
+PreparedStatement psTiposSesion = con.prepareStatement("SELECT IdTipoSesion, TipoSesion FROM tiposesion WHERE EstadoRegistro = 1");
+ResultSet rsTiposSesion = psTiposSesion.executeQuery();
+
+
+// Obtener tipos de sesión disponibles
+PreparedStatement psTiposSesion2 = con.prepareStatement("SELECT IdTipoSesion, TipoSesion FROM tiposesion WHERE EstadoRegistro = 1");
+ResultSet rsTiposSesion2 = psTiposSesion2.executeQuery();
+// Obtener sesiones
+PreparedStatement psSesiones = con.prepareStatement(
+    "SELECT s.IdSesion, s.NumeroSesion, s.NombreSesion, s.FechaSesion, t.IdTipoSesion, t.TipoSesion " +
+    "FROM sesion s " +
+    "JOIN tiposesion t ON s.IdTipoSesion = t.IdTipoSesion " +
+    "WHERE s.EstadoRegistro = 1"
+);
+ResultSet rsSesiones = psSesiones.executeQuery();
+
+
 
 
 %>
 
 <!-- Aquí se agregan los mensajes de éxito o error -->
-<%    String successMessage = request.getParameter("success");
+<%
+    String successMessage = request.getParameter("success");
     if (successMessage != null) {
 %>
 <div class="alert alert-success mt-3">
@@ -134,15 +155,27 @@ ResultSet rsDocentes = psDocentes.executeQuery();
         out.print("¡Docente eliminado exitosamente!");
     } else if ("docenteAsignado".equals(successMessage)) {
         out.print("¡Docente asignado al curso exitosamente!");
+    } else if ("tipoSesionRegistrado".equals(successMessage)) {
+        out.print("¡Tipo de sesión registrado exitosamente!");
+    } else if ("tipoSesionEditado".equals(successMessage)) {
+        out.print("¡Tipo de sesión editado exitosamente!");
+    } else if ("tipoSesionEliminado".equals(successMessage)) {
+        out.print("¡Tipo de sesión eliminado exitosamente!");
+    } else if ("sesionRegistrada".equals(successMessage)) {
+        out.print("¡Sesión registrada exitosamente!");
+    } else if ("sesionEditada".equals(successMessage)) {
+        out.print("¡Sesión editada exitosamente!");
+    } else if ("sesionEliminada".equals(successMessage)) {
+        out.print("¡Sesión eliminada exitosamente!");
     } else if ("asignacionYaExiste".equals(request.getParameter("error"))) {
         out.print("La asignación ya existe.");
     } else if ("errorAsignacionDocente".equals(request.getParameter("error"))) {
         out.print("Error al asignar docente al curso.");
     }
-%>
-
+    %>
 </div>
-<% }%>
+<% } %>
+
 
 
 <!DOCTYPE html>
@@ -180,6 +213,12 @@ ResultSet rsDocentes = psDocentes.executeQuery();
                     <button class="btn btn-warning w-100 my-2" onclick="mostrarCRUD('duraciones')">Gestionar Duración Curso</button>
                     <button class="btn btn-danger w-100 my-2" onclick="mostrarCRUD('idiomas')">Gestionar Idioma Curso</button>
                     <button class="btn btn-dark w-100 my-2" onclick="mostrarCRUD('rangos')">Gestionar Rango Edades Curso</button>
+                    
+                    <h5>Gestión para Sesiones</h5>
+                    <hr>
+                    <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('tiposesion')">Gestionar Tipos de Sesión</button>
+                    <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('sesion')">Gestionar Sesiones</button>
+
 
                     <!-- Cerrar sesion -->
                     <form action="LogoutServlet" method="post" class="mt-3">
@@ -504,6 +543,7 @@ ResultSet rsDocentes = psDocentes.executeQuery();
             </div>
         </div>
 
+<!-- MODAL DOCENTES -->
     <div class="modal fade" id="docenteModal" tabindex="-1" aria-labelledby="docenteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -606,6 +646,98 @@ ResultSet rsDocentes = psDocentes.executeQuery();
         </div>
     </div>
 </div>
+
+<!-- MODAL TIPO-SESION-->
+<!-- Modal para gestionar Tipos de Sesión -->
+<div class="modal fade" id="tipoSesionModal" tabindex="-1" aria-labelledby="tipoSesionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tipoSesionModalLabel">Gestionar Tipo de Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formTipoSesion">
+                    <input type="hidden" name="idTipoSesion" id="idTipoSesion">
+                    <div class="mb-3">
+                        <label for="tipoSesion" class="form-label">Tipo de Sesión (ej. Teórico, Práctico)</label>
+                        <input type="text" class="form-control" id="tipoSesion" name="tipoSesion" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarTipoSesion" class="btn btn-primary">Guardar Tipo de Sesión</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL SESION -->
+<div class="modal fade" id="sesionModal" tabindex="-1" aria-labelledby="sesionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sesionModalLabel">Registrar Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="<%= request.getContextPath() %>/MantenimientoServlet" method="post" id="formSesion">
+                    <!-- ComboBox para seleccionar el curso -->
+                    <div class="mb-3">
+                        <label for="curso" class="form-label">Curso</label>
+                        <select class="form-select" id="curso" name="cursoSesion" required>
+                            <option value="" disabled selected>Seleccionar Curso</option>
+                            <% 
+                                while (rsCursosDisponibles.next()) { 
+                            %>
+                                <option value="<%= rsCursosDisponibles.getInt("IdCurso") %>"><%= rsCursosDisponibles.getString("Nombre") %></option>
+                            <% 
+                                }  
+                            %>
+                        </select>
+                    </div>
+
+                    <!-- Resto del formulario de Sesión (Número de sesión, Nombre, Fecha, Tipo de sesión) -->
+                    <div class="mb-3">
+                        <label for="numeroSesion" class="form-label">Número de Sesión</label>
+                        <input type="number" class="form-control" id="numeroSesion" name="numeroSesion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombreSesion" class="form-label">Nombre de la Sesión</label>
+                        <input type="text" class="form-control" id="nombreSesion" name="nombreSesion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaSesion" class="form-label">Fecha de la Sesión</label>
+                        <input type="date" class="form-control" id="fechaSesion" name="fechaSesion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipoSesion" class="form-label">Tipo de Sesión</label>
+                        <select class="form-select" id="tipoSesion" name="tipoSesion" required>
+                            <option value="" disabled selected>Seleccionar Tipo de Sesión</option>
+                            <% 
+                                while (rsTiposSesion2.next()) { 
+                            %>
+                                <option value="<%= rsTiposSesion2.getInt("IdTipoSesion") %>"><%= rsTiposSesion2.getString("TipoSesion") %></option>
+                            <% 
+                                }  
+                            %>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarSesion" class="btn btn-primary">Guardar Sesión</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 
 
@@ -979,7 +1111,82 @@ ResultSet rsDocentes = psDocentes.executeQuery();
             </tbody>
         </table>
     `;
+}else if (tipo === 'tiposesion') {
+    contenido = `
+        <h5>Gestión de Tipos de Sesión</h5>
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#tipoSesionModal">
+            Nuevo Tipo de Sesión
+        </button>
+        <h5 class="mt-4">Tipos de Sesión Registrados</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo de Sesión</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsTiposSesion.next()) { %>
+                <tr>
+                    <td><%= rsTiposSesion.getInt("IdTipoSesion") %></td>
+                    <td><%= rsTiposSesion.getString("TipoSesion") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarTipoSesion(<%= rsTiposSesion.getInt("IdTipoSesion") %>, '<%= rsTiposSesion.getString("TipoSesion") %>')">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Está seguro de que desea eliminar este tipo de sesión?');">
+                            <input type="hidden" name="idTipoSesion" value="<%= rsTiposSesion.getInt("IdTipoSesion") %>">
+                            <button type="submit" name="accion" value="eliminarTipoSesion" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
+} else if (tipo === 'sesion') {
+    contenido = `
+        <h5>Gestión de Sesiones</h5>
+        <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#sesionModal">
+            Nueva Sesión
+        </button>
+        <h5 class="mt-4">Sesiones Registradas</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Nombre de la Sesión</th>
+                    <th>Tipo de Sesión</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsSesiones.next()) { %>
+                <tr>
+                    <td><%= rsSesiones.getInt("NumeroSesion") %></td>
+                    <td><%= rsSesiones.getString("NombreSesion") %></td>
+                    <td><%= rsSesiones.getString("TipoSesion") %></td>
+                    <td><%= rsSesiones.getDate("FechaSesion") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarSesion(
+                            <%= rsSesiones.getInt("IdSesion") %>, 
+                            <%= rsSesiones.getInt("NumeroSesion") %>, 
+                            '<%= rsSesiones.getString("NombreSesion") %>', 
+                            <%= rsSesiones.getInt("IdTipoSesion") %>, 
+                            '<%= rsSesiones.getDate("FechaSesion") %>'
+                        )">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Está seguro de que desea eliminar esta sesión?');">
+                            <input type="hidden" name="idSesion" value="<%= rsSesiones.getInt("IdSesion") %>">
+                            <button type="submit" name="accion" value="eliminarSesion" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
 }
+
 
 
 
@@ -1222,6 +1429,27 @@ ResultSet rsDocentes = psDocentes.executeQuery();
 asignacionModal.addEventListener('hidden.bs.modal', function () {
     document.getElementById('formAsignacion').reset();
 });
+
+function editarTipoSesion(idTipoSesion, tipoSesion) {
+    document.getElementById('idTipoSesion').value = idTipoSesion;
+    document.getElementById('tipoSesion').value = tipoSesion;
+    document.querySelector('#formTipoSesion button[type="submit"]').innerText = "Actualizar Tipo de Sesión";
+    document.querySelector('#formTipoSesion button[type="submit"]').value = "editarTipoSesion";
+    var modal = new bootstrap.Modal(document.getElementById('tipoSesionModal'));
+    modal.show();
+}
+
+function editarSesion(idSesion, numeroSesion, nombreSesion, tipoSesionId, fechaSesion) {
+    document.getElementById('idSesion').value = idSesion;
+    document.getElementById('numeroSesion').value = numeroSesion;
+    document.getElementById('nombreSesion').value = nombreSesion;
+    document.getElementById('tipoSesionId').value = tipoSesionId;
+    document.getElementById('fechaSesion').value = fechaSesion;
+    document.querySelector('#formSesion button[type="submit"]').innerText = "Actualizar Sesión";
+    document.querySelector('#formSesion button[type="submit"]').value = "editarSesion";
+    var modal = new bootstrap.Modal(document.getElementById('sesionModal'));
+    modal.show();
+}
 
 
         </script>
