@@ -87,7 +87,9 @@ PreparedStatement psSesiones = con.prepareStatement(
 );
 ResultSet rsSesiones = psSesiones.executeQuery();
 
-
+// Obtener RedSocial
+    PreparedStatement psRedes = con.prepareStatement("SELECT IdRedesSociales, RedSocial FROM RedesSociales WHERE EstadoRegistro = 1 ");
+    ResultSet rsRedes = psRedes.executeQuery();
 
 
 %>
@@ -178,7 +180,13 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         out.print("La asignación ya existe.");
     } else if ("errorAsignacionDocente".equals(request.getParameter("error"))) {
         out.print("Error al asignar docente al curso.");
-    }
+    }else if ("RedSocialRegistrado".equals(successMessage)) {
+                out.print("¡Red Social registrado exitosamente!");
+            } else if ("RedSocialEditado".equals(successMessage)) {
+                out.print("¡Red Social actualizado exitosamente!");
+            } else if ("RedSocialEliminado".equals(successMessage)) {
+                out.print("¡Red Social eliminado exitosamente!");
+            }
     %>
 </div>
 <% } %>
@@ -230,7 +238,10 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                     <h5>Gestión de Asistencias</h5>
                     <hr>
                     <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('estadosAsistencia')">Gestionar Estados de Asistencia</button>
-
+                    <h5>Gestión de Redes sociales</h5>
+                    <hr>
+                    <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('redesSociales')">Gestionar Redes Sociales</button>
+                    <hr>
                     <!-- Cerrar sesion -->
                     <form action="LogoutServlet" method="post" class="mt-3">
                         <button type="submit" class="btn btn-danger w-100">Cerrar Sesión</button>
@@ -782,7 +793,33 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         </div>
     </div>
 </div>
+<!-- MODAL REDES SOCIALES -->
+<div class="modal fade" id="redesSocialesModal" tabindex="-1" aria-labelledby="redesSocialesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="redesSocialesModalLabel">Gestionar Red Social</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formRedesSociales">
+                    <input type="hidden" name="idRedesSociales" id="idRedesSociales">
 
+                    <!-- Campo para Red Social -->
+                    <div class="mb-3">
+                        <label for="redSocial" class="form-label">Nombre de la Red Social</label>
+                        <input type="text" class="form-control" id="redSocial" name="redSocial" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarRedSocial" class="btn btn-primary">Guardar Red Social</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -1269,7 +1306,41 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </tbody>
         </table>
     `;
+} else if (tipo === 'redesSociales') {
+    contenido = `
+        <h5>Gestión de Redes Sociales</h5>
+        <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#redesSocialesModal">
+            Nueva Red Social
+        </button>
+        <h5 class="mt-4">Redes Sociales Registradas</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Red Social</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% while (rsRedes.next()) { %>
+                <tr>
+                    <td><%= rsRedes.getInt("IdRedesSociales") %></td>
+                    <td><%= rsRedes.getString("RedSocial") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarRedSocial(<%= rsRedes.getInt("IdRedesSociales") %>, '<%= rsRedes.getString("RedSocial") %>')">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Está seguro que desea eliminar esta red social?');">
+                            <input type="hidden" name="idRedesSociales" value="<%= rsRedes.getInt("IdRedesSociales") %>">
+                            <button type="submit" name="accion" value="eliminarRedSocial" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    `;
 }
+
+
 
 
                             seccionCRUD.innerHTML = contenido;
@@ -1570,6 +1641,31 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 document.querySelector('#formEstadoAsistencia button[type="submit"]').innerText = "Guardar Estado";
                 document.querySelector('#formEstadoAsistencia button[type="submit"]').value = "registrarEstadoAsistencia";
             });
+
+function editarRedSocial(idRedesSociales, redSocial) {
+    // Asigna los valores a los campos del formulario del modal
+    document.getElementById('idRedesSociales').value = idRedesSociales;
+    document.getElementById('redSocial').value = redSocial;
+
+    // Cambia el texto y el valor del botón a "Actualizar Red Social"
+    document.querySelector('#formRedesSociales button[type="submit"]').innerText = "Actualizar Red Social";
+    document.querySelector('#formRedesSociales button[type="submit"]').value = "editarRedSocial";
+
+    // Muestra el modal para editar
+    var modal = new bootstrap.Modal(document.getElementById('redesSocialesModal'));
+    modal.show();
+}
+
+// Limpiar el formulario del modal de redes sociales al cerrarse
+var redesSocialesModal = document.getElementById('redesSocialesModal');
+redesSocialesModal.addEventListener('hidden.bs.modal', function () {
+    document.getElementById('formRedesSociales').reset();
+    document.getElementById('idRedesSociales').value = '';
+
+    // Cambia el texto y el valor del botón a "Guardar Red Social"
+    document.querySelector('#formRedesSociales button[type="submit"]').innerText = "Guardar Red Social";
+    document.querySelector('#formRedesSociales button[type="submit"]').value = "registrarRedSocial";
+});
 
             
         </script>

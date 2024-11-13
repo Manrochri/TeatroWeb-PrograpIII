@@ -690,6 +690,48 @@ case "editarDocente": {
                         }
                         break;
                     }
+                    // REDES SOCIALES CRUD
+                    case "registrarRedSocial": {
+                        // Lógica para registrar una nueva red social
+                        String redSocial = request.getParameter("redSocial");
+
+                        String query = "INSERT INTO RedesSociales (RedSocial, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, redSocial);
+                        ps.executeUpdate();
+
+                        response.sendRedirect("mantenimiento.jsp?success=redSocialRegistrada");
+                        break;
+                    }
+
+                    case "editarRedSocial": {
+                        // Lógica para editar una red social existente
+                        int idRedSocial = Integer.parseInt(request.getParameter("idRedesSociales"));
+                        String redSocial = request.getParameter("redSocial");
+
+                        String query = "UPDATE RedesSociales SET RedSocial = ? WHERE IdRedesSociales = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, redSocial);
+                        ps.setInt(2, idRedSocial);
+                        ps.executeUpdate();
+
+                        response.sendRedirect("mantenimiento.jsp?success=redSocialEditada");
+                        break;
+                    }
+
+                    case "eliminarRedSocial": {
+                        // Lógica para eliminar (desactivar) una red social
+                        int idRedSocial = Integer.parseInt(request.getParameter("idRedesSociales"));
+
+                        String query = "UPDATE RedesSociales SET EstadoRegistro = 0 WHERE IdRedesSociales = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idRedSocial);
+                        ps.executeUpdate();
+
+                        response.sendRedirect("mantenimiento.jsp?success=redSocialEliminada");
+                        break;
+                    }
+
 
                     
 
