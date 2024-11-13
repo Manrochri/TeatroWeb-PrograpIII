@@ -559,13 +559,21 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                         <label for="idUsuario" class="form-label">Usuario</label>
                         <select class="form-select" id="idUsuario" name="idUsuario" required>
                             <option value="" disabled selected>Seleccionar Usuario</option>
-                            <% 
-                                PreparedStatement psUsuarios2 = con.prepareStatement("SELECT IdUsuario, Nombres FROM Usuario WHERE EstadoRegistro = 1");
-                                ResultSet rsUsuarios2 = psUsuarios2.executeQuery();
-                                while (rsUsuarios2.next()) {
-                            %>
-                            <option value="<%= rsUsuarios2.getInt("IdUsuario") %>"><%= rsUsuarios2.getString("Nombres") %></option>
-                            <% } rsUsuarios2.close(); psUsuarios2.close(); %>
+                                <% 
+                                        PreparedStatement psUsuarios2 = con.prepareStatement(
+                                            "SELECT IdUsuario, CONCAT(DNI, ' - ', Nombres, ' ', ApellidoPaterno) AS NombreCompleto " +
+                                            "FROM Usuario WHERE EstadoRegistro = 1"
+                                        );
+                                        ResultSet rsUsuarios2 = psUsuarios2.executeQuery();
+                                        while (rsUsuarios2.next()) {
+                                    %>
+                                <option value="<%= rsUsuarios2.getInt("IdUsuario") %>">
+                                <%= rsUsuarios2.getString("NombreCompleto") %>
+                                </option>
+                                <% } 
+                                        rsUsuarios2.close(); 
+                                        psUsuarios2.close(); 
+                                    %>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -733,10 +741,6 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         </div>
     </div>
 </div>
-
-
-
-
 
 
         <!-- Bootstrap JS -->
@@ -1185,12 +1189,6 @@ ResultSet rsSesiones = psSesiones.executeQuery();
     `;
 }
 
-
-
-
-
-
-
                             seccionCRUD.innerHTML = contenido;
                             seccionCRUD.style.display = 'block';
  }
@@ -1421,18 +1419,26 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                     submitButton.innerText = "Guardar Docente";
                     submitButton.value = "registrarDocente"; // Volver al valor por defecto
                 });
-                var asignacionModal = document.getElementById('asignacionModal');
+            var asignacionModal = document.getElementById('asignacionModal');
             asignacionModal.addEventListener('hidden.bs.modal', function () {
                 document.getElementById('formAsignacion').reset();
             });
             
             var sesionModal = document.getElementById('sesionModal');
             sesionModal.addEventListener('hidden.bs.modal', function () {
-                document.getElementById('formSesion').reset();
-                document.getElementById('idSesion').value = ''; // Limpia el campo oculto de idSesion
+                console.log("Modal cerrado y formulario reseteado"); // Verifica en la consola si esto se ejecuta
+                document.getElementById('formSesion').reset(); // Resetea el formulario completo
+                document.getElementById('idSesion').value = ''; // Limpia el campo oculto idSesion
+
+                // Resetea manualmente los selectores, si el formulario no lo hace automáticamente
+                document.getElementById('curso').selectedIndex = 0; 
+                document.getElementById('tipoSesion').selectedIndex = 0;
+
                 document.querySelector('#formSesion button[type="submit"]').innerText = "Guardar Sesión";
                 document.querySelector('#formSesion button[type="submit"]').value = "registrarSesion";
             });
+
+
 
             function editarTipoSesion(idTipoSesion, tipoSesion) {
                 document.getElementById('idTipoSesion').value = idTipoSesion;
@@ -1459,8 +1465,6 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 var modal = new bootstrap.Modal(document.getElementById('sesionModal'));
                 modal.show();
             }
-
-            
 
 
         </script>
