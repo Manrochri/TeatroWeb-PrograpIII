@@ -92,7 +92,8 @@ ResultSet rsSesiones = psSesiones.executeQuery();
 
 %>
 
-<!-- Aquí se agregan los mensajes de éxito o error -->
+<!-- Mensajes de éxito o error -->
+<!-- Mensajes de éxito o error -->
 <%
     String successMessage = request.getParameter("success");
     if (successMessage != null) {
@@ -167,6 +168,12 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         out.print("¡Sesión editada exitosamente!");
     } else if ("sesionEliminada".equals(successMessage)) {
         out.print("¡Sesión eliminada exitosamente!");
+    } else if ("estadoAsistenciaRegistrado".equals(successMessage)) {
+        out.print("¡Estado de asistencia registrado exitosamente!");
+    } else if ("estadoAsistenciaEditado".equals(successMessage)) {
+        out.print("¡Estado de asistencia editado exitosamente!");
+    } else if ("estadoAsistenciaEliminado".equals(successMessage)) {
+        out.print("¡Estado de asistencia eliminado exitosamente!");
     } else if ("asignacionYaExiste".equals(request.getParameter("error"))) {
         out.print("La asignación ya existe.");
     } else if ("errorAsignacionDocente".equals(request.getParameter("error"))) {
@@ -175,6 +182,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
     %>
 </div>
 <% } %>
+
 
 
 
@@ -219,6 +227,9 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                     <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('tiposesion')">Gestionar Tipos de Sesión</button>
                     <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('sesion')">Gestionar Sesiones</button>
 
+                    <h5>Gestión de Asistencias</h5>
+                    <hr>
+                    <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('estadosAsistencia')">Gestionar Estados de Asistencia</button>
 
                     <!-- Cerrar sesion -->
                     <form action="LogoutServlet" method="post" class="mt-3">
@@ -747,6 +758,30 @@ ResultSet rsSesiones = psSesiones.executeQuery();
     </div>
 </div>
 
+<!-- MODAL ESTADOS ASISTENCIA -->
+<div class="modal fade" id="estadoAsistenciaModal" tabindex="-1" aria-labelledby="estadoAsistenciaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="estadoAsistenciaModalLabel">Gestionar Estado de Asistencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formEstadoAsistencia">
+                    <input type="hidden" name="idEstadoAsistencia" id="idEstadoAsistencia">
+                    <div class="mb-3">
+                        <label for="tipoAsistencia" class="form-label">Tipo de Asistencia</label>
+                        <input type="text" class="form-control" id="tipoAsistencia" name="tipoAsistencia" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarEstadoAsistencia" class="btn btn-primary">Guardar Estado</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -1192,7 +1227,50 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </tbody>
         </table>
     `;
+}  else if (tipo === 'estadosAsistencia') {
+    contenido = `
+        <h5>Gestión de Estados de Asistencia</h5>
+        <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#estadoAsistenciaModal">
+            Nuevo Estado de Asistencia
+        </button>
+        <h5 class="mt-4">Estados de Asistencia Registrados</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tipo de Asistencia</th>
+                    <th>Estado Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% 
+                    PreparedStatement psEstadosAsistencia = con.prepareStatement("SELECT IdEstadoAsistencia, TipoAsistencia, EstadoRegistro FROM EstadosAsistencia WHERE EstadoRegistro = 1");
+                    ResultSet rsEstadosAsistencia = psEstadosAsistencia.executeQuery();
+                    while (rsEstadosAsistencia.next()) {
+                %>
+                <tr>
+                    <td><%= rsEstadosAsistencia.getString("TipoAsistencia") %></td>
+                    <td><%= rsEstadosAsistencia.getInt("EstadoRegistro") == 1 ? "Activo" : "Inactivo" %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarEstadoAsistencia(
+                            <%= rsEstadosAsistencia.getInt("IdEstadoAsistencia") %>, 
+                            '<%= rsEstadosAsistencia.getString("TipoAsistencia") %>'
+                        )">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idEstadoAsistencia" value="<%= rsEstadosAsistencia.getInt("IdEstadoAsistencia") %>">
+                            <button type="submit" name="accion" value="eliminarEstadoAsistencia" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este estado de asistencia?');">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                <% } 
+                    rsEstadosAsistencia.close();
+                    psEstadosAsistencia.close();
+                %>
+            </tbody>
+        </table>
+    `;
 }
+
 
                             seccionCRUD.innerHTML = contenido;
                             seccionCRUD.style.display = 'block';
@@ -1470,6 +1548,28 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 var modal = new bootstrap.Modal(document.getElementById('sesionModal'));
                 modal.show();
             }
+
+            function editarEstadoAsistencia(idEstadoAsistencia, tipoAsistencia) {
+                document.getElementById('idEstadoAsistencia').value = idEstadoAsistencia;
+                document.getElementById('tipoAsistencia').value = tipoAsistencia;
+
+                // Cambiar el texto y valor del botón
+                document.querySelector('#formEstadoAsistencia button[type="submit"]').innerText = "Guardar Cambios";
+                document.querySelector('#formEstadoAsistencia button[type="submit"]').value = "editarEstadoAsistencia";
+
+                // Abrir el modal
+                var modal = new bootstrap.Modal(document.getElementById('estadoAsistenciaModal'));
+                modal.show();
+            }
+
+            // Limpiar el formulario al cerrar el modal
+            var estadoAsistenciaModal = document.getElementById('estadoAsistenciaModal');
+            estadoAsistenciaModal.addEventListener('hidden.bs.modal', function () {
+                document.getElementById('formEstadoAsistencia').reset();
+                document.getElementById('idEstadoAsistencia').value = '';
+                document.querySelector('#formEstadoAsistencia button[type="submit"]').innerText = "Guardar Estado";
+                document.querySelector('#formEstadoAsistencia button[type="submit"]').value = "registrarEstadoAsistencia";
+            });
 
             
         </script>

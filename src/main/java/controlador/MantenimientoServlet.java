@@ -645,12 +645,57 @@ case "editarDocente": {
                         break;
                     }
 
+                    case "registrarEstadoAsistencia": {
+                        String tipoAsistencia = request.getParameter("tipoAsistencia");
+
+                        String query = "INSERT INTO EstadosAsistencia (TipoAsistencia, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, tipoAsistencia);
+
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=estadoAsistenciaRegistrado");
+                        break;
+                    }
+
+                    case "editarEstadoAsistencia": {
+                        int idEstadoAsistencia = Integer.parseInt(request.getParameter("idEstadoAsistencia"));
+                        String tipoAsistencia = request.getParameter("tipoAsistencia");
+
+                        String query = "UPDATE EstadosAsistencia SET TipoAsistencia = ? WHERE IdEstadoAsistencia = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, tipoAsistencia);
+                        ps.setInt(2, idEstadoAsistencia);
+
+                        int rowsUpdated = ps.executeUpdate();
+                        if (rowsUpdated > 0) {
+                            response.sendRedirect("mantenimiento.jsp?success=estadoAsistenciaEditado");
+                        } else {
+                            response.sendRedirect("mantenimiento.jsp?error=estadoAsistenciaNoEditado");
+                        }
+                        break;
+                    }
+
+                    case "eliminarEstadoAsistencia": {
+                        int idEstadoAsistencia = Integer.parseInt(request.getParameter("idEstadoAsistencia"));
+
+                        String query = "UPDATE EstadosAsistencia SET EstadoRegistro = 0 WHERE IdEstadoAsistencia = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idEstadoAsistencia);
+
+                        int rowsDeleted = ps.executeUpdate();
+                        if (rowsDeleted > 0) {
+                            response.sendRedirect("mantenimiento.jsp?success=estadoAsistenciaEliminado");
+                        } else {
+                            response.sendRedirect("mantenimiento.jsp?error=estadoAsistenciaNoEliminado");
+                        }
+                        break;
+                    }
 
                     
 
     // Agregar el caso para listar docentes si es necesario para el despliegue en la página
 
-                    // AGREGAR CASE EDITAR CURSO
+               
                     default:
                         response.sendRedirect("error.jsp?msg=Acción no válida");
                         break;
