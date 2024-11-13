@@ -551,30 +551,35 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             <div class="modal-body">
                 <form action="MantenimientoServlet" method="post" id="formDocente">
                     <input type="hidden" name="idDocente" id="idDocente">
-                    <div class="mb-3">
+                    <div class="mb-3" style="display:none;">
                         <label for="nombres" class="form-label">Nombre del Docente</label>
-                        <input type="text" class="form-control" id="nombres" name="nombres" required>
+                        <input type="text" class="form-control" id="nombres" name="nombres">
                     </div>
                     <div class="mb-3">
                         <label for="idUsuario" class="form-label">Usuario</label>
                         <select class="form-select" id="idUsuario" name="idUsuario" required>
-                            <option value="" disabled selected>Seleccionar Usuario</option>
-                                <% 
-                                        PreparedStatement psUsuarios2 = con.prepareStatement(
-                                            "SELECT IdUsuario, CONCAT(DNI, ' - ', Nombres, ' ', ApellidoPaterno) AS NombreCompleto " +
-                                            "FROM Usuario WHERE EstadoRegistro = 1"
-                                        );
-                                        ResultSet rsUsuarios2 = psUsuarios2.executeQuery();
-                                        while (rsUsuarios2.next()) {
-                                    %>
-                                <option value="<%= rsUsuarios2.getInt("IdUsuario") %>">
-                                <%= rsUsuarios2.getString("NombreCompleto") %>
-                                </option>
-                                <% } 
-                                        rsUsuarios2.close(); 
-                                        psUsuarios2.close(); 
-                                    %>
-                        </select>
+    <option value="" disabled selected>Seleccionar Usuario</option>
+    <% 
+        PreparedStatement psUsuarios2 = con.prepareStatement(
+            "SELECT u.IdUsuario, CONCAT(u.DNI, ' - ', u.Nombres, ' ', u.ApellidoPaterno) AS NombreCompleto " +
+            "FROM Usuario u " +
+            "JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario " +
+            "JOIN Perfiles p ON up.IdPerfil = p.IdPerfil " +
+            "WHERE u.EstadoRegistro = 1 AND p.Nombre = 'Docente'"
+        );
+        ResultSet rsUsuarios2 = psUsuarios2.executeQuery();
+        while (rsUsuarios2.next()) {
+    %>
+        <option value="<%= rsUsuarios2.getInt("IdUsuario") %>">
+            <%= rsUsuarios2.getString("NombreCompleto") %>
+        </option>
+    <% 
+        } 
+        rsUsuarios2.close(); 
+        psUsuarios2.close(); 
+    %>
+</select>
+
                     </div>
                     <div class="mb-3">
                         <label for="idGradoAcademico" class="form-label">Grado Académico</label>
@@ -1026,52 +1031,52 @@ ResultSet rsSesiones = psSesiones.executeQuery();
 
         `;
                             } 
-                            else if (tipo === 'docentes') {
+                            
+ else if (tipo === 'docentes') {
     contenido = `
-        <h5>Gestión de Docentes</h5>
-        <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#docenteModal">
+<h5>Gestión de Docentes</h5>
+<button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#docenteModal">
             Nuevo Docente
-        </button>
-        <h5 class="mt-4">Docentes Registrados</h5>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Grado Académico</th>
-                    <th>Descripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-             <%
+</button>
+<h5 class="mt-4">Docentes Registrados</h5>
+<table class="table table-bordered">
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Grado Académico</th>
+<th>Descripción</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody>
+<%
                  while (rsDocentes.next()) {
              %>
-                <tr>
-                    <td><%= rsDocentes.getString("NombreDocente")%></td>
-                    <td><%= rsDocentes.getString("GradoAcademico")%></td>
-                    <td><%= rsDocentes.getString("Descripcion")%></td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarDocente(
-             <%= rsDocentes.getInt("IdDocente")%>, 
-             <%= rsDocentes.getInt("IdUsuario")%>, 
-             <%= rsDocentes.getInt("IdGradoAcademico")%>, 
+<tr>
+<td><%= rsDocentes.getString("NombreDocente")%></td>
+<td><%= rsDocentes.getString("GradoAcademico")%></td>
+<td><%= rsDocentes.getString("Descripcion")%></td>
+<td>
+<button class="btn btn-warning btn-sm" onclick="editarDocente(
+<%= rsDocentes.getInt("IdDocente")%>, 
+<%= rsDocentes.getInt("IdUsuario")%>, 
+<%= rsDocentes.getInt("IdGradoAcademico")%>, 
                             '<%= rsDocentes.getString("Descripcion")%>',
                             '<%= rsDocentes.getString("NombreDocente")%>'
                         )">Editar</button>
-                        <form action="MantenimientoServlet" method="post" class="d-inline">
-                            <input type="hidden" name="idDocente" value="<%= rsDocentes.getInt("IdDocente")%>">
-                            <button type="submit" name="accion" value="eliminarDocente" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este docente?');">Eliminar</button>
-                        </form>
-
+<form action="MantenimientoServlet" method="post" class="d-inline">
+<input type="hidden" name="idDocente" value="<%= rsDocentes.getInt("IdDocente")%>">
+<button type="submit" name="accion" value="eliminarDocente" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este docente?');">Eliminar</button>
+</form>
+ 
                     </td>
-                </tr>
-             <% }
+</tr>
+<% }
                     rsDocentes.close();
                     psDocentes.close();%>
-            </tbody>
-        </table>
-    `;
-} else if (tipo === 'asignacion') {
+</tbody>
+</table>
+    `;} else if (tipo === 'asignacion') {
     contenido = `
         <h5>Asignación de Docentes a Cursos</h5>
         <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#asignacionModal">
@@ -1466,7 +1471,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 modal.show();
             }
 
-
+            
         </script>
     </body>
 </html>
