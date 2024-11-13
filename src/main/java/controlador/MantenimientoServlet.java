@@ -314,42 +314,42 @@ public class MantenimientoServlet extends HttpServlet {
                     }
                     
                     case "editarCurso":{
-    // Lógica para editar un curso existente
-    int idCurso = Integer.parseInt(request.getParameter("idCurso"));
-    String nombreCurso = request.getParameter("nombreCurso");
-    int capacidad = Integer.parseInt(request.getParameter("capacidad"));
-    String fechaInicio = request.getParameter("fechaInicio");
-    String fechaFin = request.getParameter("fechaFin");
-    double precio = Double.parseDouble(request.getParameter("precio"));
-    int categoria = Integer.parseInt(request.getParameter("categoria"));
-    int duracion = Integer.parseInt(request.getParameter("duracion"));
-    int idioma = Integer.parseInt(request.getParameter("idioma"));
-    int rango = Integer.parseInt(request.getParameter("rango"));
+                        // Lógica para editar un curso existente
+                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+                        String nombreCurso = request.getParameter("nombreCurso");
+                        int capacidad = Integer.parseInt(request.getParameter("capacidad"));
+                        String fechaInicio = request.getParameter("fechaInicio");
+                        String fechaFin = request.getParameter("fechaFin");
+                        double precio = Double.parseDouble(request.getParameter("precio"));
+                        int categoria = Integer.parseInt(request.getParameter("categoria"));
+                        int duracion = Integer.parseInt(request.getParameter("duracion"));
+                        int idioma = Integer.parseInt(request.getParameter("idioma"));
+                        int rango = Integer.parseInt(request.getParameter("rango"));
 
-    String updateQuery = "UPDATE Curso SET Nombre = ?, Capacidad = ?, FechaInicio = ?, FechaFin = ?, Precio = ?, " +
-                         "IdCategoria = ?, IdDuracion = ?, IdIdioma = ?, IdRango = ? WHERE IdCurso = ?";
-    ps = con.prepareStatement(updateQuery);
-    ps.setString(1, nombreCurso);
-    ps.setInt(2, capacidad);
-    ps.setString(3, fechaInicio);
-    ps.setString(4, fechaFin);
-    ps.setDouble(5, precio);
-    ps.setInt(6, categoria);
-    ps.setInt(7, duracion);
-    ps.setInt(8, idioma);
-    ps.setInt(9, rango);
-    ps.setInt(10, idCurso);
+                        String updateQuery = "UPDATE Curso SET Nombre = ?, Capacidad = ?, FechaInicio = ?, FechaFin = ?, Precio = ?, " +
+                                             "IdCategoria = ?, IdDuracion = ?, IdIdioma = ?, IdRango = ? WHERE IdCurso = ?";
+                        ps = con.prepareStatement(updateQuery);
+                        ps.setString(1, nombreCurso);
+                        ps.setInt(2, capacidad);
+                        ps.setString(3, fechaInicio);
+                        ps.setString(4, fechaFin);
+                        ps.setDouble(5, precio);
+                        ps.setInt(6, categoria);
+                        ps.setInt(7, duracion);
+                        ps.setInt(8, idioma);
+                        ps.setInt(9, rango);
+                        ps.setInt(10, idCurso);
 
-    // Ejecutar la actualización
-    int rowsUpdated = ps.executeUpdate();
+                        // Ejecutar la actualización
+                        int rowsUpdated = ps.executeUpdate();
 
-    // Redireccionar dependiendo del resultado
-    if (rowsUpdated > 0) {
-        response.sendRedirect("mantenimiento.jsp?success=cursoEditado");
-    } else {
-        response.sendRedirect("mantenimiento.jsp?error=cursoNoEditado");
-    }
-    break;
+                        // Redireccionar dependiendo del resultado
+                        if (rowsUpdated > 0) {
+                            response.sendRedirect("mantenimiento.jsp?success=cursoEditado");
+                        } else {
+                            response.sendRedirect("mantenimiento.jsp?error=cursoNoEditado");
+                        }
+                        break;
                 }
                     //FALTA COMPLETAR DARLE FORMA
                     /*
@@ -416,47 +416,82 @@ public class MantenimientoServlet extends HttpServlet {
                         break;
                     }
                     
-                    case "registrarDocente": {
+case "registrarDocente": {
     // Obtener parámetros del formulario para registrar un nuevo docente
     int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
     int idGradoAcademico = Integer.parseInt(request.getParameter("idGradoAcademico"));
     String descripcion = request.getParameter("descripcion");
-    String nombres = request.getParameter("nombres"); // Campo para el nombre del docente
-
-    // Consulta para insertar el nuevo docente
+ 
+    // Obtener el nombre y apellido concatenado del usuario seleccionado
+    String nombresConcatenados = "";
+    try {
+        String queryUsuario = "SELECT Nombres, ApellidoPaterno FROM Usuario WHERE IdUsuario = ?";
+        ps = con.prepareStatement(queryUsuario);
+        ps.setInt(1, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            nombresConcatenados = rs.getString("Nombres") + " " + rs.getString("ApellidoPaterno");
+        }
+        rs.close();
+        ps.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("mantenimiento.jsp?error=errorObteniendoUsuario");
+        break;
+    }
+ 
+    // Consulta para insertar el nuevo docente con el nombre concatenado
     String query = "INSERT INTO Docente (IdUsuario, IdGradoAcademico, Descripcion, Nombres) VALUES (?, ?, ?, ?)";
     ps = con.prepareStatement(query);
     ps.setInt(1, idUsuario);
     ps.setInt(2, idGradoAcademico);
     ps.setString(3, descripcion);
-    ps.setString(4, nombres);
-
+    ps.setString(4, nombresConcatenados);
+ 
     // Ejecutar la inserción
     ps.executeUpdate();
     response.sendRedirect("mantenimiento.jsp?success=docenteRegistrado");
     break;
 }
-
+ 
+ 
 case "editarDocente": {
     // Obtener parámetros del formulario para editar un docente existente
     int idDocente = Integer.parseInt(request.getParameter("idDocente"));
     int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
     int idGradoAcademico = Integer.parseInt(request.getParameter("idGradoAcademico"));
     String descripcion = request.getParameter("descripcion");
-    String nombres = request.getParameter("nombres"); // Actualizar el nombre del docente
-
-    // Consulta para actualizar el docente existente
+ 
+    // Obtener el nombre y apellido concatenado del usuario seleccionado si el idUsuario ha cambiado
+    String nombresConcatenados = "";
+    try {
+        String queryUsuario = "SELECT Nombres, ApellidoPaterno FROM Usuario WHERE IdUsuario = ?";
+        ps = con.prepareStatement(queryUsuario);
+        ps.setInt(1, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            nombresConcatenados = rs.getString("Nombres") + " " + rs.getString("ApellidoPaterno");
+        }
+        rs.close();
+        ps.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.sendRedirect("mantenimiento.jsp?error=errorObteniendoUsuario");
+        break;
+    }
+ 
+    // Consulta para actualizar el docente existente con el nombre concatenado
     String query = "UPDATE Docente SET IdUsuario = ?, IdGradoAcademico = ?, Descripcion = ?, Nombres = ? WHERE IdDocente = ?";
     ps = con.prepareStatement(query);
     ps.setInt(1, idUsuario);
     ps.setInt(2, idGradoAcademico);
     ps.setString(3, descripcion);
-    ps.setString(4, nombres);
+    ps.setString(4, nombresConcatenados);
     ps.setInt(5, idDocente);
-
+ 
     // Ejecutar la actualización
     int rowsUpdated = ps.executeUpdate();
-
+ 
     // Redireccionar dependiendo del resultado
     if (rowsUpdated > 0) {
         response.sendRedirect("mantenimiento.jsp?success=docenteEditado");
@@ -466,59 +501,150 @@ case "editarDocente": {
     break;
 }
 
-case "eliminarDocente": {
-    // Obtener el ID del docente a eliminar
-    int idDocente = Integer.parseInt(request.getParameter("idDocente"));
+                    case "eliminarDocente": {
+                        // Obtener el ID del docente a eliminar
+                        int idDocente = Integer.parseInt(request.getParameter("idDocente"));
 
-    // Consulta para eliminar el docente
-    String query = "DELETE FROM Docente WHERE IdDocente = ?";
-    ps = con.prepareStatement(query);
-    ps.setInt(1, idDocente);
+                        // Consulta para eliminar el docente
+                        String query = "DELETE FROM Docente WHERE IdDocente = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idDocente);
 
-    // Ejecutar la eliminación
-    int rowsDeleted = ps.executeUpdate();
+                        // Ejecutar la eliminación
+                        int rowsDeleted = ps.executeUpdate();
 
-    // Redireccionar dependiendo del resultado
-    if (rowsDeleted > 0) {
-        response.sendRedirect("mantenimiento.jsp?success=docenteEliminado");
-    } else {
-        response.sendRedirect("mantenimiento.jsp?error=docenteNoEliminado");
-    }
-    break;
-}
-case "asignarDocenteCurso": {
-    // Obtener los parámetros del formulario de asignación
-    int idDocente = Integer.parseInt(request.getParameter("idDocente"));
-    int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+                        // Redireccionar dependiendo del resultado
+                        if (rowsDeleted > 0) {
+                            response.sendRedirect("mantenimiento.jsp?success=docenteEliminado");
+                        } else {
+                            response.sendRedirect("mantenimiento.jsp?error=docenteNoEliminado");
+                        }
+                        break;
+                    }
+                    case "asignarDocenteCurso": {
+                        // Obtener los parámetros del formulario de asignación
+                        int idDocente = Integer.parseInt(request.getParameter("idDocente"));
+                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
 
-    try {
-        // Verificar si la asignación ya existe
-        String checkQuery = "SELECT COUNT(*) FROM Curso_Docente WHERE IdCurso = ? AND IdDocente = ?";
-        ps = con.prepareStatement(checkQuery);
-        ps.setInt(1, idCurso);
-        ps.setInt(2, idDocente);
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        int count = rs.getInt(1);
+                        try {
+                            // Verificar si la asignación ya existe
+                            String checkQuery = "SELECT COUNT(*) FROM Curso_Docente WHERE IdCurso = ? AND IdDocente = ?";
+                            ps = con.prepareStatement(checkQuery);
+                            ps.setInt(1, idCurso);
+                            ps.setInt(2, idDocente);
+                            ResultSet rs = ps.executeQuery();
+                            rs.next();
+                            int count = rs.getInt(1);
 
-        if (count == 0) {
-            // Insertar la nueva asignación si no existe
-            String insertQuery = "INSERT INTO Curso_Docente (IdCurso, IdDocente) VALUES (?, ?)";
-            ps = con.prepareStatement(insertQuery);
-            ps.setInt(1, idCurso);
-            ps.setInt(2, idDocente);
-            ps.executeUpdate();
-            response.sendRedirect("mantenimiento.jsp?success=docenteAsignado");
-        } else {
-            // Si la asignación ya existe, redirigir con mensaje de advertencia
-            response.sendRedirect("mantenimiento.jsp?error=asignacionYaExiste");
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect("mantenimiento.jsp?error=errorAsignacionDocente");
-    }
-    break;
-}
+                            if (count == 0) {
+                                // Insertar la nueva asignación si no existe
+                                String insertQuery = "INSERT INTO Curso_Docente (IdCurso, IdDocente) VALUES (?, ?)";
+                                ps = con.prepareStatement(insertQuery);
+                                ps.setInt(1, idCurso);
+                                ps.setInt(2, idDocente);
+                                ps.executeUpdate();
+                                response.sendRedirect("mantenimiento.jsp?success=docenteAsignado");
+                            } else {
+                                // Si la asignación ya existe, redirigir con mensaje de advertencia
+                                response.sendRedirect("mantenimiento.jsp?error=asignacionYaExiste");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("mantenimiento.jsp?error=errorAsignacionDocente");
+                        }
+                        break;
+                    }
+                    case "registrarTipoSesion": {
+                        String tipoSesion = request.getParameter("tipoSesion");
+                        String query = "INSERT INTO tiposesion (TipoSesion, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, tipoSesion);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=tipoSesionRegistrado");
+                        break;
+                    }
+
+                    case "editarTipoSesion": {
+                        int idTipoSesion = Integer.parseInt(request.getParameter("idTipoSesion"));
+                        String tipoSesion = request.getParameter("tipoSesion");
+                        String query = "UPDATE tiposesion SET TipoSesion = ? WHERE IdTipoSesion = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, tipoSesion);
+                        ps.setInt(2, idTipoSesion);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=tipoSesionEditado");
+                        break;
+                    }
+
+                    case "eliminarTipoSesion": {
+                        int idTipoSesion = Integer.parseInt(request.getParameter("idTipoSesion"));
+                        String query = "DELETE FROM tiposesion WHERE IdTipoSesion = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idTipoSesion);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=tipoSesionEliminado");
+                        break;
+                    }
+
+                    case "registrarSesion": {
+                        // Obtener los parámetros del formulario
+                        int numeroSesion = Integer.parseInt(request.getParameter("numeroSesion"));
+                        String nombreSesion = request.getParameter("nombreSesion");
+                        int tipoSesion = Integer.parseInt(request.getParameter("tipoSesion"));
+                        int cursoSesion = Integer.parseInt(request.getParameter("cursoSesion"));
+                        String fechaSesion = request.getParameter("fechaSesion");
+
+
+                        // Consulta SQL para insertar la nueva sesión
+                        String query = "INSERT INTO Sesion (NumeroSesion, NombreSesion, IdTipoSesion, IdCurso, FechaSesion, EstadoRegistro) VALUES (?, ?, ?, ?, ?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, numeroSesion);
+                        ps.setString(2, nombreSesion);
+                        ps.setInt(3, tipoSesion);
+                        ps.setInt(4, cursoSesion); // Relación con el curso
+                        ps.setString(5, fechaSesion);
+
+                        // Ejecutar la inserción
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=sesionRegistrada");
+                        break;
+                    }
+
+
+                case "editarSesion": {
+                    // Obtener parámetros del formulario
+                    int idSesion = Integer.parseInt(request.getParameter("idSesion"));
+                    int numeroSesion = Integer.parseInt(request.getParameter("numeroSesion"));
+                    String nombreSesion = request.getParameter("nombreSesion");
+                    int tipoSesionId = Integer.parseInt(request.getParameter("tipoSesion"));
+                    String fechaSesion = request.getParameter("fechaSesion");
+
+                    // Consulta SQL para actualizar la sesión
+                    String query = "UPDATE sesion SET NumeroSesion = ?, NombreSesion = ?, IdTipoSesion = ?, FechaSesion = ? WHERE IdSesion = ?";
+                    ps = con.prepareStatement(query);
+                    ps.setInt(1, numeroSesion);
+                    ps.setString(2, nombreSesion);
+                    ps.setInt(3, tipoSesionId);
+                    ps.setString(4, fechaSesion);
+                    ps.setInt(5, idSesion);
+
+                    // Ejecutar la actualización y redireccionar con mensaje de éxito
+                    ps.executeUpdate();
+                    response.sendRedirect("mantenimiento.jsp?success=sesionEditada");
+                    break;
+                }
+
+
+                    case "eliminarSesion": {
+                        int idSesion = Integer.parseInt(request.getParameter("idSesion"));
+                        String query = "DELETE FROM sesion WHERE IdSesion = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idSesion);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=sesionEliminada");
+                        break;
+                    }
+
 
                     
 
