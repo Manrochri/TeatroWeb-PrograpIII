@@ -344,7 +344,6 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </div>
         </div>
 
-
         <!-- MODAL CATEGORÍA CURSO -->
         <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -393,8 +392,6 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 </div>
             </div>
         </div>
-
-
         <!-- MODAL Idioma-CURSOS-->
         <div class="modal fade" id="idiomaModal" tabindex="-1" aria-labelledby="idiomaModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -684,6 +681,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </div>
             <div class="modal-body">
                 <form action="<%= request.getContextPath() %>/MantenimientoServlet" method="post" id="formSesion">
+                    <input type="hidden" id="idSesion" name="idSesion">
                     <!-- ComboBox para seleccionar el curso -->
                     <div class="mb-3">
                         <label for="curso" class="form-label">Curso</label>
@@ -1319,25 +1317,23 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                         }
 
                         function editarDocente(idDocente, idUsuario, idGradoAcademico, descripcion, nombres) {
-    // Asignar valores al formulario
-    document.getElementById('idDocente').value = idDocente;
-    document.getElementById('idUsuario').value = idUsuario;
-    document.getElementById('idGradoAcademico').value = idGradoAcademico;
-    document.getElementById('descripcion').value = descripcion;
-    document.getElementById('nombres').value = nombres;
+                        // Asignar valores al formulario
+                        document.getElementById('idDocente').value = idDocente;
+                        document.getElementById('idUsuario').value = idUsuario;
+                        document.getElementById('idGradoAcademico').value = idGradoAcademico;
+                        document.getElementById('descripcion').value = descripcion;
+                        document.getElementById('nombres').value = nombres;
 
-    // Cambiar el texto y el valor del botón a "Editar Docente"
-    const submitButton = document.querySelector('#formDocente button[type="submit"]');
-    submitButton.innerText = "Guardar Cambios";
-    submitButton.value = "editarDocente"; // Cambiar el valor para que el servlet use el case correspondiente
+                        // Cambiar el texto y el valor del botón a "Editar Docente"
+                        const submitButton = document.querySelector('#formDocente button[type="submit"]');
+                        submitButton.innerText = "Guardar Cambios";
+                        submitButton.value = "editarDocente"; // Cambiar el valor para que el servlet use el case correspondiente
 
-    // Mostrar el modal de edición
-    var modal = new bootstrap.Modal(document.getElementById('docenteModal'));
-    modal.show();
-    
-}
+                        // Mostrar el modal de edición
+                        var modal = new bootstrap.Modal(document.getElementById('docenteModal'));
+                        modal.show();
 
-
+                    }
 
                         // Limpiar el formulario del modal de usuario al cerrarse
                         var usuarioModal = document.getElementById('usuarioModal');
@@ -1415,41 +1411,56 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                         });
 
                        var docenteModal = document.getElementById('docenteModal');
-    docenteModal.addEventListener('hidden.bs.modal', function () {
-        // Resetear el formulario
-        document.getElementById('formDocente').reset();
-        document.getElementById('idDocente').value = '';
+                docenteModal.addEventListener('hidden.bs.modal', function () {
+                    // Resetear el formulario
+                    document.getElementById('formDocente').reset();
+                    document.getElementById('idDocente').value = '';
 
-        // Cambiar el texto y el valor del botón a "Guardar Docente"
-        const submitButton = document.querySelector('#formDocente button[type="submit"]');
-        submitButton.innerText = "Guardar Docente";
-        submitButton.value = "registrarDocente"; // Volver al valor por defecto
-    });
-    var asignacionModal = document.getElementById('asignacionModal');
-asignacionModal.addEventListener('hidden.bs.modal', function () {
-    document.getElementById('formAsignacion').reset();
-});
+                    // Cambiar el texto y el valor del botón a "Guardar Docente"
+                    const submitButton = document.querySelector('#formDocente button[type="submit"]');
+                    submitButton.innerText = "Guardar Docente";
+                    submitButton.value = "registrarDocente"; // Volver al valor por defecto
+                });
+                var asignacionModal = document.getElementById('asignacionModal');
+            asignacionModal.addEventListener('hidden.bs.modal', function () {
+                document.getElementById('formAsignacion').reset();
+            });
+            
+            var sesionModal = document.getElementById('sesionModal');
+            sesionModal.addEventListener('hidden.bs.modal', function () {
+                document.getElementById('formSesion').reset();
+                document.getElementById('idSesion').value = ''; // Limpia el campo oculto de idSesion
+                document.querySelector('#formSesion button[type="submit"]').innerText = "Guardar Sesión";
+                document.querySelector('#formSesion button[type="submit"]').value = "registrarSesion";
+            });
 
-function editarTipoSesion(idTipoSesion, tipoSesion) {
-    document.getElementById('idTipoSesion').value = idTipoSesion;
-    document.getElementById('tipoSesion').value = tipoSesion;
-    document.querySelector('#formTipoSesion button[type="submit"]').innerText = "Actualizar Tipo de Sesión";
-    document.querySelector('#formTipoSesion button[type="submit"]').value = "editarTipoSesion";
-    var modal = new bootstrap.Modal(document.getElementById('tipoSesionModal'));
-    modal.show();
-}
+            function editarTipoSesion(idTipoSesion, tipoSesion) {
+                document.getElementById('idTipoSesion').value = idTipoSesion;
+                document.getElementById('tipoSesion').value = tipoSesion;
+                document.querySelector('#formTipoSesion button[type="submit"]').innerText = "Actualizar Tipo de Sesión";
+                document.querySelector('#formTipoSesion button[type="submit"]').value = "editarTipoSesion";
+                var modal = new bootstrap.Modal(document.getElementById('tipoSesionModal'));
+                modal.show();
+            }
 
-function editarSesion(idSesion, numeroSesion, nombreSesion, tipoSesionId, fechaSesion) {
-    document.getElementById('idSesion').value = idSesion;
-    document.getElementById('numeroSesion').value = numeroSesion;
-    document.getElementById('nombreSesion').value = nombreSesion;
-    document.getElementById('tipoSesionId').value = tipoSesionId;
-    document.getElementById('fechaSesion').value = fechaSesion;
-    document.querySelector('#formSesion button[type="submit"]').innerText = "Actualizar Sesión";
-    document.querySelector('#formSesion button[type="submit"]').value = "editarSesion";
-    var modal = new bootstrap.Modal(document.getElementById('sesionModal'));
-    modal.show();
-}
+            function editarSesion(idSesion, numeroSesion, nombreSesion, tipoSesionId, fechaSesion) {
+                // Asignar valores a los campos del formulario
+                document.getElementById('idSesion').value = idSesion;
+                document.getElementById('numeroSesion').value = numeroSesion;
+                document.getElementById('nombreSesion').value = nombreSesion;
+                document.getElementById('tipoSesion').value = tipoSesionId; // Asume que el id de select es 'tipoSesion'
+                document.getElementById('fechaSesion').value = fechaSesion;
+
+                // Cambiar el texto y valor del botón a "Actualizar Sesión"
+                document.querySelector('#formSesion button[type="submit"]').innerText = "Actualizar Sesión";
+                document.querySelector('#formSesion button[type="submit"]').value = "editarSesion";
+
+                // Mostrar el modal para editar
+                var modal = new bootstrap.Modal(document.getElementById('sesionModal'));
+                modal.show();
+            }
+
+            
 
 
         </script>

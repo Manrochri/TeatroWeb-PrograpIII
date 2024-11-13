@@ -314,42 +314,42 @@ public class MantenimientoServlet extends HttpServlet {
                     }
                     
                     case "editarCurso":{
-    // Lógica para editar un curso existente
-    int idCurso = Integer.parseInt(request.getParameter("idCurso"));
-    String nombreCurso = request.getParameter("nombreCurso");
-    int capacidad = Integer.parseInt(request.getParameter("capacidad"));
-    String fechaInicio = request.getParameter("fechaInicio");
-    String fechaFin = request.getParameter("fechaFin");
-    double precio = Double.parseDouble(request.getParameter("precio"));
-    int categoria = Integer.parseInt(request.getParameter("categoria"));
-    int duracion = Integer.parseInt(request.getParameter("duracion"));
-    int idioma = Integer.parseInt(request.getParameter("idioma"));
-    int rango = Integer.parseInt(request.getParameter("rango"));
+                        // Lógica para editar un curso existente
+                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+                        String nombreCurso = request.getParameter("nombreCurso");
+                        int capacidad = Integer.parseInt(request.getParameter("capacidad"));
+                        String fechaInicio = request.getParameter("fechaInicio");
+                        String fechaFin = request.getParameter("fechaFin");
+                        double precio = Double.parseDouble(request.getParameter("precio"));
+                        int categoria = Integer.parseInt(request.getParameter("categoria"));
+                        int duracion = Integer.parseInt(request.getParameter("duracion"));
+                        int idioma = Integer.parseInt(request.getParameter("idioma"));
+                        int rango = Integer.parseInt(request.getParameter("rango"));
 
-    String updateQuery = "UPDATE Curso SET Nombre = ?, Capacidad = ?, FechaInicio = ?, FechaFin = ?, Precio = ?, " +
-                         "IdCategoria = ?, IdDuracion = ?, IdIdioma = ?, IdRango = ? WHERE IdCurso = ?";
-    ps = con.prepareStatement(updateQuery);
-    ps.setString(1, nombreCurso);
-    ps.setInt(2, capacidad);
-    ps.setString(3, fechaInicio);
-    ps.setString(4, fechaFin);
-    ps.setDouble(5, precio);
-    ps.setInt(6, categoria);
-    ps.setInt(7, duracion);
-    ps.setInt(8, idioma);
-    ps.setInt(9, rango);
-    ps.setInt(10, idCurso);
+                        String updateQuery = "UPDATE Curso SET Nombre = ?, Capacidad = ?, FechaInicio = ?, FechaFin = ?, Precio = ?, " +
+                                             "IdCategoria = ?, IdDuracion = ?, IdIdioma = ?, IdRango = ? WHERE IdCurso = ?";
+                        ps = con.prepareStatement(updateQuery);
+                        ps.setString(1, nombreCurso);
+                        ps.setInt(2, capacidad);
+                        ps.setString(3, fechaInicio);
+                        ps.setString(4, fechaFin);
+                        ps.setDouble(5, precio);
+                        ps.setInt(6, categoria);
+                        ps.setInt(7, duracion);
+                        ps.setInt(8, idioma);
+                        ps.setInt(9, rango);
+                        ps.setInt(10, idCurso);
 
-    // Ejecutar la actualización
-    int rowsUpdated = ps.executeUpdate();
+                        // Ejecutar la actualización
+                        int rowsUpdated = ps.executeUpdate();
 
-    // Redireccionar dependiendo del resultado
-    if (rowsUpdated > 0) {
-        response.sendRedirect("mantenimiento.jsp?success=cursoEditado");
-    } else {
-        response.sendRedirect("mantenimiento.jsp?error=cursoNoEditado");
-    }
-    break;
+                        // Redireccionar dependiendo del resultado
+                        if (rowsUpdated > 0) {
+                            response.sendRedirect("mantenimiento.jsp?success=cursoEditado");
+                        } else {
+                            response.sendRedirect("mantenimiento.jsp?error=cursoNoEditado");
+                        }
+                        break;
                 }
                     //FALTA COMPLETAR DARLE FORMA
                     /*
@@ -577,11 +577,14 @@ public class MantenimientoServlet extends HttpServlet {
 
 
                     case "editarSesion": {
+                        // Obtener parámetros del formulario
                         int idSesion = Integer.parseInt(request.getParameter("idSesion"));
                         int numeroSesion = Integer.parseInt(request.getParameter("numeroSesion"));
                         String nombreSesion = request.getParameter("nombreSesion");
-                        int tipoSesionId = Integer.parseInt(request.getParameter("tipoSesionId"));
+                        int tipoSesionId = Integer.parseInt(request.getParameter("tipoSesion"));
                         String fechaSesion = request.getParameter("fechaSesion");
+
+                        // Consulta SQL para actualizar la sesión
                         String query = "UPDATE sesion SET NumeroSesion = ?, NombreSesion = ?, IdTipoSesion = ?, FechaSesion = ? WHERE IdSesion = ?";
                         ps = con.prepareStatement(query);
                         ps.setInt(1, numeroSesion);
@@ -589,10 +592,13 @@ public class MantenimientoServlet extends HttpServlet {
                         ps.setInt(3, tipoSesionId);
                         ps.setString(4, fechaSesion);
                         ps.setInt(5, idSesion);
+
+                        // Ejecutar la actualización y redireccionar con mensaje de éxito
                         ps.executeUpdate();
                         response.sendRedirect("mantenimiento.jsp?success=sesionEditada");
                         break;
                     }
+
 
                     case "eliminarSesion": {
                         int idSesion = Integer.parseInt(request.getParameter("idSesion"));
