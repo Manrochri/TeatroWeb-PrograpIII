@@ -17,3 +17,10 @@
     font-weight: bold;
     margin-right: 10px; /* Espacio entre label e input */
 }
+/* Estilo nuevo */
+.container-fluid {
+    padding-top: 0; /* Elimina el padding superior */
+}
+body {
+    margin: 0; /* Elimina los márgenes por defecto del body */
+}

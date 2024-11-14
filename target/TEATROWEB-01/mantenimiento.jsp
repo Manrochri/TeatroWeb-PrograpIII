@@ -204,7 +204,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         <link rel="stylesheet" href="styles/styles.css">
     </head>
     <body>
-        <div class="container-fluid mt-5">
+        <div class="container-fluid">
             <div class="row">
                 <!-- Menú principal a la izquierda -->
                 <div class="col-md-3 bg-light p-4">
@@ -212,35 +212,54 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                     <p>Rol: <strong><%= rolUsuario%></strong></p>
                     <hr>
                     <h6>Opciones</h6>
-                    <h5>Gestión para Usuarios</h5>
-                    <hr>
-                    <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('usuarios')">Gestionar Usuarios</button>
-                    <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('perfiles')">Gestionar Perfiles</button>
-                    <h5>Gestión para Docentes</h5>
-                    <hr>
-                    <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('docentes')">Gestionar Docentes</button>
-                    <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('asignacion')">Asignar Docente a Curso</button>
-
-                    <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('grados')">Gestionar Grado Académico</button>
-                    <h5>Gestión para Cursos</h5>
-                    <hr>
-                    <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('cursos')">Gestionar Cursos</button>
-                    <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('categorias')">Gestionar Categorías de cursos</button>
-                    <button class="btn btn-warning w-100 my-2" onclick="mostrarCRUD('duraciones')">Gestionar Duración Curso</button>
-                    <button class="btn btn-danger w-100 my-2" onclick="mostrarCRUD('idiomas')">Gestionar Idioma Curso</button>
-                    <button class="btn btn-dark w-100 my-2" onclick="mostrarCRUD('rangos')">Gestionar Rango Edades Curso</button>
+                    <h5 onclick="toggleMenu('menuUsuarios', this)" style="cursor: pointer;">Gestión para Usuarios <span class="toggle-icon">∨</span></h5>
+                    <div id="menuUsuarios" style="display: none;">
+                        <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('usuarios')">Gestionar Usuarios</button>
+                        <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('perfiles')">Gestionar Perfiles</button>
+                    </div>
                     
-                    <h5>Gestión para Sesiones</h5>
                     <hr>
-                    <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('tiposesion')">Gestionar Tipos de Sesión</button>
-                    <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('sesion')">Gestionar Sesiones</button>
+                    
+                    <h5 onclick="toggleMenu('menuDocentes', this)" style="cursor: pointer;">Gestión para Docentes <span class="toggle-icon">∨</span></h5>
+                    <div id="menuDocentes" style="display: none;">
+                        <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('docentes')">Gestionar Docentes</button>
+                        <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('asignacion')">Asignar Docente a Curso</button>
+                        <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('grados')">Gestionar Grado Académico</button>
+                    </div>
 
-                    <h5>Gestión de Asistencias</h5>
                     <hr>
-                    <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('estadosAsistencia')">Gestionar Estados de Asistencia</button>
-                    <h5>Gestión de Redes sociales</h5>
+                    
+                    <h5 onclick="toggleMenu('menuCursos', this)" style="cursor: pointer;">Gestión para Cursos <span class="toggle-icon">∨</span></h5>
+                    <div id="menuCursos" style="display: none;">
+                        <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('cursos')">Gestionar Cursos</button>
+                        <button class="btn btn-success w-100 my-2" onclick="mostrarCRUD('categorias')">Gestionar Categorías de cursos</button>
+                        <button class="btn btn-warning w-100 my-2" onclick="mostrarCRUD('duraciones')">Gestionar Duración Curso</button>
+                        <button class="btn btn-danger w-100 my-2" onclick="mostrarCRUD('idiomas')">Gestionar Idioma Curso</button>
+                        <button class="btn btn-dark w-100 my-2" onclick="mostrarCRUD('rangos')">Gestionar Rango Edades Curso</button>
+                    </div>
+
                     <hr>
-                    <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('redesSociales')">Gestionar Redes Sociales</button>
+                    
+                    <h5 onclick="toggleMenu('menuSesiones', this)" style="cursor: pointer;">Gestión para Sesiones <span class="toggle-icon">∨</span></h5>
+                    <div id="menuSesiones" style="display: none;">
+                        <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('tiposesion')">Gestionar Tipos de Sesión</button>
+                        <button class="btn btn-secondary w-100 my-2" onclick="mostrarCRUD('sesion')">Gestionar Sesiones</button>
+                    </div>
+
+                    <hr>
+                    
+                    <h5 onclick="toggleMenu('menuAsistencias', this)" style="cursor: pointer;">Gestión de Asistencias <span class="toggle-icon">∨</span></h5>
+                    <div id="menuAsistencias" style="display: none;">
+                        <button class="btn btn-info w-100 my-2" onclick="mostrarCRUD('estadosAsistencia')">Gestionar Estados de Asistencia</button>
+                    </div>
+
+                    <hr>
+                    
+                    <h5 onclick="toggleMenu('menuRedesSociales', this)" style="cursor: pointer;">Gestión de Redes sociales <span class="toggle-icon">∨</span></h5>
+                    <div id="menuRedesSociales" style="display: none;">
+                        <button class="btn btn-primary w-100 my-2" onclick="mostrarCRUD('redesSociales')">Gestionar Redes Sociales</button>
+                    </div>
+                    
                     <hr>
                     <!-- Cerrar sesion -->
                     <form action="LogoutServlet" method="post" class="mt-3">
@@ -257,7 +276,25 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 </div>
             </div>
         </div>
+        
+        <script>
+            // Función para alternar el menú
+            function toggleMenu(menuId, element) {
+                var menu = document.getElementById(menuId);
+                var icon = element.querySelector('.toggle-icon');
 
+                // Alternar la visibilidad del menú
+                if (menu.style.display === "none") {
+                    menu.style.display = "block";
+                    icon.textContent = '∧';  // Cambiar a flecha hacia arriba
+                } else {
+                    menu.style.display = "none";
+                    icon.textContent = '∨';  // Cambiar a flecha hacia abajo
+                }
+            }
+        </script>
+
+        
         <!-- MODAL USUARIOS -->
         <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
             <div class="modal-dialog">
