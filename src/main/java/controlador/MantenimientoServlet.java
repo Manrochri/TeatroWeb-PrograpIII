@@ -645,12 +645,99 @@ case "editarDocente": {
                         break;
                     }
 
+                    case "registrarEstadoAsistencia": {
+                        String tipoAsistencia = request.getParameter("tipoAsistencia");
+
+                        String query = "INSERT INTO EstadosAsistencia (TipoAsistencia, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, tipoAsistencia);
+
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=estadoAsistenciaRegistrado");
+                        break;
+                    }
+
+                    case "editarEstadoAsistencia": {
+                        int idEstadoAsistencia = Integer.parseInt(request.getParameter("idEstadoAsistencia"));
+                        String tipoAsistencia = request.getParameter("tipoAsistencia");
+
+                        String query = "UPDATE EstadosAsistencia SET TipoAsistencia = ? WHERE IdEstadoAsistencia = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, tipoAsistencia);
+                        ps.setInt(2, idEstadoAsistencia);
+
+                        int rowsUpdated = ps.executeUpdate();
+                        if (rowsUpdated > 0) {
+                            response.sendRedirect("mantenimiento.jsp?success=estadoAsistenciaEditado");
+                        } else {
+                            response.sendRedirect("mantenimiento.jsp?error=estadoAsistenciaNoEditado");
+                        }
+                        break;
+                    }
+
+                    case "eliminarEstadoAsistencia": {
+                        int idEstadoAsistencia = Integer.parseInt(request.getParameter("idEstadoAsistencia"));
+
+                        String query = "UPDATE EstadosAsistencia SET EstadoRegistro = 0 WHERE IdEstadoAsistencia = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idEstadoAsistencia);
+
+                        int rowsDeleted = ps.executeUpdate();
+                        if (rowsDeleted > 0) {
+                            response.sendRedirect("mantenimiento.jsp?success=estadoAsistenciaEliminado");
+                        } else {
+                            response.sendRedirect("mantenimiento.jsp?error=estadoAsistenciaNoEliminado");
+                        }
+                        break;
+                    }
+                    // REDES SOCIALES CRUD
+                    case "registrarRedSocial": {
+                        // Lógica para registrar una nueva red social
+                        String redSocial = request.getParameter("redSocial");
+
+                        String query = "INSERT INTO RedesSociales (RedSocial, EstadoRegistro) VALUES (?, 1)";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, redSocial);
+                        ps.executeUpdate();
+
+                        response.sendRedirect("mantenimiento.jsp?success=redSocialRegistrada");
+                        break;
+                    }
+
+                    case "editarRedSocial": {
+                        // Lógica para editar una red social existente
+                        int idRedSocial = Integer.parseInt(request.getParameter("idRedesSociales"));
+                        String redSocial = request.getParameter("redSocial");
+
+                        String query = "UPDATE RedesSociales SET RedSocial = ? WHERE IdRedesSociales = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setString(1, redSocial);
+                        ps.setInt(2, idRedSocial);
+                        ps.executeUpdate();
+
+                        response.sendRedirect("mantenimiento.jsp?success=redSocialEditada");
+                        break;
+                    }
+
+                    case "eliminarRedSocial": {
+                        // Lógica para eliminar (desactivar) una red social
+                        int idRedSocial = Integer.parseInt(request.getParameter("idRedesSociales"));
+
+                        String query = "UPDATE RedesSociales SET EstadoRegistro = 0 WHERE IdRedesSociales = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idRedSocial);
+                        ps.executeUpdate();
+
+                        response.sendRedirect("mantenimiento.jsp?success=redSocialEliminada");
+                        break;
+                    }
+
 
                     
 
     // Agregar el caso para listar docentes si es necesario para el despliegue en la página
 
-                    // AGREGAR CASE EDITAR CURSO
+               
                     default:
                         response.sendRedirect("error.jsp?msg=Acción no válida");
                         break;
