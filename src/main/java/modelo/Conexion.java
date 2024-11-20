@@ -14,7 +14,7 @@ public class Conexion {
             con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/teatroweb", 
                 "root", 
-                "shadowsun456"
+                ""
             );
         } catch(Exception e) {
             e.printStackTrace();

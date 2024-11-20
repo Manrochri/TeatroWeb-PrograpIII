@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import modelo.Conexion;
 
 @WebServlet("/MantenimientoServlet")
@@ -593,8 +596,16 @@ case "editarDocente": {
                         int tipoSesion = Integer.parseInt(request.getParameter("tipoSesion"));
                         int cursoSesion = Integer.parseInt(request.getParameter("cursoSesion"));
                         String fechaSesion = request.getParameter("fechaSesion");
+                        
+                        //Validación para evitar que se registre hasta antes de 5 días
+                        LocalDate fechaIngresada = LocalDate.parse(fechaSesion, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        LocalDate fechaLimite = LocalDate.now().minus(5, ChronoUnit.DAYS);
 
-
+                        
+                        if (fechaIngresada.isBefore(fechaLimite)) {
+                            response.sendRedirect("mantenimiento.jsp?error=fechaInvalida");
+                            return;
+                        }
                         // Consulta SQL para insertar la nueva sesión
                         String query = "INSERT INTO Sesion (NumeroSesion, NombreSesion, IdTipoSesion, IdCurso, FechaSesion, EstadoRegistro) VALUES (?, ?, ?, ?, ?, 1)";
                         ps = con.prepareStatement(query);
@@ -619,6 +630,16 @@ case "editarDocente": {
                     int tipoSesionId = Integer.parseInt(request.getParameter("tipoSesion"));
                     String fechaSesion = request.getParameter("fechaSesion");
 
+                    //Validación para evitar que se registre hasta antes de 5 días
+                    LocalDate fechaIngresada = LocalDate.parse(fechaSesion, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    LocalDate fechaLimite = LocalDate.now().minus(5, ChronoUnit.DAYS);
+
+
+                    if (fechaIngresada.isBefore(fechaLimite)) {
+                        response.sendRedirect("mantenimiento.jsp?error=fechaInvalida");
+                        return;
+                    }
+                    
                     // Consulta SQL para actualizar la sesión
                     String query = "UPDATE sesion SET NumeroSesion = ?, NombreSesion = ?, IdTipoSesion = ?, FechaSesion = ? WHERE IdSesion = ?";
                     ps = con.prepareStatement(query);

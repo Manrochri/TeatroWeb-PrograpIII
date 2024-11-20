@@ -16,11 +16,63 @@
 .form-label {
     font-weight: bold;
     margin-right: 10px; /* Espacio entre label e input */
+    
 }
-/* Estilo nuevo */
+
 .container-fluid {
     padding-top: 0; /* Elimina el padding superior */
+    padding-bottom: 0; 
+    height: 100vh;
 }
+
+.toggle-icon {
+     display:flex;
+     text-align:right;
+     justify-content:space-between;
+     align-self: center;
+     padding-right: 10px;
+   
+}
+
+.sidebar {
+            
+            height: 100vh; /* Ocupa toda la altura de la pantalla */
+            
+        }
+
+.seccionCRUD{
+    padding: 30px;
+}
+
+.dropdownPadre{
+    padding-bottom: 5px;
+    display:flex;
+    justify-content:space-between;
+    align-content: center;
+    padding-left: 10px;
+    border-bottom: 1px solid #777;
+}
+.dropdownPadre:hover {
+  background-color: #dedede; /* Cambia el color de fondo del contenedor */
+  
+}
+.dropdownContenido button {
+            width: 100%;
+            padding: 10px;
+            background-color: #c7c7c7;
+            border: none;
+            color: black;
+            cursor: pointer;
+            text-align: left;
+            border-bottom: 2px solid #f7f7f5;
+}
+
+.dropdownContenido button:hover {
+            background-color: #777;
+            color:white
+        }
+
+
 body {
     margin: 0; /* Elimina los márgenes por defecto del body */
 }
