@@ -752,11 +752,93 @@ case "editarDocente": {
                         response.sendRedirect("mantenimiento.jsp?success=redSocialEliminada");
                         break;
                     }
-
-
                     
+                    // Alumnos y Curso Alumnos
+                    case "registrarMatricula": {
+                        String dni = request.getParameter("dni");
+                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+                        String consulta = "INSERT INTO Matriculas (DNI, IdCurso, EstadoRegistro) VALUES (?, ?, 1)";
+                        ps = con.prepareStatement(consulta);
+                        ps.setString(1, dni);
+                        ps.setInt(2, idCurso);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=matriculaRegistrada");
+                        break;
+                    }
+                    case "editarMatricula": {
+                        int idMatricula = Integer.parseInt(request.getParameter("idMatricula"));
+                        String dni = request.getParameter("dni");
+                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+                        String consulta = "UPDATE Matriculas SET DNI=?, IdCurso=? WHERE IdMatricula=?";
+                        ps = con.prepareStatement(consulta);
+                        ps.setString(1, dni);
+                        ps.setInt(2, idCurso);
+                        ps.setInt(3, idMatricula);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=matriculaEditada");
+                        break;
+                    }
+                    case "eliminarMatricula": {
+                        int idMatricula = Integer.parseInt(request.getParameter("idMatricula"));
+                        String consulta = "DELETE FROM Matriculas WHERE IdMatricula=?";
+                        ps = con.prepareStatement(consulta);
+                        ps.setInt(1, idMatricula);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=matriculaEliminada");
+                        break;
+                    }
+                    case "registrarAlumno": {
+                        String dni = request.getParameter("dni");
+                        String nombres = request.getParameter("nombres");
+                        String apellidoPaterno = request.getParameter("apellidoPaterno");
+                        String apellidoMaterno = request.getParameter("apellidoMaterno");
+                        String correoElectronico = request.getParameter("correoElectronico");
+                        String celular = request.getParameter("celular");
+                        int idUsuario = Integer.parseInt(request.getParameter("idUsuario")); // Captura el IdUsuario
 
-    // Agregar el caso para listar docentes si es necesario para el despliegue en la página
+                        String consulta = "INSERT INTO Alumno (DNI, Nombres, ApellidoPaterno, ApellidoMaterno, CorreoElectronico, Celular, IdUsuario) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        ps = con.prepareStatement(consulta);
+                        ps.setString(1, dni);
+                        ps.setString(2, nombres);
+                        ps.setString(3, apellidoPaterno);
+                        ps.setString(4, apellidoMaterno);
+                        ps.setString(5, correoElectronico);
+                        ps.setString(6, celular);
+             
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=alumnoRegistrado");
+                        break;
+                    }
+                    case "editarAlumno": {
+                        int idAlumno = Integer.parseInt(request.getParameter("idAlumno"));
+                        String dni = request.getParameter("dni");
+                        String nombres = request.getParameter("nombres");
+                        String apellidoPaterno = request.getParameter("apellidoPaterno");
+                        String apellidoMaterno = request.getParameter("apellidoMaterno");
+                        String correoElectronico = request.getParameter("correoElectronico");
+                        String celular = request.getParameter("celular");
+                        String consulta = "UPDATE Alumno SET DNI=?, Nombres=?, ApellidoPaterno=?, ApellidoMaterno=?, CorreoElectronico=?, Celular=? WHERE IdAlumno=?";
+                        ps = con.prepareStatement(consulta);
+                        ps.setString(1, dni);
+                        ps.setString(2, nombres);
+                        ps.setString(3, apellidoPaterno);
+                        ps.setString(4, apellidoMaterno);
+                        ps.setString(5, correoElectronico);
+                        ps.setString(6, celular);
+                        ps.setInt(7, idAlumno);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=alumnoEditado");
+                        break;
+                    }
+                    case "eliminarAlumno": {
+                        int idAlumno = Integer.parseInt(request.getParameter("idAlumno"));
+                        String consulta = "DELETE FROM Alumno WHERE IdAlumno=?";
+                        ps = con.prepareStatement(consulta);
+                        ps.setInt(1, idAlumno);
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=alumnoEliminado");
+                        break;
+                    }
 
                
                     default:

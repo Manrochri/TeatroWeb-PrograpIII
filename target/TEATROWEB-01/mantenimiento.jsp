@@ -90,7 +90,13 @@ ResultSet rsSesiones = psSesiones.executeQuery();
 // Obtener RedSocial
     PreparedStatement psRedes = con.prepareStatement("SELECT IdRedesSociales, RedSocial FROM RedesSociales WHERE EstadoRegistro = 1 ");
     ResultSet rsRedes = psRedes.executeQuery();
-
+    
+ // Obtener alumnos
+    PreparedStatement psAlumnos = con.prepareStatement("SELECT IdAlumno, DNI, Nombres, ApellidoPaterno, ApellidoMaterno, CorreoElectronico, Celular, FechaRegistro FROM Alumno");
+        ResultSet rsAlumnos = psAlumnos.executeQuery();
+// Obtener matriculas
+    PreparedStatement psMatriculas = con.prepareStatement("SELECT IdMatricula, DNI, IdCurso, FechaMatricula FROM Matriculas WHERE EstadoRegistro = 1");
+    ResultSet rsMatriculas = psMatriculas.executeQuery();
 
 %>
 
@@ -272,6 +278,14 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                         <button onclick="mostrarCRUD('redesSociales')">Gestionar Redes Sociales</button>
                     </div>
                     
+                    <div class="dropdownPadre" style="cursor: pointer;" onclick="toggleMenu('menuAlumnos', this)">
+                    <h6 style="cursor: pointer; margin-top: 15px">Gestión para Alumnos</h6> <span class="toggle-icon">∨</span>
+                    </div>
+                    <div class="dropdownContenido" id="menuAlumnos" style="display: none;">
+                    <button onclick="mostrarCRUD('alumnos')">Gestionar Alumnos</button>
+                    <button onclick="mostrarCRUD('matriculas')">Gestionar Matrículas</button>
+                    </div>
+
                     <hr>
                     <!-- Cerrar sesion -->
                     <form action="LogoutServlet" method="post" class="mt-3">
@@ -871,6 +885,83 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         </div>
     </div>
 </div>
+
+<!-- MODAL Matrículas -->
+<div class="desvanecimiento modal" id="matriculaModal" tabindex="-1" aria-labelledby="matriculaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="matriculaModalLabel">Gestión de Matrículas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formMatricula">
+                    <input type="hidden" name="idMatricula" id="idMatricula">
+                    <div class="mb-3">
+                        <label for="dni" class="form-label">DNI del Estudiante</label>
+                        <input type="text" class="form-control" id="dni" name="dni" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="idCurso" class="form-label">ID del Curso</label>
+                        <input type="number" class="form-control" id="idCurso" name="idCurso" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarMatricula" class="btn btn-primary">Guardar Matrícula</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>                  
+ 
+<!-- MODAL Alumnos -->
+<div class="desvanecimiento modal" id="alumnoModal" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alumnoModalLabel">Gestión de Alumnos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formAlumno">
+                    <input type="hidden" name="idAlumno" id="idAlumno">
+                    <div class="mb-3">
+                        <label for="dni" class="form-label">DNI</label>
+                        <input type="text" class="form-control" id="dni" name="dni" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombres" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="nombres" name="nombres" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno">
+                    </div>
+                    <div class="mb-3">
+                        <label for="correoElectronico" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="correoElectronico" name="correoElectronico" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="celular" class="form-label">Celular</label>
+                        <input type="text" class="form-control" id="celular" name="celular">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarAlumno" class="btn btn-primary">Guardar Alumno</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -1389,7 +1480,80 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </tbody>
         </table>
     `;
-}
+} else if (tipo === 'alumnos') { 
+    contenido = `
+    <h5>Gestión de Alumnos</h5>
+    <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#alumnoModal">Nuevo Alumno</button>
+    <h5 class="mt-4">Alumnos Registrados</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>DNI</th>
+                <th>Nombres</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Correo Electrónico</th>
+                <th>Celular</th>
+                <th>Fecha de Registro</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% while (rsAlumnos.next()) { %>
+                <tr>
+                    <td><%= rsAlumnos.getString("DNI") %></td>
+                    <td><%= rsAlumnos.getString("Nombres") %></td>
+                    <td><%= rsAlumnos.getString("ApellidoPaterno") %></td>
+                    <td><%= rsAlumnos.getString("ApellidoMaterno") %></td>
+                    <td><%= rsAlumnos.getString("CorreoElectronico") %></td>
+                    <td><%= rsAlumnos.getString("Celular") %></td>
+                    <td><%= rsAlumnos.getTimestamp("FechaRegistro") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarAlumno(<%= rsAlumnos.getInt("IdAlumno") %>, '<%= rsAlumnos.getString("DNI") %>', '<%= rsAlumnos.getString("Nombres") %>', '<%= rsAlumnos.getString("ApellidoPaterno") %>', '<%= rsAlumnos.getString("ApellidoMaterno") %>', '<%= rsAlumnos.getString("CorreoElectronico") %>', '<%= rsAlumnos.getString("Celular") %>')">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idAlumno" value="<%= rsAlumnos.getInt("IdAlumno") %>">
+                            <button type="submit" name="accion" value="eliminarAlumno" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    `;
+} else if (tipo === 'matriculas') {
+    contenido = `
+    <h5>Gestión de Matrículas</h5>
+    <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#matriculaModal">Nueva Matrícula</button>
+    <h5 class="mt-4">Matrículas Registradas</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>DNI</th>
+                <th>ID del Curso</th>
+                <th>Fecha de Matrícula</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% while (rsMatriculas.next()) { %>
+                <tr>
+                    <td><%= rsMatriculas.getString("DNI") %></td>
+                    <td><%= rsMatriculas.getInt("IdCurso") %></td>
+                    <td><%= rsMatriculas.getTimestamp("FechaMatricula") %></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarMatricula(<%= rsMatriculas.getInt("IdMatricula") %>, '<%= rsMatriculas.getString("DNI") %>', <%= rsMatriculas.getInt("IdCurso") %>)">Editar</button>
+                        <form action="MantenimientoServlet" method="post" class="d-inline">
+                            <input type="hidden" name="idMatricula" value="<%= rsMatriculas.getInt("IdMatricula") %>">
+                            <button type="submit" name="accion" value="eliminarMatricula" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    `;
+} 
+
 
 
 
@@ -1717,6 +1881,47 @@ redesSocialesModal.addEventListener('hidden.bs.modal', function () {
     document.querySelector('#formRedesSociales button[type="submit"]').innerText = "Guardar Red Social";
     document.querySelector('#formRedesSociales button[type="submit"]').value = "registrarRedSocial";
 });
+
+
+function editarMatricula(idMatricula, dni, idCurso) {
+            document.getElementById('idMatricula').value = idMatricula;
+            document.getElementById('dni').value = dni;
+            document.getElementById('idCurso').value = idCurso;
+            document.querySelector('#formMatricula button[type="submit"]').innerText = "Actualizar Matrícula";
+            document.querySelector('#formMatricula button[type="submit"]').value = "editarMatricula";
+
+            var modal = new bootstrap.Modal(document.getElementById('matriculaModal'));
+            modal.show();
+        }
+        function editarAlumno(idAlumno, dni, nombres, apellidoPaterno, apellidoMaterno, correoElectronico, celular) {
+            document.getElementById('idAlumno').value = idAlumno;
+            document.getElementById('dni').value = dni;
+            document.getElementById('nombres').value = nombres;
+            document.getElementById('apellidoPaterno').value = apellidoPaterno;
+            document.getElementById('apellidoMaterno').value = apellidoMaterno;
+            document.getElementById('correoElectronico').value = correoElectronico;
+            document.getElementById('celular').value = celular;
+            document.querySelector('#formAlumno button[type="submit"]').innerText = "Actualizar Alumno";
+            document.querySelector('#formAlumno button[type="submit"]').value = "editarAlumno";
+
+            var modal = new bootstrap.Modal(document.getElementById('alumnoModal'));
+            modal.show();
+        }
+
+var matriculaModal = document.getElementById('matriculaModal');
+        matriculaModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('formMatricula').reset();
+            document.getElementById('idMatricula').value = '';
+            document.querySelector('#formMatricula button[type="submit"]').innerText = "Guardar Matrícula";
+            document.querySelector('#formMatricula button[type="submit"]').value = "registrarMatricula";
+        });
+        var alumnoModal = document.getElementById('alumnoModal');
+        alumnoModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('formAlumno').reset();
+            document.getElementById('idAlumno').value = '';
+            document.querySelector('#formAlumno button[type="submit"]').innerText = "Guardar Alumno";
+            document.querySelector('#formAlumno button[type="submit"]').value = "registrarAlumno";
+        });
 
             
         </script>
