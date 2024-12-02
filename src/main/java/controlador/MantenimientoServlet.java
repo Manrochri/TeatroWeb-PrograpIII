@@ -39,7 +39,14 @@ public class MantenimientoServlet extends HttpServlet {
                         String apellidoMaterno = request.getParameter("apellidoMaterno");
                         String correo = request.getParameter("correo");
                         int perfil = Integer.parseInt(request.getParameter("perfil"));
-
+                        
+                        //Para pasar a mayúsculas
+                        nombres= nombres.toUpperCase();
+                        apellidoPaterno = apellidoPaterno.toUpperCase();
+                        apellidoMaterno = apellidoMaterno.toUpperCase();
+                        correo = correo.toUpperCase();
+                        
+                        
                         String query = "INSERT INTO Usuario (DNI, Nombres, ApellidoPaterno, ApellidoMaterno, CorreoElectronico, Clave, FechaCreacion, EstadoRegistro) "
                                      + "VALUES (?, ?, ?, ?, ?, ?, NOW(), 1)";
                         ps = con.prepareStatement(query);
@@ -100,7 +107,6 @@ public class MantenimientoServlet extends HttpServlet {
                     }
 
                     case "editarUsuario": {
-                        // Editar un usuario existente
                         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
                         String dni = request.getParameter("dni");
                         String nombres = request.getParameter("nombres");
@@ -108,7 +114,13 @@ public class MantenimientoServlet extends HttpServlet {
                         String apellidoMaterno = request.getParameter("apellidoMaterno");
                         String correo = request.getParameter("correo");
                         int perfil = Integer.parseInt(request.getParameter("perfil"));
-
+                        
+                        nombres= nombres.toUpperCase();
+                        apellidoPaterno = apellidoPaterno.toUpperCase();
+                        apellidoMaterno = apellidoMaterno.toUpperCase();
+                        correo = correo.toUpperCase();
+                        
+                        
                         String query = "UPDATE Usuario SET DNI=?, Nombres=?, ApellidoPaterno=?, ApellidoMaterno=?, CorreoElectronico=?, FechaModificacion=NOW() WHERE IdUsuario=?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, dni);

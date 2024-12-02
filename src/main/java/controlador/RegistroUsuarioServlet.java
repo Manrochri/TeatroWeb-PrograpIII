@@ -33,6 +33,11 @@ public class RegistroUsuarioServlet extends HttpServlet {
             String perfilIdStr = request.getParameter("perfil");
 
             // **[MODIFICACIÓN 1]**
+            if (nombre != null) nombre = nombre.toUpperCase();  // Nombre a mayúsculas
+            if (apellidoPaterno != null) apellidoPaterno = apellidoPaterno.toUpperCase();  // Apellido Paterno a mayúsculas
+            if (apellidoMaterno != null) apellidoMaterno = apellidoMaterno.toUpperCase();
+            
+            
             // Validación de campos obligatorios
             if (dni == null || dni.trim().isEmpty()
                     || nombre == null || nombre.trim().isEmpty()
