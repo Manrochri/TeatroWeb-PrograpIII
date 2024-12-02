@@ -61,13 +61,18 @@ public class LoginServlet extends HttpServlet {
                     session.setAttribute("perfil", perfil);
                     
                     // Redirigir según el perfil
-                    if ("Administrador".equals(perfil)) {
-                        response.sendRedirect("mantenimiento.jsp");
-                    } else if ("Docente".equals(perfil)) {
-                        response.sendRedirect("perfilDocente.jsp");
-                    } else {
-                        response.sendRedirect("dashboard.jsp");
+                    switch (perfil) {
+                        case "ADMINISTRADOR":
+                            response.sendRedirect("mantenimiento.jsp");
+                            break;
+                        case "DOCENTE":
+                            response.sendRedirect("perfilDocente.jsp");
+                            break;
+                        default:
+                            response.sendRedirect("dashboard.jsp");
+                            break;
                     }
+
                 } else {
                     // Si la clave no coincide
                     response.sendRedirect("errorLogin.jsp");

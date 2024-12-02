@@ -4,7 +4,7 @@
 <%@ page import="jakarta.servlet.http.HttpSession" %>
 <%
     if (session == null || session.getAttribute("perfil") == null
-            || !"Administrador".equals(session.getAttribute("perfil"))) {
+            || !"ADMINISTRADOR".equals(session.getAttribute("perfil"))) {
         response.sendRedirect("errorAcceso.jsp");
         return;
     }

@@ -70,6 +70,10 @@ public class MantenimientoServlet extends HttpServlet {
                         // Lógica para registrar un nuevo perfil
                         String nombrePerfil = request.getParameter("nombrePerfil");
                         String descripcionPerfil = request.getParameter("descripcionPerfil");
+                        
+                        nombrePerfil = nombrePerfil.toUpperCase();
+                        descripcionPerfil = descripcionPerfil.toUpperCase();
+                        
                         String query = "INSERT INTO Perfiles (Nombre, Descripcion, EstadoRegistro) VALUES (?, ?, 1)";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombrePerfil);
@@ -84,6 +88,9 @@ public class MantenimientoServlet extends HttpServlet {
                         String nombrePerfil = request.getParameter("nombrePerfil");
                         String descripcionPerfil = request.getParameter("descripcionPerfil");
 
+                        nombrePerfil = nombrePerfil.toUpperCase();
+                        descripcionPerfil = descripcionPerfil.toUpperCase();
+                        
                         String query = "UPDATE Perfiles SET Nombre=?, Descripcion=? WHERE IdPerfil=?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombrePerfil);
