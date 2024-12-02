@@ -122,6 +122,7 @@ public class MantenimientoServlet extends HttpServlet {
                         String correo = request.getParameter("correo");
                         int perfil = Integer.parseInt(request.getParameter("perfil"));
                         
+                        //MAYÚSCULAS 
                         nombres= nombres.toUpperCase();
                         apellidoPaterno = apellidoPaterno.toUpperCase();
                         apellidoMaterno = apellidoMaterno.toUpperCase();
@@ -164,11 +165,13 @@ public class MantenimientoServlet extends HttpServlet {
                         response.sendRedirect("mantenimiento.jsp?success=usuarioEliminado");
                         break;
                     }
-
-                    // NUEVO CRUD PARA GRADOS ACADÉMICOS
                     case "registrarGrado": {
                         // Lógica para registrar un nuevo grado académico
                         String nombreGrado = request.getParameter("nombreGrado");
+                        
+                        //MAYÚSCULAS 
+                        nombreGrado = nombreGrado.toUpperCase();
+                        
                         String query = "INSERT INTO GradoAcademico (Nombre, EstadoRegistro) VALUES (?, 1)";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreGrado);
@@ -181,6 +184,10 @@ public class MantenimientoServlet extends HttpServlet {
                         // Lógica para editar un grado académico existente
                         int idGrado = Integer.parseInt(request.getParameter("idGrado"));
                         String nombreGrado = request.getParameter("nombreGrado");
+                        
+                        //MAYÚSCULAS
+                        nombreGrado = nombreGrado.toUpperCase();
+                        
                         String query = "UPDATE GradoAcademico SET Nombre=? WHERE IdGradoAcademico=?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreGrado);
@@ -203,6 +210,11 @@ public class MantenimientoServlet extends HttpServlet {
                     
                      case "registrarCategoria": {
                         String nombreCategoria = request.getParameter("nombreCategoria");
+                        
+                        //Mayus
+                        nombreCategoria = nombreCategoria.toUpperCase();
+                        
+                        
                         String query = "INSERT INTO CategoriaCurso (Nombre, EstadoRegistro) VALUES (?, 1)";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreCategoria);
@@ -215,7 +227,10 @@ public class MantenimientoServlet extends HttpServlet {
                         // Lógica para editar una categoría existente
                         int idCategoria = Integer.parseInt(request.getParameter("idCategoria"));
                         String nombreCategoria = request.getParameter("nombreCategoria");
-
+                        
+                        //MAYUS
+                        nombreCategoria = nombreCategoria.toUpperCase();
+                        
                         String query = "UPDATE CategoriaCurso SET Nombre=? WHERE IdCategoria=?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreCategoria);
@@ -239,6 +254,9 @@ public class MantenimientoServlet extends HttpServlet {
                     // CRUD DuracionCurso
                     case "registrarDuracion": {
                         String nombreDuracion = request.getParameter("nombreDuracion");
+                        
+                        nombreDuracion= nombreDuracion.toUpperCase();
+                                
                         String query = "INSERT INTO DuracionCurso (Nombre, EstadoRegistro) VALUES (?, 1)";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreDuracion);
@@ -250,6 +268,9 @@ public class MantenimientoServlet extends HttpServlet {
                     case "editarDuracion": {
                         int idDuracion = Integer.parseInt(request.getParameter("idDuracion"));
                         String nombreDuracion = request.getParameter("nombreDuracion");
+                        
+                        nombreDuracion= nombreDuracion.toUpperCase();
+
                         String query = "UPDATE DuracionCurso SET Nombre=? WHERE IdDuracion=?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreDuracion);
@@ -272,7 +293,9 @@ public class MantenimientoServlet extends HttpServlet {
                     // NUEVO CRUD PARA IDIOMA CURSO
                     case "registrarIdioma": {
                         String nombreIdioma = request.getParameter("nombreIdioma");
+                        
                         nombreIdioma = nombreIdioma.toUpperCase();
+                        
                         String query = "INSERT INTO IdiomaCurso (Nombre, EstadoRegistro) VALUES (?, 1)";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreIdioma);
@@ -284,7 +307,9 @@ public class MantenimientoServlet extends HttpServlet {
                     case "editarIdioma": {
                         int idIdioma = Integer.parseInt(request.getParameter("idIdioma"));
                         String nombreIdioma = request.getParameter("nombreIdioma");
+                        
                         nombreIdioma = nombreIdioma.toUpperCase();
+                        
                         String query = "UPDATE IdiomaCurso SET Nombre=? WHERE IdIdioma=?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, nombreIdioma);
@@ -307,7 +332,9 @@ public class MantenimientoServlet extends HttpServlet {
                     // NUEVO CRUD PARA RANGO EDADES CURSO
                     case "registrarRango": {
                         String descripcionRango = request.getParameter("descripcionRango");
+                        
                         descripcionRango = descripcionRango.toUpperCase();
+                        
                         String query = "INSERT INTO RangoEdadesCurso (Descripcion, EstadoRegistro) VALUES (?, 1)";
                         ps = con.prepareStatement(query);
                         ps.setString(1, descripcionRango);
@@ -319,7 +346,9 @@ public class MantenimientoServlet extends HttpServlet {
                     case "editarRango": {
                         int idRango = Integer.parseInt(request.getParameter("idRango"));
                         String descripcionRango = request.getParameter("descripcionRango");
+                        
                         descripcionRango = descripcionRango.toUpperCase();
+                        
                         String query = "UPDATE RangoEdadesCurso SET Descripcion=? WHERE IdRango=?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, descripcionRango);
@@ -351,6 +380,9 @@ public class MantenimientoServlet extends HttpServlet {
                         int duracion = Integer.parseInt(request.getParameter("duracion"));
                         int idioma = Integer.parseInt(request.getParameter("idioma"));
                         int rango = Integer.parseInt(request.getParameter("rango"));
+                        
+                        nombreCurso = nombreCurso.toUpperCase();
+                        
 
                         String updateQuery = "UPDATE Curso SET Nombre = ?, Capacidad = ?, FechaInicio = ?, FechaFin = ?, Precio = ?, " +
                                              "IdCategoria = ?, IdDuracion = ?, IdIdioma = ?, IdRango = ? WHERE IdCurso = ?";
@@ -377,21 +409,8 @@ public class MantenimientoServlet extends HttpServlet {
                         }
                         break;
                 }
-                    //FALTA COMPLETAR DARLE FORMA
-                    /*
-                    case "registrarCurso":{
-                        int Idcurso= Integer.parseInt(request.getParameter("idRango"));
-                        String query = "INSERT INTO Curso (Idcurso,Nombre,FechaRegistro,Capacidad,FechaInicio,FechaFin,Precio,IdCategoria,IdDuracion,IdIdioma,IdRango,EstadoRegistro)"
-                                + "values (?,?,NOW(),?,?,?,?,?,?,?,1)";
-                        
-                        ps = con.prepareStatement(query);
-                        ps.setString(1,idcurso);
-                        response.sendRedirect("mantenimiento.jsp?success=rangoEliminado");
-                        break;
-                    }
-                    */
                     
-                    // -TEMPORAL! FALTA COMPROBAR FUNCIONA Y AGREGAR EDICION Y ELIMIAR PARA CURSO-
+             
                     case "registrarCurso": {
                         // Obtener parámetros del formulario
                         String nombreCurso = request.getParameter("nombreCurso");
@@ -403,8 +422,9 @@ public class MantenimientoServlet extends HttpServlet {
                         int idDuracion = Integer.parseInt(request.getParameter("duracion"));
                         int idIdioma = Integer.parseInt(request.getParameter("idioma"));
                         int idRango = Integer.parseInt(request.getParameter("rango"));
-
-                        // Lógica para insertar el nuevo curso
+                        
+                        nombreCurso = nombreCurso.toUpperCase();
+                      
                         String query = "INSERT INTO Curso (Nombre, Capacidad, FechaRegistro, FechaInicio, FechaFin, Precio, IdCategoria, IdDuracion, IdIdioma, IdRango, EstadoRegistro) "
                                      + "VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, 1)";
                         ps = con.prepareStatement(query);
@@ -427,13 +447,14 @@ public class MantenimientoServlet extends HttpServlet {
                         int idCurso = Integer.parseInt(request.getParameter("idCurso"));
 
                         // Eliminar las relaciones en la tabla intermedia Curso_Docentes
-                        String query = "DELETE FROM Curso_Docentes WHERE IdCurso = ?";
+                        //modificaciones a update
+                        String query = "UPDATE Curso_Docente SET EstadoRegistro=0 WHERE IdCurso = ?";
                         ps = con.prepareStatement(query);
                         ps.setInt(1, idCurso);
                         ps.executeUpdate();
 
                         // Ahora eliminar el curso
-                        query = "DELETE FROM Curso WHERE IdCurso = ?";
+                        query = "UPDATE Curso SET EstadoRegistro=0 WHERE IdCurso = ?";
                         ps = con.prepareStatement(query);
                         ps.setInt(1, idCurso);
                         ps.executeUpdate();
