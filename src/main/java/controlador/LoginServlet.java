@@ -18,21 +18,30 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        String dni = request.getParameter("dni");
+        String usuario = request.getParameter("usuario");  // DNI o Correo
         String clave = request.getParameter("clave");
 
         try {
             // Conectar a la base de datos
             Connection con = Conexion.getConnection();
             
-            // Consultar la contraseña encriptada por DNI
-            String query = "SELECT u.Clave, u.Nombres, u.ApellidoPaterno, p.Nombre as Perfil FROM Usuario u " +
-                           "JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario " +
-                           "JOIN Perfiles p ON up.IdPerfil = p.IdPerfil " +
-                           "WHERE u.DNI = ?";
+            // Consulta dependiendo de si es un correo electrónico o un DNI
+            String query = "";
+            if (usuario.contains("@")) {  // Si el usuario contiene "@", asumimos que es un correo electrónico
+                query = "SELECT u.Clave, u.Nombres, u.ApellidoPaterno, p.Nombre as Perfil FROM Usuario u " +
+                        "JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario " +
+                        "JOIN Perfiles p ON up.IdPerfil = p.IdPerfil " +
+                        "WHERE u.CorreoElectronico = ?";
+            } else {  // De lo contrario, asumimos que es un DNI
+                query = "SELECT u.Clave, u.Nombres, u.ApellidoPaterno, p.Nombre as Perfil FROM Usuario u " +
+                        "JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario " +
+                        "JOIN Perfiles p ON up.IdPerfil = p.IdPerfil " +
+                        "WHERE u.DNI = ?";
+            }
+
+            // Preparar y ejecutar la consulta
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, dni);
-            
+            ps.setString(1, usuario);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -40,25 +49,23 @@ public class LoginServlet extends HttpServlet {
                 
                 // Verificar si la clave ingresada coincide con la clave encriptada
                 if (BCrypt.checkpw(clave, hashedClave)) {
-                    // Obtener el nombre, apellido y perfil del usuario
+                    // Obtener los datos del usuario
                     String nombre = rs.getString("Nombres");
-                    String apellido = rs.getString("ApellidoPaterno");  // Agregamos apellido
+                    String apellido = rs.getString("ApellidoPaterno");
                     String perfil = rs.getString("Perfil");
                     
                     // Crear una sesión para el usuario autenticado
                     HttpSession session = request.getSession();
                     session.setAttribute("nombre", nombre);
-                    session.setAttribute("apellido", apellido);  // Guardar el apellido en la sesión
+                    session.setAttribute("apellido", apellido);
                     session.setAttribute("perfil", perfil);
                     
-                    // Redirigir dependiendo del perfil del usuario
+                    // Redirigir según el perfil
                     if ("Administrador".equals(perfil)) {
                         response.sendRedirect("mantenimiento.jsp");
                     } else if ("Docente".equals(perfil)) {
-                        // Redirigir al perfil del docente si es "Docente"
                         response.sendRedirect("perfilDocente.jsp");
                     } else {
-                        // Otros perfiles pueden redirigirse a una página general
                         response.sendRedirect("dashboard.jsp");
                     }
                 } else {
@@ -70,7 +77,7 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("errorLogin.jsp");
             }
         } catch (IOException | SQLException e) {
-            // En caso de error redirigir a página de error
+            // En caso de error, redirigir a la página de error
             response.sendRedirect("errorLogin.jsp");
         }
     }

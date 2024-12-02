@@ -15,7 +15,7 @@ public class UsuarioDAO {
             // Establecer conexión con la base de datos
             con = Conexion.getConnection();
 
-            // Sentencia SQL para insertar un nuevo usuario (sin UsuarioCreacion y UsuarioModificacion)
+            // Sentencia SQL para insertar un nuevo usuario
             String sql = "INSERT INTO Usuario (DNI, Nombres, ApellidoPaterno, ApellidoMaterno, Celular, CorreoElectronico, Clave, FechaCreacion, EstadoRegistro) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
@@ -32,7 +32,7 @@ public class UsuarioDAO {
 
             // Ejecutar la inserción
             int filas = ps.executeUpdate();
-            
+
             if (filas > 0) {
                 rs = ps.getGeneratedKeys();
                 if (rs.next()) {
@@ -47,12 +47,12 @@ public class UsuarioDAO {
                         psUpdate.setTimestamp(3, new java.sql.Timestamp(new Date().getTime())); // Fecha de modificación igual a la de creación
                         psUpdate.setInt(4, idUsuario); // ID del usuario a actualizar
                         psUpdate.executeUpdate();
-                    } // UsuarioCreacion
+                    }
 
                     // Insertar los perfiles asociados al usuario
-                    for (Integer idPerfil : usuario.getPerfiles()) {
-                        String sqlPerfiles = "INSERT INTO Usuario_Perfiles (IdUsuario, IdPerfil, EstadoRegistro) VALUES (?, ?, ?)";
-                        try (PreparedStatement psPerfiles = con.prepareStatement(sqlPerfiles)) {
+                    String sqlPerfiles = "INSERT INTO Usuario_Perfiles (IdUsuario, IdPerfil, EstadoRegistro) VALUES (?, ?, ?)";
+                    try (PreparedStatement psPerfiles = con.prepareStatement(sqlPerfiles)) {
+                        for (Integer idPerfil : usuario.getPerfiles()) {
                             psPerfiles.setInt(1, idUsuario);
                             psPerfiles.setInt(2, idPerfil);
                             psPerfiles.setBoolean(3, true); // Estado activo
@@ -64,15 +64,14 @@ public class UsuarioDAO {
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace(); // Añadir logging o manejo de excepciones más detallado si es necesario
         } finally {
             // Cerrar recursos de base de datos
-            try { if (rs != null) rs.close(); } catch (SQLException e) {}
-            try { if (ps != null) ps.close(); } catch (SQLException e) {}
-            try { if (con != null) con.close(); } catch (SQLException e) {}
+            closeResources(rs, ps, con);
         }
         return registrado;
     }
-    
+
     // Método para actualizar un usuario existente en la base de datos
     public boolean actualizarUsuario(Usuario usuario) {
         boolean actualizado = false;
@@ -106,11 +105,18 @@ public class UsuarioDAO {
                 actualizado = true;
             }
         } catch (SQLException e) {
+            e.printStackTrace(); // Añadir logging o manejo de excepciones más detallado si es necesario
         } finally {
             // Cerrar recursos de base de datos
-            try { if (ps != null) ps.close(); } catch (SQLException e) {}
-            try { if (con != null) con.close(); } catch (SQLException e) {}
+            closeResources(null, ps, con);
         }
         return actualizado;
+    }
+
+    // Método para cerrar recursos de base de datos
+    private void closeResources(ResultSet rs, PreparedStatement ps, Connection con) {
+        try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+        try { if (ps != null) ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+        try { if (con != null) con.close(); } catch (SQLException e) { e.printStackTrace(); }
     }
 }

@@ -5,13 +5,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.List;
-
 import modelo.Usuario;
 import modelo.UsuarioDAO;
-
 import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet("/registrarUsuario")
@@ -35,6 +32,7 @@ public class RegistroUsuarioServlet extends HttpServlet {
             String clave = request.getParameter("clave");
             String perfilIdStr = request.getParameter("perfil");
 
+            // **[MODIFICACIÓN 1]**
             // Validación de campos obligatorios
             if (dni == null || dni.trim().isEmpty()
                     || nombre == null || nombre.trim().isEmpty()
@@ -43,7 +41,11 @@ public class RegistroUsuarioServlet extends HttpServlet {
                     || clave == null || clave.trim().isEmpty()
                     || perfilIdStr == null || perfilIdStr.trim().isEmpty()) {
 
-                request.setAttribute("error", "Todos los campos obligatorios deben ser completados.");
+                // **[MODIFICACIÓN 2]**: Establecer mensaje de error en el request
+                request.setAttribute("mensaje", "Todos los campos obligatorios deben ser completados.");
+                request.setAttribute("tipo", "error"); // Tipo de mensaje (error)
+
+                // Redirigir a index.jsp para mostrar el mensaje en el modal
                 request.getRequestDispatcher("index.jsp").forward(request, response);
                 return;
             }
@@ -73,14 +75,25 @@ public class RegistroUsuarioServlet extends HttpServlet {
             boolean registrado = usuarioDAO.registrarUsuario(usuario);
 
             if (registrado) {
-                response.sendRedirect("registroExitoso.jsp");
+                // **[MODIFICACIÓN 3]**: Enviar mensaje de éxito al request
+                request.setAttribute("mensaje", "¡Usuario registrado exitosamente!");
+                request.setAttribute("tipo", "success"); // Tipo de mensaje (éxito)
             } else {
-                request.setAttribute("error", "Error al registrar el usuario.");
-                request.getRequestDispatcher("index.jsp").forward(request, response);
+                // **[MODIFICACIÓN 4]**: Enviar mensaje de error al request
+                request.setAttribute("mensaje", "Error al registrar el usuario.");
+                request.setAttribute("tipo", "error");
             }
 
-        } catch (ServletException | IOException | NumberFormatException e) {
-            request.setAttribute("error", "Error: " + e.getMessage());
+            // **[MODIFICACIÓN 5]**: Redirigir a index.jsp para mostrar el mensaje en el modal
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            // **[MODIFICACIÓN 6]**: Captura de excepciones y envío de mensaje de error
+            request.setAttribute("mensaje", "Error: " + e.getMessage());
+            request.setAttribute("tipo", "error");
+
+            // Redirigir a index.jsp con el mensaje de error
+            request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }
 }

@@ -13,8 +13,8 @@
             
                 <form action="LoginServlet" method="post">
                     <div class="mb-3">
-                        <label for="dni" class="form-label">DNI</label>
-                        <input type="text" class="form-control" id="dni" name="dni" required>
+                        <label for="usuario" class="form-label">DNI o Correo</label>
+                        <input type="text" class="form-control" id="usuario" name="usuario" required>
                     </div>
                     <div class="mb-3">
                         <label for="clave" class="form-label">Clave</label>

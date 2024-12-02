@@ -27,6 +27,8 @@
         <link rel="stylesheet" href="styles/styles.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="js/scripts.js"></script>
+        <script src="js/PopUpRegistro.js"></script>
+
     </head>
     <body>
         <div class="container mt-5 d-flex justify-content-center">
@@ -124,7 +126,29 @@
                         <input type="submit" value="Registrar Usuario" class="btn btn-primary">
                     </div>
                 </form>
+                <input type="hidden" id="mensaje" value="<%= request.getAttribute("mensaje") != null ? request.getAttribute("mensaje") : "" %>">
+                <input type="hidden" id="tipo" value="<%= request.getAttribute("tipo") != null ? request.getAttribute("tipo") : "" %>">
             </div>
         </div>
+            
+        <!-- Modal de Bootstrap para mostrar el mensaje -->
+<div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusModalLabel">Registro de Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- El mensaje se insertará aquí -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+    
+        <script src="js/PopUpRegistro.js"></script>
     </body>
 </html>
