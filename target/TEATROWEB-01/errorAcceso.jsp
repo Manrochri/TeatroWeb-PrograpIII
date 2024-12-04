@@ -11,7 +11,7 @@
             <div class="alert alert-danger text-center" role="alert">
                 <h4>Acceso Denegado</h4>
                 <p>No tienes permisos para acceder a esta página.</p>
-                <a href="index.jsp" class="btn btn-primary">Volver al Inicio</a>
+                <a href="loginUsuario.jsp" class="btn btn-primary">Volver al Inicio</a>
             </div>
         </div>
     </body>

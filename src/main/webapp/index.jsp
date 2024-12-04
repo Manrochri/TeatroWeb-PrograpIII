@@ -31,6 +31,7 @@
 
     </head>
     <body>
+        <a href="loginUsuario.jsp" class="boton">Regresar al login</a>
         <div class="container mt-5 d-flex justify-content-center">
             <div class="form-container">
                 <h1 class="text-center mb-4">Registrar Usuario</h1>
@@ -148,7 +149,7 @@
         </div>
     </div>
 </div>
-    
+        
         <script src="js/PopUpRegistro.js"></script>
     </body>
 </html>

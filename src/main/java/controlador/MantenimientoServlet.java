@@ -463,90 +463,89 @@ public class MantenimientoServlet extends HttpServlet {
                         break;
                     }
                     
-case "registrarDocente": {
-    // Obtener parámetros del formulario para registrar un nuevo docente
-    int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-    int idGradoAcademico = Integer.parseInt(request.getParameter("idGradoAcademico"));
-    String descripcion = request.getParameter("descripcion");
- 
-    // Obtener el nombre y apellido concatenado del usuario seleccionado
-    String nombresConcatenados = "";
-    try {
-        String queryUsuario = "SELECT Nombres, ApellidoPaterno FROM Usuario WHERE IdUsuario = ?";
-        ps = con.prepareStatement(queryUsuario);
-        ps.setInt(1, idUsuario);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            nombresConcatenados = rs.getString("Nombres") + " " + rs.getString("ApellidoPaterno");
-        }
-        rs.close();
-        ps.close();
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect("mantenimiento.jsp?error=errorObteniendoUsuario");
-        break;
-    }
- 
-    // Consulta para insertar el nuevo docente con el nombre concatenado
-    String query = "INSERT INTO Docente (IdUsuario, IdGradoAcademico, Descripcion, Nombres) VALUES (?, ?, ?, ?)";
-    ps = con.prepareStatement(query);
-    ps.setInt(1, idUsuario);
-    ps.setInt(2, idGradoAcademico);
-    ps.setString(3, descripcion);
-    ps.setString(4, nombresConcatenados);
- 
-    // Ejecutar la inserción
-    ps.executeUpdate();
-    response.sendRedirect("mantenimiento.jsp?success=docenteRegistrado");
-    break;
-}
- 
- 
-case "editarDocente": {
-    // Obtener parámetros del formulario para editar un docente existente
-    int idDocente = Integer.parseInt(request.getParameter("idDocente"));
-    int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-    int idGradoAcademico = Integer.parseInt(request.getParameter("idGradoAcademico"));
-    String descripcion = request.getParameter("descripcion");
- 
-    // Obtener el nombre y apellido concatenado del usuario seleccionado si el idUsuario ha cambiado
-    String nombresConcatenados = "";
-    try {
-        String queryUsuario = "SELECT Nombres, ApellidoPaterno FROM Usuario WHERE IdUsuario = ?";
-        ps = con.prepareStatement(queryUsuario);
-        ps.setInt(1, idUsuario);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            nombresConcatenados = rs.getString("Nombres") + " " + rs.getString("ApellidoPaterno");
-        }
-        rs.close();
-        ps.close();
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendRedirect("mantenimiento.jsp?error=errorObteniendoUsuario");
-        break;
-    }
- 
-    // Consulta para actualizar el docente existente con el nombre concatenado
-    String query = "UPDATE Docente SET IdUsuario = ?, IdGradoAcademico = ?, Descripcion = ?, Nombres = ? WHERE IdDocente = ?";
-    ps = con.prepareStatement(query);
-    ps.setInt(1, idUsuario);
-    ps.setInt(2, idGradoAcademico);
-    ps.setString(3, descripcion);
-    ps.setString(4, nombresConcatenados);
-    ps.setInt(5, idDocente);
- 
-    // Ejecutar la actualización
-    int rowsUpdated = ps.executeUpdate();
- 
-    // Redireccionar dependiendo del resultado
-    if (rowsUpdated > 0) {
-        response.sendRedirect("mantenimiento.jsp?success=docenteEditado");
-    } else {
-        response.sendRedirect("mantenimiento.jsp?error=docenteNoEditado");
-    }
-    break;
-}
+                    case "registrarDocente": {
+                        // Obtener parámetros del formulario para registrar un nuevo docente
+                        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+                        int idGradoAcademico = Integer.parseInt(request.getParameter("idGradoAcademico"));
+                        String descripcion = request.getParameter("descripcion");
+
+                        // Obtener el nombre y apellido concatenado del usuario seleccionado
+                        String nombresConcatenados = "";
+                        try {
+                            String queryUsuario = "SELECT Nombres, ApellidoPaterno FROM Usuario WHERE IdUsuario = ?";
+                            ps = con.prepareStatement(queryUsuario);
+                            ps.setInt(1, idUsuario);
+                            ResultSet rs = ps.executeQuery();
+                            if (rs.next()) {
+                                nombresConcatenados = rs.getString("Nombres") + " " + rs.getString("ApellidoPaterno");
+                            }
+                            rs.close();
+                            ps.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("mantenimiento.jsp?error=errorObteniendoUsuario");
+                            break;
+                        }
+
+                        // Consulta para insertar el nuevo docente con el nombre concatenado
+                        String query = "INSERT INTO Docente (IdUsuario, IdGradoAcademico, Descripcion, Nombres) VALUES (?, ?, ?, ?)";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idUsuario);
+                        ps.setInt(2, idGradoAcademico);
+                        ps.setString(3, descripcion);
+                        ps.setString(4, nombresConcatenados);
+
+                        // Ejecutar la inserción
+                        ps.executeUpdate();
+                        response.sendRedirect("mantenimiento.jsp?success=docenteRegistrado");
+                        break;
+                    }
+
+                    case "editarDocente": {
+                        // Obtener parámetros del formulario para editar un docente existente
+                        int idDocente = Integer.parseInt(request.getParameter("idDocente"));
+                        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+                        int idGradoAcademico = Integer.parseInt(request.getParameter("idGradoAcademico"));
+                        String descripcion = request.getParameter("descripcion");
+
+                        // Obtener el nombre y apellido concatenado del usuario seleccionado si el idUsuario ha cambiado
+                        String nombresConcatenados = "";
+                        try {
+                            String queryUsuario = "SELECT Nombres, ApellidoPaterno FROM Usuario WHERE IdUsuario = ?";
+                            ps = con.prepareStatement(queryUsuario);
+                            ps.setInt(1, idUsuario);
+                            ResultSet rs = ps.executeQuery();
+                            if (rs.next()) {
+                                nombresConcatenados = rs.getString("Nombres") + " " + rs.getString("ApellidoPaterno");
+                            }
+                            rs.close();
+                            ps.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("mantenimiento.jsp?error=errorObteniendoUsuario");
+                            break;
+                        }
+
+                        // Consulta para actualizar el docente existente con el nombre concatenado
+                        String query = "UPDATE Docente SET IdUsuario = ?, IdGradoAcademico = ?, Descripcion = ?, Nombres = ? WHERE IdDocente = ?";
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, idUsuario);
+                        ps.setInt(2, idGradoAcademico);
+                        ps.setString(3, descripcion);
+                        ps.setString(4, nombresConcatenados);
+                        ps.setInt(5, idDocente);
+
+                        // Ejecutar la actualización
+                        int rowsUpdated = ps.executeUpdate();
+
+                        // Redireccionar dependiendo del resultado
+                        if (rowsUpdated > 0) {
+                            response.sendRedirect("mantenimiento.jsp?success=docenteEditado");
+                        } else {
+                            response.sendRedirect("mantenimiento.jsp?error=docenteNoEditado");
+                        }
+                        break;
+                    }
 
                     case "eliminarDocente": {
                         // Obtener el ID del docente a eliminar
@@ -603,6 +602,9 @@ case "editarDocente": {
                     }
                     case "registrarTipoSesion": {
                         String tipoSesion = request.getParameter("tipoSesion");
+                        
+                        tipoSesion = tipoSesion.toUpperCase();
+                        
                         String query = "INSERT INTO tiposesion (TipoSesion, EstadoRegistro) VALUES (?, 1)";
                         ps = con.prepareStatement(query);
                         ps.setString(1, tipoSesion);
@@ -614,6 +616,9 @@ case "editarDocente": {
                     case "editarTipoSesion": {
                         int idTipoSesion = Integer.parseInt(request.getParameter("idTipoSesion"));
                         String tipoSesion = request.getParameter("tipoSesion");
+                        
+                        tipoSesion = tipoSesion.toUpperCase();
+                        
                         String query = "UPDATE tiposesion SET TipoSesion = ? WHERE IdTipoSesion = ?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, tipoSesion);
@@ -640,6 +645,9 @@ case "editarDocente": {
                         int tipoSesion = Integer.parseInt(request.getParameter("tipoSesion"));
                         int cursoSesion = Integer.parseInt(request.getParameter("cursoSesion"));
                         String fechaSesion = request.getParameter("fechaSesion");
+                        
+                        nombreSesion = nombreSesion.toUpperCase();
+                        
                         
                         //Validación para evitar que se registre hasta antes de 5 días
                         LocalDate fechaIngresada = LocalDate.parse(fechaSesion, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -673,7 +681,9 @@ case "editarDocente": {
                     String nombreSesion = request.getParameter("nombreSesion");
                     int tipoSesionId = Integer.parseInt(request.getParameter("tipoSesion"));
                     String fechaSesion = request.getParameter("fechaSesion");
-
+                    
+                    nombreSesion = nombreSesion.toUpperCase();
+                    
                     //Validación para evitar que se registre hasta antes de 5 días
                     LocalDate fechaIngresada = LocalDate.parse(fechaSesion, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     LocalDate fechaLimite = LocalDate.now().minus(5, ChronoUnit.DAYS);
@@ -712,7 +722,9 @@ case "editarDocente": {
 
                     case "registrarEstadoAsistencia": {
                         String tipoAsistencia = request.getParameter("tipoAsistencia");
-
+                        
+                        tipoAsistencia= tipoAsistencia.toUpperCase();
+                        
                         String query = "INSERT INTO EstadosAsistencia (TipoAsistencia, EstadoRegistro) VALUES (?, 1)";
                         ps = con.prepareStatement(query);
                         ps.setString(1, tipoAsistencia);
@@ -725,7 +737,9 @@ case "editarDocente": {
                     case "editarEstadoAsistencia": {
                         int idEstadoAsistencia = Integer.parseInt(request.getParameter("idEstadoAsistencia"));
                         String tipoAsistencia = request.getParameter("tipoAsistencia");
-
+                        
+                        tipoAsistencia= tipoAsistencia.toUpperCase();
+                        
                         String query = "UPDATE EstadosAsistencia SET TipoAsistencia = ? WHERE IdEstadoAsistencia = ?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, tipoAsistencia);
@@ -759,6 +773,9 @@ case "editarDocente": {
                     case "registrarRedSocial": {
                         // Lógica para registrar una nueva red social
                         String redSocial = request.getParameter("redSocial");
+                        
+                        redSocial = redSocial.toUpperCase();
+                        
 
                         String query = "INSERT INTO RedesSociales (RedSocial, EstadoRegistro) VALUES (?, 1)";
                         ps = con.prepareStatement(query);
@@ -773,7 +790,9 @@ case "editarDocente": {
                         // Lógica para editar una red social existente
                         int idRedSocial = Integer.parseInt(request.getParameter("idRedesSociales"));
                         String redSocial = request.getParameter("redSocial");
-
+                        
+                        redSocial = redSocial.toUpperCase();
+                        
                         String query = "UPDATE RedesSociales SET RedSocial = ? WHERE IdRedesSociales = ?";
                         ps = con.prepareStatement(query);
                         ps.setString(1, redSocial);
@@ -831,6 +850,8 @@ case "editarDocente": {
                         response.sendRedirect("mantenimiento.jsp?success=matriculaEliminada");
                         break;
                     }
+                    
+                    // Se eliminarías strings redundantes con tabla usuario
                     case "registrarAlumno": {
                         String dni = request.getParameter("dni");
                         String nombres = request.getParameter("nombres");
@@ -839,7 +860,8 @@ case "editarDocente": {
                         String correoElectronico = request.getParameter("correoElectronico");
                         String celular = request.getParameter("celular");
                         int idUsuario = Integer.parseInt(request.getParameter("idUsuario")); // Captura el IdUsuario
-
+                        
+                        
                         String consulta = "INSERT INTO Alumno (DNI, Nombres, ApellidoPaterno, ApellidoMaterno, CorreoElectronico, Celular, IdUsuario) VALUES (?, ?, ?, ?, ?, ?, ?)";
                         ps = con.prepareStatement(consulta);
                         ps.setString(1, dni);

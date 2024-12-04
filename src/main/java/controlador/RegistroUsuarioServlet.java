@@ -78,15 +78,27 @@ public class RegistroUsuarioServlet extends HttpServlet {
             // Registrar usuario en la base de datos
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             boolean registrado = usuarioDAO.registrarUsuario(usuario);
-
+            
+            
+            
+            //POPUP DE REGISTRO
             if (registrado) {
                 // **[MODIFICACIÓN 3]**: Enviar mensaje de éxito al request
                 request.setAttribute("mensaje", "¡Usuario registrado exitosamente!");
                 request.setAttribute("tipo", "success"); // Tipo de mensaje (éxito)
             } else {
                 // **[MODIFICACIÓN 4]**: Enviar mensaje de error al request
+                
+                if (usuarioDAO.existeDni(dni)) {
+                    request.setAttribute("mensaje", "Este DNI ya está registrado. Inténtelo de nuevo.");
+                    request.setAttribute("tipo", "error");
+                    request.getRequestDispatcher("index.jsp").forward(request, response);
+                    return;
+                }
+                else {
                 request.setAttribute("mensaje", "Error al registrar el usuario.");
                 request.setAttribute("tipo", "error");
+                }
             }
 
             // **[MODIFICACIÓN 5]**: Redirigir a index.jsp para mostrar el mensaje en el modal

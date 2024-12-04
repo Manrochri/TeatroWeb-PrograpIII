@@ -208,8 +208,6 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         <title>Mantenimiento de Usuarios, Perfiles y Grados Académicos</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="styles/styles.css">
-        <!-- Script fecha de sesiones -->
-        
     </head>
     <body>
         
@@ -807,6 +805,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                     </div>
                     <div class="mb-3">
                         <label for="fechaSesion" class="form-label">Fecha de la Sesión</label>
+                        <!-- // JS de validar fechas  -->
                         <script src="js/validacionFechas.js"></script>
                         <input type="date" class="form-control" id="fechaSesion" name="fechaSesion" required>
                     </div>
@@ -971,77 +970,104 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                             console.log("mostrarCRUD cargado");
                             const seccionCRUD = document.getElementById('seccionCRUD');
                             let contenido = '';
-
-                            if (tipo === 'usuarios') {
-                                contenido = `
-                        <h5>Gestión de Usuarios</h5>
-                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#usuarioModal">
-                            Nuevo Usuario
-                        </button>
-                        <h5 class="mt-4">Usuarios Registrados</h5>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>DNI</th>
-                                    <th>Nombre Completo</th>
-                                    <th>Correo Electrónico</th>
-                                    <th>Perfil</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            <% while (rsUsuarios.next()) {%>
-                                <tr>
-                                    <td><%= rsUsuarios.getString("DNI")%></td>
-                                    <td><%= rsUsuarios.getString("Nombres")%> <%= rsUsuarios.getString("ApellidoPaterno")%></td>
-                                    <td><%= rsUsuarios.getString("CorreoElectronico")%></td>
-                                    <td><%= rsUsuarios.getString("Perfil")%></td>
-                                    <td>
-                                        <button class="btn btn-warning btn-sm" onclick="editarUsuario(<%= rsUsuarios.getInt("IdUsuario")%>, '<%= rsUsuarios.getString("DNI")%>', '<%= rsUsuarios.getString("Nombres")%>', '<%= rsUsuarios.getString("ApellidoPaterno")%>', '<%= rsUsuarios.getString("ApellidoMaterno")%>', '<%= rsUsuarios.getString("CorreoElectronico")%>', '<%= rsUsuarios.getString("Perfil")%>')">Editar</button>
-                                        <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
-                                            <input type="hidden" name="idUsuario" value="<%= rsUsuarios.getInt("IdUsuario")%>">
-                                            <button type="submit" name="accion" value="eliminarUsuario" class="btn btn-danger btn-sm">Eliminar</button>
-                                        </form>
-                                    </td>
-                                </tr>
-            <% } %>
-                            </tbody>
-                        </table>
-                    `;
-                            } else if (tipo === 'perfiles') {
-                                contenido = `
-                        <h5>Gestión de Perfiles</h5>
-                        <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#perfilModal">
-                            Nuevo Perfil
-                        </button>
-                        <h5 class="mt-4">Perfiles Registrados</h5>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Descripción</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            <% while (rsPerfiles.next()) {%>
-                                <tr>
-                                    <td><%= rsPerfiles.getString("Nombre")%></td>
-                                    <td><%= rsPerfiles.getString("Descripcion")%></td>
-                                    <td>
-                                        <button class="btn btn-warning btn-sm" onclick="editarPerfil(<%= rsPerfiles.getInt("IdPerfil")%>, '<%= rsPerfiles.getString("Nombre")%>', '<%= rsPerfiles.getString("Descripcion")%>')">Editar</button>
-                                        <form action="MantenimientoServlet" method="post" class="d-inline">
-                                            <input type="hidden" name="idPerfil" value="<%= rsPerfiles.getInt("IdPerfil")%>">
-                                            <button type="submit" name="accion" value="eliminarPerfil" class="btn btn-danger btn-sm">Eliminar</button>
-                                        </form>
-                                    </td>
-                                </tr>
-            <% } %>
-                            </tbody>
-                        </table>
-                    `;
-                            } else if (tipo === 'grados') {
-                                contenido = `
+                            
+                            switch (tipo) {
+                                case 'usuarios':
+                                    observarTabla('tablaUsuarios', 'seccionCRUD', 10, 'paginacionUsuarios');cer
+                                    contenido = `
+                                        <h5>Gestión de Usuarios</h5>
+                                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#usuarioModal">
+                                            Nuevo Usuario
+                                        </button>
+                                        <h5 class="mt-4">Usuarios Registrados</h5>
+                                        <table id="tablaUsuarios" class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>DNI</th>
+                                                    <th>Nombre Completo</th>
+                                                    <th>Correo Electrónico</th>
+                                                    <th>Perfil</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                        <% while (rsUsuarios.next()) {%>
+                                                <tr>
+                                                    <td><%= rsUsuarios.getString("DNI")%></td>
+                                                    <td><%= rsUsuarios.getString("Nombres")%> <%= rsUsuarios.getString("ApellidoPaterno")%></td>
+                                                    <td><%= rsUsuarios.getString("CorreoElectronico")%></td>
+                                                    <td><%= rsUsuarios.getString("Perfil")%></td>
+                                                    <td>
+                                                        <button class="btn btn-warning btn-sm" onclick="editarUsuario(<%= rsUsuarios.getInt("IdUsuario")%>, '<%= rsUsuarios.getString("DNI")%>', '<%= rsUsuarios.getString("Nombres")%>', '<%= rsUsuarios.getString("ApellidoPaterno")%>', '<%= rsUsuarios.getString("ApellidoMaterno")%>', '<%= rsUsuarios.getString("CorreoElectronico")%>', '<%= rsUsuarios.getString("Perfil")%>')">Editar</button>
+                                                        <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                                            <input type="hidden" name="idUsuario" value="<%= rsUsuarios.getInt("IdUsuario")%>">
+                                                            <button type="submit" name="accion" value="eliminarUsuario" class="btn btn-danger btn-sm">Eliminar</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                        <% } %>
+                                            </tbody>
+                                        </table>
+                                        
+                                    <div id="paginacionUsuarios" class="d-flex justify-content-center align-items-center mt-3">
+                                        <nav aria-label="Page navigation">
+                                            <ul class="pagination">
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                                                </li>
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="#">1</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="#">2</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="#">3</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="#">Siguiente</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    `;
+                                    break;
+case 'perfiles':
+                                            contenido = `
+                               <h5>Gestión de Perfiles</h5>
+                               <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#perfilModal">
+                                   Nuevo Perfil
+                               </button>
+                               <h5 class="mt-4">Perfiles Registrados</h5>
+                               <table class="table table-bordered">
+                                   <thead>
+                                       <tr>
+                                           <th>Nombre</th>
+                                           <th>Descripción</th>
+                                           <th>Acciones</th>
+                                       </tr>
+                                   </thead>
+                                   <tbody>
+                               <% while (rsPerfiles.next()) {%>
+                                       <tr>
+                                           <td><%= rsPerfiles.getString("Nombre")%></td>
+                                           <td><%= rsPerfiles.getString("Descripcion")%></td>
+                                           <td>
+                                               <button class="btn btn-warning btn-sm" onclick="editarPerfil(<%= rsPerfiles.getInt("IdPerfil")%>, '<%= rsPerfiles.getString("Nombre")%>', '<%= rsPerfiles.getString("Descripcion")%>')">Editar</button>
+                                               <form action="MantenimientoServlet" method="post" class="d-inline">
+                                                   <input type="hidden" name="idPerfil" value="<%= rsPerfiles.getInt("IdPerfil")%>">
+                                                   <button type="submit" name="accion" value="eliminarPerfil" class="btn btn-danger btn-sm">Eliminar</button>
+                                               </form>
+                                           </td>
+                                       </tr>
+                               <% } %>
+                                   </tbody>
+                               </table>
+                           `;
+                           break;
+                    
+                    case 'grados':
+                            contenido = `
                         <h5>Gestión de Grado Académico</h5>
                         <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#gradoModal">
                             Nuevo Grado
@@ -1072,8 +1098,10 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                             </tbody>
                         </table>
                     `;
-                            } else if (tipo === 'categorias') {
-                                contenido = `
+                    break;
+                    
+case 'categorias':
+        contenido = `
             <h5>Gestión de Categorías</h5>
             <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#categoriaModal">Nueva Categoría</button>
             <h5 class="mt-4">Categorías Registradas</h5>
@@ -1100,8 +1128,11 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 </tbody>
             </table>
         `;
-                            } else if (tipo === 'duraciones') {
-                                contenido = `
+            break;
+
+case 'duraciones':
+    
+                    contenido = `
             <h5>Gestión de Duraciones</h5>
             <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#duracionModal">Nueva Duración</button>
             <h5 class="mt-4">Duraciones Registradas</h5>
@@ -1128,8 +1159,10 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 </tbody>
             </table>
         `;
-                            } else if (tipo === 'idiomas') {
-                                contenido = `
+        break;
+
+case 'idiomas':
+    contenido = `
             <h5>Gestión de Idiomas</h5>
             <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#idiomaModal">Nuevo Idioma</button>
             <h5 class="mt-4">Idiomas Registradas</h5>
@@ -1156,8 +1189,10 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 </tbody>
             </table>
         `;
-                            } else if (tipo === 'rangos') {
-                                contenido = `
+    break;
+    
+    case 'rangos':
+        contenido = `
             <h5>Gestión de Rango de Edades</h5>
             <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#rangoModal">Nuevo Rango</button>
             <h5 class="mt-4">Rango de Edades Registradas</h5>
@@ -1184,8 +1219,10 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 </tbody>
             </table>
         `;
-                            } else if (tipo === 'cursos') {
-                                contenido = `
+    break;
+    
+    case 'cursos':
+        contenido = `
             <h5>Gestión Cursos</h5>
             <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#cursosModal">Registrar nuevo curso</button>
             <h5 class="mt-4">Cursos Registrados</h5>
@@ -1244,9 +1281,9 @@ ResultSet rsSesiones = psSesiones.executeQuery();
     </table>
 
         `;
-                            } 
-                            
- else if (tipo === 'docentes') {
+    break;
+
+case 'docentes':
     contenido = `
 <h5>Gestión de Docentes</h5>
 <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#docenteModal">
@@ -1290,8 +1327,11 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                     psDocentes.close();%>
 </tbody>
 </table>
-    `;} else if (tipo === 'asignacion') {
-    contenido = `
+    `;
+    break;
+    
+    case 'asignacion':
+        contenido = `
         <h5>Asignación de Docentes a Cursos</h5>
         <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#asignacionModal">
             Asignar Docente a Curso
@@ -1332,8 +1372,10 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </tbody>
         </table>
     `;
-}else if (tipo === 'tiposesion') {
-    contenido = `
+    break;
+    
+    case 'tiposesion':
+           contenido = `
         <h5>Gestión de Tipos de Sesión</h5>
         <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#tipoSesionModal">
             Nuevo Tipo de Sesión
@@ -1364,8 +1406,10 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </tbody>
         </table>
     `;
-} else if (tipo === 'sesion') {
-    contenido = `
+    break;
+    
+    case 'sesion':
+        contenido = `
         <h5>Gestión de Sesiones</h5>
         <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#sesionModal">
             Nueva Sesión
@@ -1406,7 +1450,9 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </tbody>
         </table>
     `;
-}  else if (tipo === 'estadosAsistencia') {
+    break;
+
+case 'estadosAsistencia':
     contenido = `
         <h5>Gestión de Estados de Asistencia</h5>
         <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#estadoAsistenciaModal">
@@ -1448,7 +1494,9 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </tbody>
         </table>
     `;
-} else if (tipo === 'redesSociales') {
+    break;
+
+case 'redesSociales':
     contenido = `
         <h5>Gestión de Redes Sociales</h5>
         <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#redesSocialesModal">
@@ -1480,8 +1528,10 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </tbody>
         </table>
     `;
-} else if (tipo === 'alumnos') { 
-    contenido = `
+    break;
+    
+    case 'alumnos':
+        contenido = `
     <h5>Gestión de Alumnos</h5>
     <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#alumnoModal">Nuevo Alumno</button>
     <h5 class="mt-4">Alumnos Registrados</h5>
@@ -1520,7 +1570,9 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         </tbody>
     </table>
     `;
-} else if (tipo === 'matriculas') {
+    break;
+    
+case 'matriculas':
     contenido = `
     <h5>Gestión de Matrículas</h5>
     <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#matriculaModal">Nueva Matrícula</button>
@@ -1552,14 +1604,14 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         </tbody>
     </table>
     `;
-} 
+    break;
+                                    
+}
 
 
-
-
-
-                            seccionCRUD.innerHTML = contenido;
-                            seccionCRUD.style.display = 'block';
+    seccionCRUD.innerHTML = contenido;
+    seccionCRUD.style.display = 'block';
+    
  }
 
                         function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, apellidoMaterno, correo, perfil) {
@@ -1925,5 +1977,6 @@ var matriculaModal = document.getElementById('matriculaModal');
 
             
         </script>
+        <script src="js/TablaPaginada.js"></script>
     </body>
 </html>
