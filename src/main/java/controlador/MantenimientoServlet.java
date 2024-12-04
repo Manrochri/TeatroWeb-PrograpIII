@@ -818,84 +818,95 @@ public class MantenimientoServlet extends HttpServlet {
                     
                     // Alumnos y Curso Alumnos
                     case "registrarMatricula": {
-                        String dni = request.getParameter("dni");
-                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
-                        String consulta = "INSERT INTO Matriculas (DNI, IdCurso, EstadoRegistro) VALUES (?, ?, 1)";
-                        ps = con.prepareStatement(consulta);
-                        ps.setString(1, dni);
-                        ps.setInt(2, idCurso);
-                        ps.executeUpdate();
-                        response.sendRedirect("mantenimiento.jsp?success=matriculaRegistrada");
+                        try {
+                            int idAlumno = Integer.parseInt(request.getParameter("idAlumno"));
+                            int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+                            String fechaMatricula = request.getParameter("fechaMatricula");
+
+                            String consulta = "INSERT INTO Matriculas (IdAlumno, IdCurso, FechaMatricula, EstadoRegistro) VALUES (?, ?, ?, 1)";
+                            ps = con.prepareStatement(consulta);
+                            ps.setInt(1, idAlumno);
+                            ps.setInt(2, idCurso);
+                            ps.setDate(3, java.sql.Date.valueOf(fechaMatricula));
+                            ps.executeUpdate();
+
+                            response.sendRedirect("mantenimiento.jsp?success=matriculaRegistrada");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("mantenimiento.jsp?error=matriculaNoRegistrada");
+                        }
                         break;
-                    }
+                            }
+
                     case "editarMatricula": {
-                        int idMatricula = Integer.parseInt(request.getParameter("idMatricula"));
-                        String dni = request.getParameter("dni");
-                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
-                        String consulta = "UPDATE Matriculas SET DNI=?, IdCurso=? WHERE IdMatricula=?";
-                        ps = con.prepareStatement(consulta);
-                        ps.setString(1, dni);
-                        ps.setInt(2, idCurso);
-                        ps.setInt(3, idMatricula);
-                        ps.executeUpdate();
-                        response.sendRedirect("mantenimiento.jsp?success=matriculaEditada");
-                        break;
-                    }
+                            try {
+                                int idMatricula = Integer.parseInt(request.getParameter("idMatricula"));
+                                int idAlumno = Integer.parseInt(request.getParameter("idAlumno"));
+                                int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+                                String fechaMatricula = request.getParameter("fechaMatricula");
+
+                                String consulta = "UPDATE Matriculas SET IdAlumno=?, IdCurso=?, FechaMatricula=? WHERE IdMatricula=?";
+                                ps = con.prepareStatement(consulta);
+                                ps.setInt(1, idAlumno);
+                                ps.setInt(2, idCurso);
+                                ps.setDate(3, java.sql.Date.valueOf(fechaMatricula));
+                                ps.setInt(4, idMatricula);
+                                ps.executeUpdate();
+
+                                response.sendRedirect("mantenimiento.jsp?success=matriculaEditada");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                response.sendRedirect("mantenimiento.jsp?error=matriculaNoEditada");
+                            }
+                            break;
+                            }
                     case "eliminarMatricula": {
-                        int idMatricula = Integer.parseInt(request.getParameter("idMatricula"));
-                        String consulta = "DELETE FROM Matriculas WHERE IdMatricula=?";
-                        ps = con.prepareStatement(consulta);
-                        ps.setInt(1, idMatricula);
-                        ps.executeUpdate();
-                        response.sendRedirect("mantenimiento.jsp?success=matriculaEliminada");
+                        try {
+                            int idMatricula = Integer.parseInt(request.getParameter("idMatricula"));
+
+                            String consulta = "UPDATE Matriculas SET EstadoRegistro=0 WHERE IdMatricula=?";
+                            ps = con.prepareStatement(consulta);
+                            ps.setInt(1, idMatricula);
+                            ps.executeUpdate();
+
+                            response.sendRedirect("mantenimiento.jsp?success=matriculaEliminada");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("mantenimiento.jsp?error=matriculaNoEliminada");
+                        }
                         break;
                     }
                     
-                    // Se eliminarías strings redundantes con tabla usuario
                     case "registrarAlumno": {
-                        String dni = request.getParameter("dni");
-                        String nombres = request.getParameter("nombres");
-                        String apellidoPaterno = request.getParameter("apellidoPaterno");
-                        String apellidoMaterno = request.getParameter("apellidoMaterno");
-                        String correoElectronico = request.getParameter("correoElectronico");
-                        String celular = request.getParameter("celular");
                         int idUsuario = Integer.parseInt(request.getParameter("idUsuario")); // Captura el IdUsuario
-                        
-                        
-                        String consulta = "INSERT INTO Alumno (DNI, Nombres, ApellidoPaterno, ApellidoMaterno, CorreoElectronico, Celular, IdUsuario) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        int idIdioma = Integer.parseInt(request.getParameter("idIdioma")); // Captura el IdIdioma
+
+                        String consulta = "INSERT INTO Alumno (IdUsuario, IdIdioma) VALUES (?, ?)";
                         ps = con.prepareStatement(consulta);
-                        ps.setString(1, dni);
-                        ps.setString(2, nombres);
-                        ps.setString(3, apellidoPaterno);
-                        ps.setString(4, apellidoMaterno);
-                        ps.setString(5, correoElectronico);
-                        ps.setString(6, celular);
-             
+                        ps.setInt(1, idUsuario);
+                        ps.setInt(2, idIdioma);
+
                         ps.executeUpdate();
                         response.sendRedirect("mantenimiento.jsp?success=alumnoRegistrado");
                         break;
                     }
+                    
                     case "editarAlumno": {
                         int idAlumno = Integer.parseInt(request.getParameter("idAlumno"));
-                        String dni = request.getParameter("dni");
-                        String nombres = request.getParameter("nombres");
-                        String apellidoPaterno = request.getParameter("apellidoPaterno");
-                        String apellidoMaterno = request.getParameter("apellidoMaterno");
-                        String correoElectronico = request.getParameter("correoElectronico");
-                        String celular = request.getParameter("celular");
-                        String consulta = "UPDATE Alumno SET DNI=?, Nombres=?, ApellidoPaterno=?, ApellidoMaterno=?, CorreoElectronico=?, Celular=? WHERE IdAlumno=?";
+                        int idUsuario = Integer.parseInt(request.getParameter("idUsuario")); // Captura el IdUsuario
+                        int idIdioma = Integer.parseInt(request.getParameter("idIdioma")); // Captura el IdIdioma
+
+                        String consulta = "UPDATE Alumno SET IdUsuario=?, IdIdioma=? WHERE IdAlumno=?";
                         ps = con.prepareStatement(consulta);
-                        ps.setString(1, dni);
-                        ps.setString(2, nombres);
-                        ps.setString(3, apellidoPaterno);
-                        ps.setString(4, apellidoMaterno);
-                        ps.setString(5, correoElectronico);
-                        ps.setString(6, celular);
-                        ps.setInt(7, idAlumno);
+                        ps.setInt(1, idUsuario);
+                        ps.setInt(2, idIdioma);
+                        ps.setInt(3, idAlumno);
+
                         ps.executeUpdate();
                         response.sendRedirect("mantenimiento.jsp?success=alumnoEditado");
                         break;
                     }
+
                     case "eliminarAlumno": {
                         int idAlumno = Integer.parseInt(request.getParameter("idAlumno"));
                         String consulta = "DELETE FROM Alumno WHERE IdAlumno=?";
@@ -905,6 +916,9 @@ public class MantenimientoServlet extends HttpServlet {
                         response.sendRedirect("mantenimiento.jsp?success=alumnoEliminado");
                         break;
                     }
+
+                    
+                        
 
                
                     default:

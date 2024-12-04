@@ -110,7 +110,7 @@ function observarTabla(tablaId, contenedorId, itemsPorPagina = 5, paginacionId =
 document.addEventListener('DOMContentLoaded', () => {
     // Observar tabla de usuarios
     console.log("Numeración de tabla cargado");
-        observarTabla('tablaUsuarios', 'seccionCRUD', 10, 'paginacionUsuarios');
+
 
 
     // Ejemplo: Observar otra tabla (si la tienes)

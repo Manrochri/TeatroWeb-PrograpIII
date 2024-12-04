@@ -92,11 +92,14 @@ ResultSet rsSesiones = psSesiones.executeQuery();
     ResultSet rsRedes = psRedes.executeQuery();
     
 // Obtener alumnos
-    PreparedStatement psAlumnos = con.prepareStatement("SELECT IdAlumno, IdUsuario, IdIdioma FROM Alumno");
-        ResultSet rsAlumnos = psAlumnos.executeQuery();
-// Obtener matriculas
-    PreparedStatement psMatriculas = con.prepareStatement("SELECT IdMatricula, IdAlumno, IdCurso, FechaMatricula FROM Matriculas WHERE EstadoRegistro = 1");
-    ResultSet rsMatriculas = psMatriculas.executeQuery();
+PreparedStatement psAlumnos = con.prepareStatement(
+    "SELECT d.IdAlumno, u.Nombres AS NombreAlumno, g.Nombre AS IdiomaCurso, d.IdUsuario, d.IdIdioma " +
+    "FROM Alumno d " +
+    "JOIN Usuario u ON d.IdUsuario = u.IdUsuario " +
+    "JOIN IdiomaCurso g ON d.IdIdioma = g.IdIdioma"
+);
+ResultSet rsAlumnos = psAlumnos.executeQuery();
+
 
 %>
 
@@ -208,6 +211,8 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         <title>Mantenimiento de Usuarios, Perfiles y Grados Académicos</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="styles/styles.css">
+         <!-- // JS de validar fechas  -->
+                        <script src="js/validacionFechas.js"></script>
     </head>
     <body>
         
@@ -805,8 +810,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                     </div>
                     <div class="mb-3">
                         <label for="fechaSesion" class="form-label">Fecha de la Sesión</label>
-                        <!-- // JS de validar fechas  -->
-                        <script src="js/validacionFechas.js"></script>
+                       
                         <input type="date" class="form-control" id="fechaSesion" name="fechaSesion" required>
                     </div>
                     <div class="mb-3">
@@ -886,7 +890,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
 </div>
 
 <!-- MODAL Matrículas -->
-<div class="desvanecimiento modal" id="matriculaModal" tabindex="-1" aria-labelledby="matriculaModalLabel" aria-hidden="true">
+<div class="modal fade" id="matriculaModal" tabindex="-1" aria-labelledby="matriculaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -897,17 +901,60 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 <form action="MantenimientoServlet" method="post" id="formMatricula">
                     <input type="hidden" name="idMatricula" id="idMatricula">
                     <div class="mb-3">
-                        <label for="idAlumno" class="form-label">ID del Alumno</label>
-                        <input type="number" class="form-control" id="idAlumno" name="idAlumno" required>
+                        <label for="idAlumno" class="form-label">Seleccionar Alumno</label>
+                        <select class="form-select" id="idAlumno" name="idAlumno" required>
+                            <option value="" disabled selected>Seleccionar Alumno</option>
+                            <% 
+                                try {
+                                    PreparedStatement psAlumno = con.prepareStatement(
+                                        "SELECT a.IdAlumno, CONCAT(u.Nombres, ' ', u.ApellidoPaterno, ' ', u.ApellidoMaterno) AS AlumnoNombre " +
+                                        "FROM Alumno a " +
+                                        "JOIN Usuario u ON a.IdUsuario = u.IdUsuario " +
+                                        "WHERE u.EstadoRegistro = 1"
+                                    );
+                                    ResultSet rsAlumno = psAlumno.executeQuery();
+                                    while (rsAlumno.next()) {
+                            %>
+                            <option value="<%= rsAlumno.getInt("IdAlumno") %>"><%= rsAlumno.getString("AlumnoNombre") %></option>
+                            <% 
+                                    }
+                                    rsAlumno.close();
+                                    psAlumno.close();
+                                } catch (Exception e) {
+                                    out.println("<option value='' disabled>Error al cargar alumnos: " + e.getMessage() + "</option>");
+                                }
+                            %>
+                        </select>
+
                     </div>
+
                     <div class="mb-3">
-                        <label for="idCurso" class="form-label">ID del Curso</label>
-                        <input type="number" class="form-control" id="idCurso" name="idCurso" required>
+                        <label for="idCurso" class="form-label">Nombre del Curso</label>
+                        <select class="form-select" id="idCurso" name="idCurso" required>
+                            <option value="" disabled selected>Seleccionar Curso</option>
+                            <% 
+                                try {
+                                    PreparedStatement psCurso = con.prepareStatement("SELECT IdCurso, Nombre FROM curso WHERE EstadoRegistro = 1");
+                                    ResultSet rsCurso = psCurso.executeQuery();
+                                    while (rsCurso.next()) {
+                            %>
+                            <option value="<%= rsCurso.getInt("IdCurso") %>"><%= rsCurso.getString("Nombre") %></option>
+                            <% 
+                                    }
+                                    rsCurso.close();
+                                    psCurso.close();
+                                } catch (Exception e) {
+                                    out.println("<option value='' disabled>Error al cargar cursos</option>");
+                                }
+                            %>
+                        </select>
                     </div>
+
                     <div class="mb-3">
                         <label for="fechaMatricula" class="form-label">Fecha de Matrícula</label>
                         <input type="date" class="form-control" id="fechaMatricula" name="fechaMatricula" required>
                     </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="submit" name="accion" value="registrarMatricula" class="btn btn-primary">Guardar Matrícula</button>
@@ -917,6 +964,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         </div>
     </div>
 </div>
+
 <!-- MODAL Alumnos -->
 <div class="desvanecimiento modal" id="alumnoModal" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -929,12 +977,43 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 <form action="MantenimientoServlet" method="post" id="formAlumno">
                     <input type="hidden" name="idAlumno" id="idAlumno">
                     <div class="mb-3">
-                        <label for="idUsuario" class="form-label">Id Usuario</label>
-                        <input type="text" class="form-control" id="idUsuario" name="idUsuario" required>
+                        <label for="idUsuario" class="form-label">Usuario</label>
+                        <select class="form-select" id="idUsuario" name="idUsuario" required>
+<option value="" disabled selected>Seleccionar Usuario</option>
+    <% 
+        PreparedStatement psUsuarios3 = con.prepareStatement(
+            "SELECT u.IdUsuario, CONCAT(u.DNI, ' - ', u.Nombres, ' ', u.ApellidoPaterno) AS NombreCompleto " +
+            "FROM Usuario u " +
+            "JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario " +
+            "JOIN Perfiles p ON up.IdPerfil = p.IdPerfil "
+        );
+        ResultSet rsUsuarios3 = psUsuarios3.executeQuery();
+        while (rsUsuarios3.next()) {
+    %>
+        <option value="<%= rsUsuarios3.getInt("IdUsuario") %>">
+            <%= rsUsuarios3.getString("NombreCompleto") %>
+        </option>
+    <% 
+        } 
+        rsUsuarios3.close(); 
+        psUsuarios3.close(); 
+    %>
+</select>
+
                     </div>
                     <div class="mb-3">
-                        <label for="idIdioma" class="form-label">Id Idioma</label>
-                        <input type="text" class="form-control" id="idIdioma" name="idIdioma" required>
+                        <label for="idIdioma" class="form-label">Seleccionar Idioma</label>
+                        <select class="form-select" id="idIdioma" name="idIdioma" required>
+<option value="" disabled selected>Seleccionar Idioma</option>
+                            <% 
+                                PreparedStatement psIdiomas2 = con.prepareStatement("SELECT IdIdioma, Nombre FROM IdiomaCurso ");
+                                ResultSet rsIdiomas2 = psIdiomas2.executeQuery();
+                                while (rsIdiomas2.next()) {
+                            %>
+                            <option value="<%= rsIdiomas2.getInt("IdIdioma") %>"><%= rsIdiomas2.getString("Nombre") %></option>
+                            <% } rsIdiomas2.close(); psIdiomas2.close(); %>
+                        </select>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -1523,27 +1602,25 @@ case 'redesSociales':
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Id Usuario</th>
-            <th>Id Idioma</th>
-            <th>Fecha de Registro</th>
+            <th>Usuario</th>
+            <th>Idioma</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        <% while (rsAlumnos.next()) { %>
-            <tr>
-                <td><%= rsAlumnos.getInt("IdUsuario") %></td>
-                <td><%= rsAlumnos.getInt("IdIdioma") %></td>
-                <td><%= rsAlumnos.getTimestamp("FechaRegistro") %></td>
-                <td>
-                    <button class="btn btn-warning btn-sm" onclick="editarAlumno(<%= rsAlumnos.getInt("IdAlumno") %>, <%= rsAlumnos.getInt("IdUsuario") %>, <%= rsAlumnos.getInt("IdIdioma") %>)">Editar</button>
-                    <form action="MantenimientoServlet" method="post" class="d-inline">
-                        <input type="hidden" name="idAlumno" value="<%= rsAlumnos.getInt("IdAlumno") %>">
-                        <button type="submit" name="accion" value="eliminarAlumno" class="btn btn-danger btn-sm">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-        <% } %>
+    <% while (rsAlumnos.next()) { %>
+        <tr>
+            <td><%= rsAlumnos.getString("NombreAlumno") %></td>
+            <td><%= rsAlumnos.getString("IdiomaCurso") %></td>
+            <td>
+                <button class="btn btn-warning btn-sm" onclick="editarAlumno(<%= rsAlumnos.getInt("IdAlumno") %>, <%= rsAlumnos.getInt("IdUsuario") %>, <%= rsAlumnos.getInt("IdIdioma") %>, '<%= rsAlumnos.getString("NombreAlumno") %>')">Editar</button>
+                <form action="MantenimientoServlet" method="post" class="d-inline">
+                    <input type="hidden" name="idAlumno" value="<%= rsAlumnos.getInt("IdAlumno") %>">
+                    <button type="submit" name="accion" value="eliminarAlumno" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+    <% } %>
     </tbody>
 </table>
 `;
@@ -1551,36 +1628,54 @@ break;
     
 case 'matriculas':
     contenido = `
-    <h5>Gestión de Matrículas</h5>
-    <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#matriculaModal">Nueva Matrícula</button>
-    <h5 class="mt-4">Matrículas Registradas</h5>
-    <table class="table table-bordered">
-        <thead>
+<h5>Gestión de Matrículas</h5>
+<button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#matriculaModal">Nueva Matrícula</button>
+<h5 class="mt-4">Matrículas Registradas</h5>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre del Alumno</th>
+            <th>Curso</th>
+            <th>Fecha de Matrícula</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%
+    try {
+        PreparedStatement psMatriculas = con.prepareStatement(
+            "SELECT u.Nombres AS AlumnoNombre, " +
+            "       c.Nombre AS CursoNombre, " +
+            "       m.FechaMatricula, " +
+            "       m.IdMatricula " +
+            "FROM Matriculas m " +
+            "JOIN Alumno a ON m.IdAlumno = a.IdAlumno " +
+            "JOIN Usuario u ON a.IdUsuario = u.IdUsuario " +
+            "JOIN Curso c ON m.IdCurso = c.IdCurso " +
+            "WHERE m.EstadoRegistro = 1"
+        );
+        ResultSet rsMatriculas = psMatriculas.executeQuery();
+        while (rsMatriculas.next()) {
+%>
             <tr>
-                <th>ID del Alumno</th>
-                <th>ID del Curso</th>
-                <th>Fecha de Matrícula</th>
-                <th>Acciones</th>
+                <td><%= rsMatriculas.getString("AlumnoNombre") %></td>
+                <td><%= rsMatriculas.getString("CursoNombre") %></td>
+                <td><%= rsMatriculas.getDate("FechaMatricula") %></td>
+                <td><%= rsMatriculas.getInt("IdMatricula") %></td>
             </tr>
-        </thead>
-        <tbody>
-            <% while (rsMatriculas.next()) { %>
-                <tr>
-                    <td><%= rsMatriculas.getInt("IdAlumno") %></td>
-                    <td><%= rsMatriculas.getInt("IdCurso") %></td>
-                    <td><%= rsMatriculas.getTimestamp("FechaMatricula") %></td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarMatricula(<%= rsMatriculas.getInt("IdMatricula") %>, <%= rsMatriculas.getInt("IdAlumno") %>, <%= rsMatriculas.getInt("IdCurso") %>, '<%= rsMatriculas.getDate("FechaMatricula") %>')">Editar</button>
-                        <form action="MantenimientoServlet" method="post" class="d-inline">
-                            <input type="hidden" name="idMatricula" value="<%= rsMatriculas.getInt("IdMatricula") %>">
-                            <button type="submit" name="accion" value="eliminarMatricula" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            <% } %>
-        </tbody>
-    </table>
-    `;
+<%
+        }
+        rsMatriculas.close();
+        psMatriculas.close();
+    } catch (Exception e) {
+        out.println("Error al cargar matrículas: " + e.getMessage());
+    }
+%>
+
+    </tbody>
+</table>
+
+`;
     break;
                                     
 }
@@ -1952,7 +2047,46 @@ var matriculaModal = document.getElementById('matriculaModal');
             document.querySelector('#formAlumno button[type="submit"]').value = "registrarAlumno";
         });
 
-            
+        function editarMatricula(idMatricula, idCurso) {
+            document.getElementById('idMatricula').value = idMatricula;
+            document.getElementById('idCurso').value = idCurso;
+            document.querySelector('#formMatricula button[type="submit"]').innerText = "Actualizar Matrícula";
+            document.querySelector('#formMatricula button[type="submit"]').value = "editarMatricula";
+
+            var modal = new bootstrap.Modal(document.getElementById('matriculaModal'));
+            modal.show();
+        }
+
+var matriculaModal = document.getElementById('matriculaModal');
+        matriculaModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('formMatricula').reset();
+            document.getElementById('idMatricula').value = '';
+            document.querySelector('#formMatricula button[type="submit"]').innerText = "Guardar Matrícula";
+            document.querySelector('#formMatricula button[type="submit"]').value = "registrarMatricula";
+        });  
+        function editarAlumno(idAlumno, idUsuario, idIdioma) {
+    document.getElementById('idAlumno').value = idAlumno;
+    document.getElementById('idUsuario').value = idUsuario; // Actualizado
+    document.getElementById('idIdioma').value = idIdioma; // Actualizado
+
+    document.querySelector('#formAlumno button[type="submit"]').innerText = "Actualizar Alumno";
+    document.querySelector('#formAlumno button[type="submit"]').value = "editarAlumno";
+
+    var modal = new bootstrap.Modal(document.getElementById('alumnoModal'));
+    modal.show();
+}
+
+var alumnoModal = document.getElementById('alumnoModal');
+alumnoModal.addEventListener('hidden.bs.modal', function () {
+    document.getElementById('formAlumno').reset();
+    document.getElementById('idAlumno').value = '';
+    document.getElementById('idUsuario').value = ''; // Limpiar campo
+    document.getElementById('idIdioma').value = ''; // Limpiar campo
+    document.querySelector('#formAlumno button[type="submit"]').innerText = "Guardar Alumno";
+    document.querySelector('#formAlumno button[type="submit"]').value = "registrarAlumno";
+});
+        
+        
         </script>
         <script src="js/TablaPaginada.js"></script>
     </body>
