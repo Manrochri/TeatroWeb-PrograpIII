@@ -91,11 +91,11 @@ ResultSet rsSesiones = psSesiones.executeQuery();
     PreparedStatement psRedes = con.prepareStatement("SELECT IdRedesSociales, RedSocial FROM RedesSociales WHERE EstadoRegistro = 1 ");
     ResultSet rsRedes = psRedes.executeQuery();
     
- // Obtener alumnos
-    PreparedStatement psAlumnos = con.prepareStatement("SELECT IdAlumno, DNI, Nombres, ApellidoPaterno, ApellidoMaterno, CorreoElectronico, Celular, FechaRegistro FROM Alumno");
+// Obtener alumnos
+    PreparedStatement psAlumnos = con.prepareStatement("SELECT IdAlumno, IdUsuario, IdIdioma FROM Alumno");
         ResultSet rsAlumnos = psAlumnos.executeQuery();
 // Obtener matriculas
-    PreparedStatement psMatriculas = con.prepareStatement("SELECT IdMatricula, DNI, IdCurso, FechaMatricula FROM Matriculas WHERE EstadoRegistro = 1");
+    PreparedStatement psMatriculas = con.prepareStatement("SELECT IdMatricula, IdAlumno, IdCurso, FechaMatricula FROM Matriculas WHERE EstadoRegistro = 1");
     ResultSet rsMatriculas = psMatriculas.executeQuery();
 
 %>
@@ -897,12 +897,16 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 <form action="MantenimientoServlet" method="post" id="formMatricula">
                     <input type="hidden" name="idMatricula" id="idMatricula">
                     <div class="mb-3">
-                        <label for="dni" class="form-label">DNI del Estudiante</label>
-                        <input type="text" class="form-control" id="dni" name="dni" required>
+                        <label for="idAlumno" class="form-label">ID del Alumno</label>
+                        <input type="number" class="form-control" id="idAlumno" name="idAlumno" required>
                     </div>
                     <div class="mb-3">
                         <label for="idCurso" class="form-label">ID del Curso</label>
                         <input type="number" class="form-control" id="idCurso" name="idCurso" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaMatricula" class="form-label">Fecha de Matrícula</label>
+                        <input type="date" class="form-control" id="fechaMatricula" name="fechaMatricula" required>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -912,8 +916,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
             </div>
         </div>
     </div>
-</div>                  
- 
+</div>
 <!-- MODAL Alumnos -->
 <div class="desvanecimiento modal" id="alumnoModal" tabindex="-1" aria-labelledby="alumnoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -926,28 +929,12 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                 <form action="MantenimientoServlet" method="post" id="formAlumno">
                     <input type="hidden" name="idAlumno" id="idAlumno">
                     <div class="mb-3">
-                        <label for="dni" class="form-label">DNI</label>
-                        <input type="text" class="form-control" id="dni" name="dni" required>
+                        <label for="idUsuario" class="form-label">Id Usuario</label>
+                        <input type="text" class="form-control" id="idUsuario" name="idUsuario" required>
                     </div>
                     <div class="mb-3">
-                        <label for="nombres" class="form-label">Nombres</label>
-                        <input type="text" class="form-control" id="nombres" name="nombres" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
-                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
-                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno">
-                    </div>
-                    <div class="mb-3">
-                        <label for="correoElectronico" class="form-label">Correo Electrónico</label>
-                        <input type="email" class="form-control" id="correoElectronico" name="correoElectronico" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="celular" class="form-label">Celular</label>
-                        <input type="text" class="form-control" id="celular" name="celular">
+                        <label for="idIdioma" class="form-label">Id Idioma</label>
+                        <input type="text" class="form-control" id="idIdioma" name="idIdioma" required>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -958,8 +945,6 @@ ResultSet rsSesiones = psSesiones.executeQuery();
         </div>
     </div>
 </div>
-
-
 
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -973,7 +958,7 @@ ResultSet rsSesiones = psSesiones.executeQuery();
                             
                             switch (tipo) {
                                 case 'usuarios':
-                                    observarTabla('tablaUsuarios', 'seccionCRUD', 10, 'paginacionUsuarios');cer
+                                    observarTabla('tablaUsuarios', 'seccionCRUD', 10, 'paginacionUsuarios');
                                     contenido = `
                                         <h5>Gestión de Usuarios</h5>
                                         <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#usuarioModal">
@@ -1532,45 +1517,37 @@ case 'redesSociales':
     
     case 'alumnos':
         contenido = `
-    <h5>Gestión de Alumnos</h5>
-    <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#alumnoModal">Nuevo Alumno</button>
-    <h5 class="mt-4">Alumnos Registrados</h5>
-    <table class="table table-bordered">
-        <thead>
+<h5>Gestión de Alumnos</h5>
+<button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#alumnoModal">Nuevo Alumno</button>
+<h5 class="mt-4">Alumnos Registrados</h5>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Id Usuario</th>
+            <th>Id Idioma</th>
+            <th>Fecha de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% while (rsAlumnos.next()) { %>
             <tr>
-                <th>DNI</th>
-                <th>Nombres</th>
-                <th>Apellido Paterno</th>
-                <th>Apellido Materno</th>
-                <th>Correo Electrónico</th>
-                <th>Celular</th>
-                <th>Fecha de Registro</th>
-                <th>Acciones</th>
+                <td><%= rsAlumnos.getInt("IdUsuario") %></td>
+                <td><%= rsAlumnos.getInt("IdIdioma") %></td>
+                <td><%= rsAlumnos.getTimestamp("FechaRegistro") %></td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="editarAlumno(<%= rsAlumnos.getInt("IdAlumno") %>, <%= rsAlumnos.getInt("IdUsuario") %>, <%= rsAlumnos.getInt("IdIdioma") %>)">Editar</button>
+                    <form action="MantenimientoServlet" method="post" class="d-inline">
+                        <input type="hidden" name="idAlumno" value="<%= rsAlumnos.getInt("IdAlumno") %>">
+                        <button type="submit" name="accion" value="eliminarAlumno" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            <% while (rsAlumnos.next()) { %>
-                <tr>
-                    <td><%= rsAlumnos.getString("DNI") %></td>
-                    <td><%= rsAlumnos.getString("Nombres") %></td>
-                    <td><%= rsAlumnos.getString("ApellidoPaterno") %></td>
-                    <td><%= rsAlumnos.getString("ApellidoMaterno") %></td>
-                    <td><%= rsAlumnos.getString("CorreoElectronico") %></td>
-                    <td><%= rsAlumnos.getString("Celular") %></td>
-                    <td><%= rsAlumnos.getTimestamp("FechaRegistro") %></td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarAlumno(<%= rsAlumnos.getInt("IdAlumno") %>, '<%= rsAlumnos.getString("DNI") %>', '<%= rsAlumnos.getString("Nombres") %>', '<%= rsAlumnos.getString("ApellidoPaterno") %>', '<%= rsAlumnos.getString("ApellidoMaterno") %>', '<%= rsAlumnos.getString("CorreoElectronico") %>', '<%= rsAlumnos.getString("Celular") %>')">Editar</button>
-                        <form action="MantenimientoServlet" method="post" class="d-inline">
-                            <input type="hidden" name="idAlumno" value="<%= rsAlumnos.getInt("IdAlumno") %>">
-                            <button type="submit" name="accion" value="eliminarAlumno" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            <% } %>
-        </tbody>
-    </table>
-    `;
-    break;
+        <% } %>
+    </tbody>
+</table>
+`;
+break;
     
 case 'matriculas':
     contenido = `
@@ -1580,7 +1557,7 @@ case 'matriculas':
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>DNI</th>
+                <th>ID del Alumno</th>
                 <th>ID del Curso</th>
                 <th>Fecha de Matrícula</th>
                 <th>Acciones</th>
@@ -1589,11 +1566,11 @@ case 'matriculas':
         <tbody>
             <% while (rsMatriculas.next()) { %>
                 <tr>
-                    <td><%= rsMatriculas.getString("DNI") %></td>
+                    <td><%= rsMatriculas.getInt("IdAlumno") %></td>
                     <td><%= rsMatriculas.getInt("IdCurso") %></td>
                     <td><%= rsMatriculas.getTimestamp("FechaMatricula") %></td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarMatricula(<%= rsMatriculas.getInt("IdMatricula") %>, '<%= rsMatriculas.getString("DNI") %>', <%= rsMatriculas.getInt("IdCurso") %>)">Editar</button>
+                        <button class="btn btn-warning btn-sm" onclick="editarMatricula(<%= rsMatriculas.getInt("IdMatricula") %>, <%= rsMatriculas.getInt("IdAlumno") %>, <%= rsMatriculas.getInt("IdCurso") %>, '<%= rsMatriculas.getDate("FechaMatricula") %>')">Editar</button>
                         <form action="MantenimientoServlet" method="post" class="d-inline">
                             <input type="hidden" name="idMatricula" value="<%= rsMatriculas.getInt("IdMatricula") %>">
                             <button type="submit" name="accion" value="eliminarMatricula" class="btn btn-danger btn-sm">Eliminar</button>

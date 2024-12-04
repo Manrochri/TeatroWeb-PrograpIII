@@ -98,24 +98,6 @@ public class UsuarioDAO {
         return actualizado;
     }
 
-    // Método para verificar si un DNI ya existe
-    public boolean existeDni(String dni) {
-        String sql = "SELECT COUNT(*) FROM Usuario WHERE DNI = ?";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, dni);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     // Método para cerrar recursos de base de datos
     private void closeResources(ResultSet rs, PreparedStatement ps, Connection con) {
         try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }

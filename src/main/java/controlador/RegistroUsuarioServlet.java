@@ -89,16 +89,10 @@ public class RegistroUsuarioServlet extends HttpServlet {
             } else {
                 // **[MODIFICACIÓN 4]**: Enviar mensaje de error al request
                 
-                if (usuarioDAO.existeDni(dni)) {
-                    request.setAttribute("mensaje", "Este DNI ya está registrado. Inténtelo de nuevo.");
-                    request.setAttribute("tipo", "error");
-                    request.getRequestDispatcher("index.jsp").forward(request, response);
-                    return;
-                }
-                else {
+                
                 request.setAttribute("mensaje", "Error al registrar el usuario.");
                 request.setAttribute("tipo", "error");
-                }
+                
             }
 
             // **[MODIFICACIÓN 5]**: Redirigir a index.jsp para mostrar el mensaje en el modal
