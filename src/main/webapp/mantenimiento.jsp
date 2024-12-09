@@ -19,7 +19,20 @@
     // Obtener usuarios
     PreparedStatement psUsuarios = con.prepareStatement("SELECT u.IdUsuario, u.DNI, u.Nombres, u.ApellidoPaterno, u.ApellidoMaterno, u.CorreoElectronico, p.Nombre as Perfil FROM Usuario u JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario JOIN Perfiles p ON up.IdPerfil = p.IdPerfil WHERE u.EstadoRegistro = 1");
     ResultSet rsUsuarios = psUsuarios.executeQuery();
+    
+    
+    // Obtener paginado para Docente en su modal
+PreparedStatement psUsuarios2 = con.prepareStatement(
+    "SELECT u.IdUsuario, u.DNI, u.Nombres, u.ApellidoPaterno, u.ApellidoMaterno, u.CorreoElectronico, p.Nombre as Perfil " +
+    "FROM Usuario u " +
+    "JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario " +
+    "JOIN Perfiles p ON up.IdPerfil = p.IdPerfil " +
+    "WHERE u.EstadoRegistro = 1 " +
+    "ORDER BY u.Nombres ASC"
+);
+ResultSet rsUsuarios2 = psUsuarios2.executeQuery();
 
+    
     // Obtener perfiles
     PreparedStatement psPerfiles = con.prepareStatement("SELECT IdPerfil, Nombre, Descripcion FROM Perfiles WHERE EstadoRegistro = 1");
     ResultSet rsPerfiles = psPerfiles.executeQuery();
@@ -629,73 +642,108 @@ ResultSet rsAlumnos = psAlumnos.executeQuery();
             </div>
         </div>
 
-<!-- MODAL DOCENTES -->
+<!-- MODAL COMBINADO PARA DOCENTE Y BUSQUEDA DE USUARIOS -->
     <div class="modal fade" id="docenteModal" tabindex="-1" aria-labelledby="docenteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="docenteModalLabel">Gestionar Docente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="MantenimientoServlet" method="post" id="formDocente">
-                    <input type="hidden" name="idDocente" id="idDocente">
-                    <div class="mb-3" style="display:none;">
-                        <label for="nombres" class="form-label">Nombre del Docente</label>
-                        <input type="text" class="form-control" id="nombres" name="nombres">
-                    </div>
-                    <div class="mb-3">
-                        <label for="idUsuario" class="form-label">Usuario</label>
-                        <select class="form-select" id="idUsuario" name="idUsuario" required>
-    <option value="" disabled selected>Seleccionar Usuario</option>
-    <% 
-        PreparedStatement psUsuarios2 = con.prepareStatement(
-            "SELECT u.IdUsuario, CONCAT(u.DNI, ' - ', u.Nombres, ' ', u.ApellidoPaterno) AS NombreCompleto " +
-            "FROM Usuario u " +
-            "JOIN Usuario_Perfiles up ON u.IdUsuario = up.IdUsuario " +
-            "JOIN Perfiles p ON up.IdPerfil = p.IdPerfil " +
-            "WHERE u.EstadoRegistro = 1 AND p.Nombre = 'Docente'"
-        );
-        ResultSet rsUsuarios2 = psUsuarios2.executeQuery();
-        while (rsUsuarios2.next()) {
-    %>
-        <option value="<%= rsUsuarios2.getInt("IdUsuario") %>">
-            <%= rsUsuarios2.getString("NombreCompleto") %>
-        </option>
-    <% 
-        } 
-        rsUsuarios2.close(); 
-        psUsuarios2.close(); 
-    %>
-</select>
+          <div class="modal-header">
+            <h5 class="modal-title" id="docenteModalLabel">Gestionar Docente y Buscar Usuario</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Grid para organizar los dos modales dentro de una sola ventana -->
+            <div class="row">
 
+              <!-- Columna izquierda: Gestión de Docente -->
+              <div class="col-md-6">
+                <form action="MantenimientoServlet" method="post" id="formDocente">
+                  <!-- Campo oculto para el ID de usuario -->
+                  <input type="hidden" name="idUsuario" id="idUsuario" value="">
+
+                  <div class="mb-3">
+                    <label for="searchDocente" class="form-label">Usuario</label>
+                    <div class="input-group">
+                      <input type="text" id="searchDocente" class="form-control" placeholder="Buscar Usuario" readonly>
+                      <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#usuarioModal2">Buscar</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="idGradoAcademico" class="form-label">Grado Académico</label>
-                        <select class="form-select" id="idGradoAcademico" name="idGradoAcademico" required>
-                            <option value="" disabled selected>Seleccionar Grado Académico</option>
-                            <% 
-                                PreparedStatement psGrados2 = con.prepareStatement("SELECT IdGradoAcademico, Nombre FROM GradoAcademico WHERE EstadoRegistro = 1");
-                                ResultSet rsGrados2 = psGrados2.executeQuery();
-                                while (rsGrados2.next()) {
-                            %>
-                            <option value="<%= rsGrados2.getInt("IdGradoAcademico") %>"><%= rsGrados2.getString("Nombre") %></option>
-                            <% } rsGrados2.close(); psGrados2.close(); %>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" name="accion" value="registrarDocente" class="btn btn-primary">Guardar Docente</button>
-                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="idGradoAcademico" class="form-label">Grado Académico</label>
+                    <select class="form-select" id="idGradoAcademico" name="idGradoAcademico" required>
+                      <option value="" disabled selected>Seleccionar Grado Académico</option>
+                      <% 
+                        PreparedStatement psGrados2 = con.prepareStatement("SELECT IdGradoAcademico, Nombre FROM GradoAcademico WHERE EstadoRegistro = 1");
+                        ResultSet rsGrados2 = psGrados2.executeQuery();
+                        while (rsGrados2.next()) {
+                      %>
+                      <option value="<%= rsGrados2.getInt("IdGradoAcademico") %>"><%= rsGrados2.getString("Nombre") %></option>
+                      <% } 
+                        rsGrados2.close(); 
+                        psGrados2.close(); 
+                      %>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" name="accion" value="registrarDocente" class="btn btn-primary">Guardar Docente</button>
+                  </div>
                 </form>
-            </div>
-        </div>
-    </div>
-</div>
+              </div>
+
+              <!-- Columna derecha: Búsqueda de Usuarios -->
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="searchUsuario2" class="form-label">Buscar Usuario</label>
+                  <input type="text" id="searchUsuario2" class="form-control mb-3" placeholder="Ingrese nombre o DNI" onkeyup="filtrarUsuarios()">
+                </div>
+                <div class="table-responsive">
+                  <table id="tablaUsuarios2" class="table">
+                    <thead>
+                      <tr>
+                        <th>ID Usuario</th>
+                        <th>DNI</th>
+                        <th>Nombres</th>
+                        <th>Apellido Paterno</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="usuariosBody">
+                      <% while (rsUsuarios2.next()) { %>
+                      <tr>
+                        <td><%= rsUsuarios2.getInt("IdUsuario") %></td>
+                        <td><%= rsUsuarios2.getString("DNI") %></td>
+                        <td><%= rsUsuarios2.getString("Nombres") %></td>
+                        <td><%= rsUsuarios2.getString("ApellidoPaterno") %></td>
+                        <td>
+                          <button onclick="seleccionarUsuario(
+                              <%= rsUsuarios2.getInt("IdUsuario") %>, 
+                              '<%= rsUsuarios2.getString("DNI") %>', 
+                              '<%= rsUsuarios2.getString("Nombres") %>', 
+                              '<%= rsUsuarios2.getString("ApellidoPaterno") %>'
+                          )" class="btn btn-primary btn-sm">Seleccionar</button>
+                        </td>
+                      </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+                </div>
+                <div id="paginacionUsuarios2"></div>
+              </div>
+
+            </div> <!-- Fin del row -->
+          </div> <!-- Fin del modal-body -->
+        </div> <!-- Fin del modal-content -->
+      </div> <!-- Fin del modal-dialog -->
+    </div> <!-- Fin del modal -->
+
+
 
 <!-- MODAL ASIGNAR DOCENTE A CURSO -->
 <div class="modal fade" id="asignacionModal" tabindex="-1" aria-labelledby="asignacionModalLabel" aria-hidden="true">
@@ -2076,18 +2124,21 @@ var matriculaModal = document.getElementById('matriculaModal');
     modal.show();
 }
 
-var alumnoModal = document.getElementById('alumnoModal');
-alumnoModal.addEventListener('hidden.bs.modal', function () {
-    document.getElementById('formAlumno').reset();
-    document.getElementById('idAlumno').value = '';
-    document.getElementById('idUsuario').value = ''; // Limpiar campo
-    document.getElementById('idIdioma').value = ''; // Limpiar campo
-    document.querySelector('#formAlumno button[type="submit"]').innerText = "Guardar Alumno";
-    document.querySelector('#formAlumno button[type="submit"]').value = "registrarAlumno";
-});
+    var alumnoModal = document.getElementById('alumnoModal');
+    alumnoModal.addEventListener('hidden.bs.modal', function () {
+        document.getElementById('formAlumno').reset();
+        document.getElementById('idAlumno').value = '';
+        document.getElementById('idUsuario').value = ''; // Limpiar campo
+        document.getElementById('idIdioma').value = ''; // Limpiar campo
+        document.querySelector('#formAlumno button[type="submit"]').innerText = "Guardar Alumno";
+        document.querySelector('#formAlumno button[type="submit"]').value = "registrarAlumno";
+    });
         
         
         </script>
+        
         <script src="js/TablaPaginada.js"></script>
+        <script src="js/usuarios.js"></script>
+        
     </body>
 </html>
