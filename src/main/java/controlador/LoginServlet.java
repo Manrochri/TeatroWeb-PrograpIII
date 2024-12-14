@@ -61,7 +61,7 @@ public class LoginServlet extends HttpServlet {
                     session.setAttribute("perfil", perfil);
                     
                     // Redirigir según el perfil
-                    switch (perfil) {
+                    switch (perfil.toUpperCase()) {
                         case "ADMINISTRADOR":
                             response.sendRedirect("mantenimiento.jsp");
                             break;

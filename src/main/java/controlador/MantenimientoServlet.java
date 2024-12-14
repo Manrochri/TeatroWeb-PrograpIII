@@ -244,7 +244,7 @@ public class MantenimientoServlet extends HttpServlet {
 
                     case "eliminarCategoria": {
                         int idCategoria = Integer.parseInt(request.getParameter("idCategoria"));
-                        String query = "DELETE FROM CategoriaCurso WHERE IdCategoria=?";
+                        String query = "UPDATE CategoriaCurso SET EstadoRegistro=0 WHERE IdCategoria=?";
                         ps = con.prepareStatement(query);
                         ps.setInt(1, idCategoria);
                         ps.executeUpdate();
