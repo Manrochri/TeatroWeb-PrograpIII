@@ -1188,7 +1188,7 @@ case 'perfiles':
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    
                                     <th>Nombre</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -1196,7 +1196,7 @@ case 'perfiles':
                             <tbody>
             <% while (rsGrados.next()) {%>
                                 <tr>
-                                    <td><%= rsGrados.getInt("IdGradoAcademico")%></td>
+                                    
                                     <td><%= rsGrados.getString("Nombre")%></td>
                                     <td>
                                         <button class="btn btn-warning btn-sm" onclick="editarGrado(<%= rsGrados.getInt("IdGradoAcademico")%>, '<%= rsGrados.getString("Nombre")%>')">Editar</button>
@@ -1496,7 +1496,7 @@ case 'docentes':
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>ID</th>
+                  
                     <th>Tipo de Sesión</th>
                     <th>Acciones</th>
                 </tr>
@@ -1504,7 +1504,6 @@ case 'docentes':
             <tbody>
                 <% while (rsTiposSesion.next()) { %>
                 <tr>
-                    <td><%= rsTiposSesion.getInt("IdTipoSesion") %></td>
                     <td><%= rsTiposSesion.getString("TipoSesion") %></td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="editarTipoSesion(<%= rsTiposSesion.getInt("IdTipoSesion") %>, '<%= rsTiposSesion.getString("TipoSesion") %>')">Editar</button>
@@ -1618,7 +1617,6 @@ case 'redesSociales':
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Red Social</th>
                     <th>Acciones</th>
                 </tr>
@@ -1626,7 +1624,6 @@ case 'redesSociales':
             <tbody>
                 <% while (rsRedes.next()) { %>
                 <tr>
-                    <td><%= rsRedes.getInt("IdRedesSociales") %></td>
                     <td><%= rsRedes.getString("RedSocial") %></td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="editarRedSocial(<%= rsRedes.getInt("IdRedesSociales") %>, '<%= rsRedes.getString("RedSocial") %>')">Editar</button>
@@ -1653,6 +1650,7 @@ case 'redesSociales':
             <th>Usuario</th>
             <th>Idioma</th>
             <th>Acciones</th>
+            <th>Detalles</th>
         </tr>
     </thead>
     <tbody>
@@ -1666,6 +1664,11 @@ case 'redesSociales':
                     <input type="hidden" name="idAlumno" value="<%= rsAlumnos.getInt("IdAlumno") %>">
                     <button type="submit" name="accion" value="eliminarAlumno" class="btn btn-danger btn-sm">Eliminar</button>
                 </form>
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary btn-sm" onclick="verPerfilAlumno('<%= rsAlumnos.getInt("IdAlumno") %>')">
+                    Ver Perfil Alumno
+                </button>
             </td>
         </tr>
     <% } %>
@@ -2136,6 +2139,14 @@ var matriculaModal = document.getElementById('matriculaModal');
         
         
         </script>
+        
+        <script>
+            function verPerfilAlumno(idMatricula) {
+                var contextPath = '<%= request.getContextPath() %>';
+                window.open(contextPath + "/PerfilAlumnoServlet?idAlumno=" + idMatricula, 'PerfilAlumno', 
+                    'width=900,height=500,scrollbars=no');
+            }
+      </script>
         
         <script src="js/TablaPaginada.js"></script>
         <script src="js/usuarios.js"></script>
