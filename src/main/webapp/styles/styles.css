@@ -23,6 +23,7 @@
     padding-top: 0; /* Elimina el padding superior */
     padding-bottom: 0; 
     height: 100vh;
+
 }
 
 .toggle-icon {
@@ -31,6 +32,7 @@
      justify-content:space-between;
      align-self: center;
      padding-right: 10px;
+
    
 }
 
@@ -71,8 +73,25 @@
             background-color: #777;
             color:white
         }
+        
+/*Imágenes del curso en mantenimiento.jsp*/
+
+
+.imagen-curso {
+    width: 50px;
+    height: auto;
+    transition: transform 0.3s ease; /* Suaviza el aumento */
+}
+
+.imagen-curso:hover {
+    transform: scale(5); /* Duplica el tamaño al hacer hover */
+    z-index: 10; /* Asegura que la imagen sobresalga sobre otros elementos */
+}
+
 
 
 body {
     margin: 0; /* Elimina los márgenes por defecto del body */
 }
+
+

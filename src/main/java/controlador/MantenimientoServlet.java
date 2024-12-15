@@ -1,10 +1,10 @@
 package controlador;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +13,20 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import modelo.Conexion;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.FileWriter;
+import java.nio.file.Paths;
+import java.util.UUID;
+import org.apache.commons.io.FilenameUtils;
 
+
+
+
+
+
+@MultipartConfig
 @WebServlet("/MantenimientoServlet")
 public class MantenimientoServlet extends HttpServlet {
 
@@ -368,81 +381,193 @@ public class MantenimientoServlet extends HttpServlet {
                         break;
                     }
                     
-                    case "editarCurso":{
-                        // Lógica para editar un curso existente
-                        int idCurso = Integer.parseInt(request.getParameter("idCurso"));
-                        String nombreCurso = request.getParameter("nombreCurso");
-                        int capacidad = Integer.parseInt(request.getParameter("capacidad"));
-                        String fechaInicio = request.getParameter("fechaInicio");
-                        String fechaFin = request.getParameter("fechaFin");
-                        double precio = Double.parseDouble(request.getParameter("precio"));
-                        int categoria = Integer.parseInt(request.getParameter("categoria"));
-                        int duracion = Integer.parseInt(request.getParameter("duracion"));
-                        int idioma = Integer.parseInt(request.getParameter("idioma"));
-                        int rango = Integer.parseInt(request.getParameter("rango"));
-                        
-                        nombreCurso = nombreCurso.toUpperCase();
-                        
-
-                        String updateQuery = "UPDATE Curso SET Nombre = ?, Capacidad = ?, FechaInicio = ?, FechaFin = ?, Precio = ?, " +
-                                             "IdCategoria = ?, IdDuracion = ?, IdIdioma = ?, IdRango = ? WHERE IdCurso = ?";
-                        ps = con.prepareStatement(updateQuery);
-                        ps.setString(1, nombreCurso);
-                        ps.setInt(2, capacidad);
-                        ps.setString(3, fechaInicio);
-                        ps.setString(4, fechaFin);
-                        ps.setDouble(5, precio);
-                        ps.setInt(6, categoria);
-                        ps.setInt(7, duracion);
-                        ps.setInt(8, idioma);
-                        ps.setInt(9, rango);
-                        ps.setInt(10, idCurso);
-
-                        // Ejecutar la actualización
-                        int rowsUpdated = ps.executeUpdate();
-
-                        // Redireccionar dependiendo del resultado
-                        if (rowsUpdated > 0) {
-                            response.sendRedirect("mantenimiento.jsp?success=cursoEditado");
-                        } else {
-                            response.sendRedirect("mantenimiento.jsp?error=cursoNoEditado");
-                        }
-                        break;
-                }
                     
-             
                     case "registrarCurso": {
-                        // Obtener parámetros del formulario
-                        String nombreCurso = request.getParameter("nombreCurso");
-                        int capacidad = Integer.parseInt(request.getParameter("capacidad"));
-                        String fechaInicio = request.getParameter("fechaInicio");
-                        String fechaFin = request.getParameter("fechaFin");
-                        double precio = Double.parseDouble(request.getParameter("precio"));
-                        int idCategoria = Integer.parseInt(request.getParameter("categoria"));
-                        int idDuracion = Integer.parseInt(request.getParameter("duracion"));
-                        int idIdioma = Integer.parseInt(request.getParameter("idioma"));
-                        int idRango = Integer.parseInt(request.getParameter("rango"));
-                        
-                        nombreCurso = nombreCurso.toUpperCase();
-                      
-                        String query = "INSERT INTO Curso (Nombre, Capacidad, FechaRegistro, FechaInicio, FechaFin, Precio, IdCategoria, IdDuracion, IdIdioma, IdRango, EstadoRegistro) "
-                                     + "VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, 1)";
-                        ps = con.prepareStatement(query);
-                        ps.setString(1, nombreCurso);
-                        ps.setInt(2, capacidad);
-                        ps.setString(3, fechaInicio);
-                        ps.setString(4, fechaFin);
-                        ps.setDouble(5, precio);
-                        ps.setInt(6, idCategoria);
-                        ps.setInt(7, idDuracion);
-                        ps.setInt(8, idIdioma);
-                        ps.setInt(9, idRango);
+                 
+                        try {
+                            // Configurar el procesamiento de multipart
+                            String nombreCurso = "";
+                            int capacidad = 0;
+                            String fechaInicio = "";
+                            String fechaFin = "";
+                            double precio = 0.0;
+                            int idCategoria = 0;
+                            int idDuracion = 0;
+                            int idIdioma = 0;
+                            int idRango = 0;
+                            String imagenURL = null;
 
-                        // Ejecutar la inserción
-                        ps.executeUpdate();
-                        response.sendRedirect("mantenimiento.jsp?success=cursoRegistrado");
+                            // Obtener las partes del request
+                            for (Part part : request.getParts()) {
+                                if (part.getName().equals("imagenCurso") && part.getSize() > 0) {
+                                    // Procesar el archivo subido
+                                    String folderPath = "C:\\Users\\ASUS\\Documents\\Trabajos\\Programacion_aplicada_III\\TEATROWEB\\src\\main\\webapp\\images\\cursos";
+                                    System.out.println("Ruta calculada: " + folderPath);
+
+                                    File uploadDir = new File(folderPath);
+                                    if (!uploadDir.exists()) {
+                                        uploadDir.mkdirs();
+                                    }
+                                    
+                                    String uniqueFileName = UUID.randomUUID().toString() + "."
+                                            + FilenameUtils.getExtension(part.getSubmittedFileName());
+
+                                    String filePath = folderPath + File.separator + uniqueFileName;
+                                    part.write(filePath);
+
+                                    
+
+                                    // Guardar la URL relativa para la base de datos
+                                    imagenURL = "images/cursos/" + uniqueFileName;
+                                } else if (part.getName().equals("nombreCurso")) {
+                                    nombreCurso = request.getParameter("nombreCurso").toUpperCase();
+                                } else if (part.getName().equals("capacidad")) {
+                                    capacidad = Integer.parseInt(request.getParameter("capacidad"));
+                                } else if (part.getName().equals("fechaInicio")) {
+                                    fechaInicio = request.getParameter("fechaInicio");
+                                } else if (part.getName().equals("fechaFin")) {
+                                    fechaFin = request.getParameter("fechaFin");
+                                } else if (part.getName().equals("precio")) {
+                                    precio = Double.parseDouble(request.getParameter("precio"));
+                                } else if (part.getName().equals("categoria")) {
+                                    idCategoria = Integer.parseInt(request.getParameter("categoria"));
+                                } else if (part.getName().equals("duracion")) {
+                                    idDuracion = Integer.parseInt(request.getParameter("duracion"));
+                                } else if (part.getName().equals("idioma")) {
+                                    idIdioma = Integer.parseInt(request.getParameter("idioma"));
+                                } else if (part.getName().equals("rango")) {
+                                    idRango = Integer.parseInt(request.getParameter("rango"));
+                                }
+                            }
+
+                            // Query para insertar el curso en la base de datos
+                            String query = "INSERT INTO Curso (Nombre, Capacidad, FechaRegistro, FechaInicio, FechaFin, Precio, IdCategoria, IdDuracion, IdIdioma, IdRango, EstadoRegistro, ImagenURL) "
+                                    + "VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, 1, ?)";
+
+                            ps = con.prepareStatement(query);
+                            ps.setString(1, nombreCurso);
+                            ps.setInt(2, capacidad);
+                            ps.setString(3, fechaInicio);
+                            ps.setString(4, fechaFin);
+                            ps.setDouble(5, precio);
+                            ps.setInt(6, idCategoria);
+                            ps.setInt(7, idDuracion);
+                            ps.setInt(8, idIdioma);
+                            ps.setInt(9, idRango);
+                            ps.setString(10, imagenURL);
+
+                            // Ejecutar la inserción
+                            ps.executeUpdate();
+
+                            // Redirigir con un mensaje de éxito
+                            response.sendRedirect("mantenimiento.jsp?success=cursoRegistrado");
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            response.sendRedirect("error.jsp?error=cursoNoRegistrado");
+                        }
+
                         break;
-                    }
+}
+
+
+
+
+                    
+case "editarCurso": {
+    // Lógica para editar un curso existente
+    int idCurso = Integer.parseInt(request.getParameter("idCurso"));
+    String nombreCurso = request.getParameter("nombreCurso");
+    int capacidad = Integer.parseInt(request.getParameter("capacidad"));
+    String fechaInicio = request.getParameter("fechaInicio");
+    String fechaFin = request.getParameter("fechaFin");
+    double precio = Double.parseDouble(request.getParameter("precio"));
+    int categoria = Integer.parseInt(request.getParameter("categoria"));
+    int duracion = Integer.parseInt(request.getParameter("duracion"));
+    int idioma = Integer.parseInt(request.getParameter("idioma"));
+    int rango = Integer.parseInt(request.getParameter("rango"));
+    String imagenURL = null;
+    
+    nombreCurso = nombreCurso.toUpperCase();
+
+    // Variable para almacenar la URL de la imagen anterior
+    String imagenAnterior = null;
+
+    // Verificar si se ha subido una nueva imagen
+    for (Part part : request.getParts()) {
+        if (part.getName().equals("imagenCurso") && part.getSize() > 0) {
+            // Procesar el archivo subido
+            // Ruta absoluta cambiar
+            String folderPath = "C:\\Users\\ASUS\\Documents\\Trabajos\\Programacion_aplicada_III\\TEATROWEB\\src\\main\\webapp\\images\\cursos";
+            System.out.println("Ruta calculada: " + folderPath);
+
+            File uploadDir = new File(folderPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            // Generar un nombre único para la imagen
+            String uniqueFileName = UUID.randomUUID().toString() + "_" + Paths.get(part.getSubmittedFileName()).getFileName().toString();
+            String filePath = folderPath + File.separator + uniqueFileName;
+            part.write(filePath);
+
+            // Guardar la URL relativa para la base de datos
+            imagenURL = "images/cursos/" + uniqueFileName;
+        }
+    }
+
+    // Si no se sube una nueva imagen, mantener la imagen actual en la base de datos
+    if (imagenURL == null) {
+        // Obtener la imagen actual desde la base de datos
+        String selectQuery = "SELECT ImagenURL FROM Curso WHERE IdCurso = ?";
+        ps = con.prepareStatement(selectQuery);
+        ps.setInt(1, idCurso);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            imagenAnterior = rs.getString("ImagenURL");
+            imagenURL = imagenAnterior; // Si no se sube una nueva imagen, mantener la anterior
+        }
+    }
+
+    // Si hay una imagen anterior y se está subiendo una nueva, eliminar la imagen anterior
+    if (imagenAnterior != null && !imagenAnterior.equals(imagenURL)) {
+        // Eliminar la imagen anterior del servidor
+        String folderPath = "C:\\Users\\ASUS\\Documents\\Trabajos\\Programacion_aplicada_III\\TEATROWEB\\src\\main\\webapp\\images\\cursos";
+        File oldImage = new File(folderPath + File.separator + imagenAnterior.substring(imagenAnterior.lastIndexOf("/") + 1));
+        if (oldImage.exists()) {
+            oldImage.delete(); // Eliminar el archivo físico de la imagen anterior
+        }
+    }
+
+    // Actualizar el curso en la base de datos
+    String updateQuery = "UPDATE Curso SET Nombre = ?, Capacidad = ?, FechaInicio = ?, FechaFin = ?, Precio = ?, " +
+                         "IdCategoria = ?, IdDuracion = ?, IdIdioma = ?, IdRango = ?, ImagenURL = ? WHERE IdCurso = ?";
+    ps = con.prepareStatement(updateQuery);
+    ps.setString(1, nombreCurso);
+    ps.setInt(2, capacidad);
+    ps.setString(3, fechaInicio);
+    ps.setString(4, fechaFin);
+    ps.setDouble(5, precio);
+    ps.setInt(6, categoria);
+    ps.setInt(7, duracion);
+    ps.setInt(8, idioma);
+    ps.setInt(9, rango);
+    ps.setString(10, imagenURL); // Establecer la URL de la imagen, ya sea nueva o la actual
+    ps.setInt(11, idCurso);
+
+    // Ejecutar la actualización
+    int rowsUpdated = ps.executeUpdate();
+
+    // Redireccionar dependiendo del resultado
+    if (rowsUpdated > 0) {
+        response.sendRedirect("mantenimiento.jsp?success=cursoEditado");
+    } else {
+        response.sendRedirect("mantenimiento.jsp?error=cursoNoEditado");
+    }
+    break;
+}
+
+
                     case "eliminarCurso": {
                         int idCurso = Integer.parseInt(request.getParameter("idCurso"));
 
