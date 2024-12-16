@@ -16,6 +16,7 @@ import modelo.Conexion;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import jakarta.ws.rs.Path;
 import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -401,7 +402,19 @@ public class MantenimientoServlet extends HttpServlet {
                             for (Part part : request.getParts()) {
                                 if (part.getName().equals("imagenCurso") && part.getSize() > 0) {
                                     // Procesar el archivo subido
-                                    String folderPath = "C:\\Users\\ASUS\\Documents\\Trabajos\\Programacion_aplicada_III\\TEATROWEB\\src\\main\\webapp\\images\\cursos";
+                                    // Obtener la ruta base desde el contexto
+                                     // Obtener la ruta del contexto desplegado
+                                        String deployedPath = getServletContext().getRealPath("/");
+
+                                        // Convertir a Path y retroceder dos niveles (de target/TEATROWEB-01 a TEATROWEB)
+                                        java.nio.file.Path projectRootPath = Paths.get(deployedPath).getParent().getParent();
+
+                                        // Construir la ruta deseada
+                                        java.nio.file.Path desiredPath = projectRootPath.resolve("src/main/webapp/images/cursos");
+
+                                        // Convertir a cadena
+                                        String folderPath = desiredPath.toString();
+
                                     System.out.println("Ruta calculada: " + folderPath);
 
                                     File uploadDir = new File(folderPath);
@@ -498,7 +511,16 @@ case "editarCurso": {
         if (part.getName().equals("imagenCurso") && part.getSize() > 0) {
             // Procesar el archivo subido
             // Ruta absoluta cambiar
-            String folderPath = "C:\\Users\\ASUS\\Documents\\Trabajos\\Programacion_aplicada_III\\TEATROWEB\\src\\main\\webapp\\images\\cursos";
+          String deployedPath = getServletContext().getRealPath("/");
+
+          // Convertir a Path y retroceder dos niveles (de target/TEATROWEB-01 a TEATROWEB)
+          java.nio.file.Path projectRootPath = Paths.get(deployedPath).getParent().getParent();
+
+          // Construir la ruta deseada
+          java.nio.file.Path desiredPath = projectRootPath.resolve("src/main/webapp/images/cursos");
+
+          // Convertir a cadena
+          String folderPath = desiredPath.toString();
             System.out.println("Ruta calculada: " + folderPath);
 
             File uploadDir = new File(folderPath);

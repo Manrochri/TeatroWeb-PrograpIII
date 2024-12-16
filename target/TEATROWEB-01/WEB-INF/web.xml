@@ -14,6 +14,10 @@
 <welcome-file-list>
     <welcome-file>loginUsuario.jsp</welcome-file>
 </welcome-file-list>
+<context-param>
+    <param-name>baseDir</param-name>
+    <param-value>TEATROWEB/src/main/webapp/images/cursos</param-value>
+</context-param>
 
     
    

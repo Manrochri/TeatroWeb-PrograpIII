@@ -51,7 +51,7 @@
             <p class="text-center">Tu perfil es: <strong><%= session.getAttribute("perfil") %></strong></p>
         </div>
         
-        <h1>Cursos </h1>
+        <h1>Catálogo de cursos disponibles</h1>
     <div class="card-container">
         <% 
             Connection con = null;
@@ -78,7 +78,7 @@
             <img src="<%= imagenURL %>" alt="Imagen del curso">
             <div class="card-content">
             <h3><%= nombreCurso %></h3>
-            <p><%= categoriaFormatted  %></p>
+            <p>Categoría: <%= categoriaFormatted  %></p>
             <p>Capacidad: <%= capacidad %></p>
             </div>
         </div>
