@@ -58,7 +58,7 @@ CREATE TABLE `categoriacurso` (
   `Nombre` varchar(50) NOT NULL,
   `EstadoRegistro` tinyint(1) NOT NULL,
   PRIMARY KEY (`IdCategoria`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `categoriacurso` (
 
 LOCK TABLES `categoriacurso` WRITE;
 /*!40000 ALTER TABLE `categoriacurso` DISABLE KEYS */;
-INSERT INTO `categoriacurso` VALUES (1,'CLOWNS',1),(4,'VOCALIZACIÓN',1);
+INSERT INTO `categoriacurso` VALUES (1,'CLOWNS',1),(4,'VOCALIZACIÓN',1),(5,'EXPRESIVIDAD',1),(6,'HISTORIA ',1);
 /*!40000 ALTER TABLE `categoriacurso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,6 +91,7 @@ CREATE TABLE `curso` (
   `IdIdioma` int NOT NULL,
   `IdRango` int NOT NULL,
   `EstadoRegistro` tinyint(1) NOT NULL,
+  `ImagenURL` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`IdCurso`),
   KEY `IdCategoria` (`IdCategoria`),
   KEY `IdDuracion` (`IdDuracion`),
@@ -100,7 +101,7 @@ CREATE TABLE `curso` (
   CONSTRAINT `curso_ibfk_2` FOREIGN KEY (`IdDuracion`) REFERENCES `duracioncurso` (`IdDuracion`),
   CONSTRAINT `curso_ibfk_3` FOREIGN KEY (`IdIdioma`) REFERENCES `idiomacurso` (`IdIdioma`),
   CONSTRAINT `curso_ibfk_4` FOREIGN KEY (`IdRango`) REFERENCES `rangoedadescurso` (`IdRango`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -109,7 +110,7 @@ CREATE TABLE `curso` (
 
 LOCK TABLES `curso` WRITE;
 /*!40000 ALTER TABLE `curso` DISABLE KEYS */;
-INSERT INTO `curso` VALUES (1,'VOCALIZACION BASICA','2024-10-30 03:28:24',50,'2024-10-29','2024-12-29',200.00,4,1,1,1,1),(2,'CLOWN','2024-10-30 16:07:46',80,'2024-10-30','2024-12-30',100.00,1,1,2,1,1),(3,'TEATRO 1','2024-10-30 21:08:16',60,'2024-10-31','2025-01-31',100.00,1,1,1,1,1),(4,'MIMO','2024-11-13 06:43:02',200,'2024-10-29','2024-11-01',132.00,4,1,1,1,0);
+INSERT INTO `curso` VALUES (1,'VOCALIZACIÓN BASICA','2024-10-30 03:28:24',50,'2024-10-29','2024-12-29',200.00,4,1,1,1,1,'images/cursos/9d242a64-a2af-455a-b035-cc11980a3979_guillaume-de-germain-UdB_8NYVAdg-unsplash.jpg'),(2,'CLOWN','2024-10-30 16:07:46',80,'2024-10-30','2024-12-30',100.00,1,1,2,1,1,'images/cursos/fddb22f6-a4d3-4019-84ac-7bc8d499381a_maxresdefault (1).jpg'),(3,'TEATRO 1','2024-10-30 21:08:16',60,'2024-10-31','2025-01-31',100.00,6,1,1,1,1,'images/cursos/42514efa-8e51-4ca6-8e2e-ec63bae757ac_martin-de-arriba-qx6QtPOhO9I-unsplash.jpg'),(4,'MIMO','2024-11-13 06:43:02',200,'2024-10-29','2024-11-01',132.00,4,1,1,1,0,NULL),(5,'TEATRO GRIEGO','2024-12-14 19:37:16',512,'2024-12-14','2024-12-21',300.00,6,1,2,1,0,NULL),(6,'IMITACIÓN','2024-12-14 19:48:46',123,'2024-12-22','2024-12-26',123.00,5,1,1,1,0,'/images/cursos/teatro-griego-1-e1569893004819.jpg'),(7,'TEATRO GRIEGO','2024-12-14 19:57:14',100,'2024-12-14','2025-01-03',200.00,6,1,2,1,0,'/images/cursos/imagen-teatro-griego.jpg'),(8,'TEATRO GRIEGO','2024-12-14 20:04:47',123,'2024-12-15','2024-12-14',123.00,6,1,2,1,1,'images/cursos/d359c721-2845-49fb-8328-8a6bb5ad24ea_imagen-teatro-griego.jpg'),(9,'IMITACIÓN','2024-12-14 20:09:57',500,'2024-12-14','2024-12-21',200.00,5,1,2,1,0,'/images/cursos/yosoy.jpg'),(10,'IMITACIÓN','2024-12-14 20:12:45',100,'2024-12-14','2024-12-29',2333.00,5,1,1,1,0,'/images/cursos/yosoy.jpg'),(11,'VOCALIZACIÓN INTERMEDIA','2024-12-14 20:16:19',123,'2024-12-14','2024-12-28',122.00,4,1,1,1,1,'images/cursos/8a6f18df-82f7-4bdb-bd0a-21f3b3804237_bandlab-Lq8ho5dJReg-unsplash.jpg'),(12,'IMITACIÓN','2024-12-14 20:37:42',2000,'2024-12-14','2024-12-31',300.00,5,1,1,1,0,'/images/cursos/yosoy.jpg'),(13,'IMITACIÓN','2024-12-14 20:45:47',123,'2024-12-15','2024-12-21',123.00,5,1,2,1,0,'/images/cursos/yosoy.jpg'),(14,'IMITACIÓN','2024-12-14 20:48:03',20,'2024-12-15','2024-12-25',12.00,5,1,1,1,0,'/images/cursos/yosoy.jpg'),(15,'IMITACIÓN','2024-12-14 20:53:55',24,'2024-12-15','2024-12-22',233.00,1,1,1,1,1,'images/cursos/3a2f4d0d-4bc6-4c77-81dd-1db821a88459_yosoy.jpg'),(16,'MIMO','2024-12-16 03:45:43',300,'2024-12-14','2024-12-25',200.00,5,1,2,1,1,'images/cursos/31d6bdeb-dbc1-40e9-9543-7565888cf116.jpg'),(17,'CÓMICO','2024-12-16 04:16:03',100,'2024-12-16','2025-01-02',123.00,1,1,2,1,0,'images/cursos/dcabb018-d0b8-44b5-82ce-bf766e7770ca.jpg'),(18,'COMICO','2024-12-16 04:25:14',100,'2024-12-16','2024-12-26',300.00,1,1,2,1,0,'images/cursos/2317f231-be6e-4728-9e5a-012a9974bfa8.jpg'),(19,'PAYASO','2024-12-16 04:52:09',123,'2024-12-15','2024-12-16',1233.00,1,1,2,1,0,'images/cursos/996bd41a-4b72-4a38-adc0-3e1d60ad2d3c.jpg'),(20,'PAYASITO','2024-12-16 04:59:21',123,'2024-12-13','2024-12-21',123.00,1,1,2,1,0,'images/cursos/ca95589e-25f5-40dd-a97c-d7cda401dccd.jpg'),(21,'PAYASITO','2024-12-16 05:09:27',6232,'2024-12-20','2025-01-03',1233.00,1,1,1,1,1,'images/cursos/53ff9bff-d129-4deb-90e3-f6ab399a4899.jpg'),(22,'TEATRO DEL RENACIMIENTO','2024-12-16 05:11:00',200,'2024-12-17','2024-12-25',200.00,6,1,2,1,1,'images/cursos/07ba1f01-199f-4a7b-bc72-97237e83e1f1_images (4).jpg');
 /*!40000 ALTER TABLE `curso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -274,7 +275,7 @@ CREATE TABLE `gradoacademico` (
 
 LOCK TABLES `gradoacademico` WRITE;
 /*!40000 ALTER TABLE `gradoacademico` DISABLE KEYS */;
-INSERT INTO `gradoacademico` VALUES (1,'BACHILLER',1),(2,'LICENCIADO',1),(3,'MAGÍSTER',1),(4,'Doctorado',1);
+INSERT INTO `gradoacademico` VALUES (1,'BACHILLER',1),(2,'LICENCIADO',1),(3,'MAGÍSTER',1),(4,'DOCTORADO',1);
 /*!40000 ALTER TABLE `gradoacademico` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -321,7 +322,7 @@ CREATE TABLE `matriculas` (
   KEY `IdCurso` (`IdCurso`),
   CONSTRAINT `matriculas_ibfk_1` FOREIGN KEY (`IdAlumno`) REFERENCES `alumno` (`IdAlumno`),
   CONSTRAINT `matriculas_ibfk_2` FOREIGN KEY (`IdCurso`) REFERENCES `curso` (`IdCurso`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -330,7 +331,7 @@ CREATE TABLE `matriculas` (
 
 LOCK TABLES `matriculas` WRITE;
 /*!40000 ALTER TABLE `matriculas` DISABLE KEYS */;
-INSERT INTO `matriculas` VALUES (1,1,2,'2024-12-05 00:00:00',1),(2,1,1,'2024-12-01 00:00:00',0),(3,1,2,'2024-12-01 00:00:00',0),(4,1,1,'2024-11-29 00:00:00',1);
+INSERT INTO `matriculas` VALUES (1,1,2,'2024-12-05 00:00:00',1),(2,1,1,'2024-12-01 00:00:00',0),(3,1,2,'2024-12-01 00:00:00',0),(4,1,1,'2024-11-29 00:00:00',1),(5,2,1,'2024-12-11 00:00:00',1);
 /*!40000 ALTER TABLE `matriculas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -351,7 +352,7 @@ CREATE TABLE `opcionesmenu` (
   PRIMARY KEY (`IdOpcionMenu`),
   KEY `IdPadre` (`IdPadre`),
   CONSTRAINT `opcionesmenu_ibfk_1` FOREIGN KEY (`IdPadre`) REFERENCES `opcionesmenu` (`IdOpcionMenu`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -360,6 +361,7 @@ CREATE TABLE `opcionesmenu` (
 
 LOCK TABLES `opcionesmenu` WRITE;
 /*!40000 ALTER TABLE `opcionesmenu` DISABLE KEYS */;
+INSERT INTO `opcionesmenu` VALUES (1,'Gestión de Usuarios','/matenimiento.jsp','Menú para gestionar usuarios',NULL,1),(2,'Crear Usuario','/crearUsuario','Submenú para crear un nuevo usuario',1,1);
 /*!40000 ALTER TABLE `opcionesmenu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -388,6 +390,7 @@ CREATE TABLE `opcionesmenu_perfiles` (
 
 LOCK TABLES `opcionesmenu_perfiles` WRITE;
 /*!40000 ALTER TABLE `opcionesmenu_perfiles` DISABLE KEYS */;
+INSERT INTO `opcionesmenu_perfiles` VALUES (1,1,1,1);
 /*!40000 ALTER TABLE `opcionesmenu_perfiles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -454,7 +457,7 @@ CREATE TABLE `redessociales` (
   `RedSocial` varchar(50) NOT NULL,
   `EstadoRegistro` tinyint(1) NOT NULL,
   PRIMARY KEY (`IdRedesSociales`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -463,7 +466,7 @@ CREATE TABLE `redessociales` (
 
 LOCK TABLES `redessociales` WRITE;
 /*!40000 ALTER TABLE `redessociales` DISABLE KEYS */;
-INSERT INTO `redessociales` VALUES (1,'FACEBOOK',1),(2,'INSTAGRAM',1),(3,'YOUTUBE',1),(4,'WHATSSAP',1);
+INSERT INTO `redessociales` VALUES (1,'FACEBOOK',1),(2,'INSTAGRAM',1),(3,'YOUTUBE',1),(4,'WHATSSAP',1),(5,'X',1),(6,'SNAPCHAT',1);
 /*!40000 ALTER TABLE `redessociales` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -547,7 +550,7 @@ CREATE TABLE `usuario` (
   `FechaModificacion` datetime DEFAULT NULL,
   `EstadoRegistro` tinyint(1) NOT NULL,
   PRIMARY KEY (`IdUsuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -556,7 +559,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (2,'38865754','JENIFFER','KAREN','MIROQUESADA','12345678','JENNI@CORREO.COM','456',1,'2024-09-29 19:50:58',1,'2024-12-04 01:00:31',1),(3,'7654321','Max','Verstappen','awdaf','1234212','max@gmail.com','1234',3,'2024-09-29 21:40:11',3,'2024-09-29 21:40:11',1),(8,'75231045','Rayo','Mcqeen','Piston','78564235','mcqueen@correo.com','123',8,'2024-10-06 23:01:33',8,'2024-10-06 23:01:33',1),(9,'85312754','Michael','Schumacher','Ferrari','985321746','michael@correo.com','789',9,'2024-10-07 21:38:32',9,'2024-10-15 17:22:02',1),(11,'75229066','Christian','Rodriguez','Chilet','982537856','christian@correo.com','$2a$10$2fSindppAdHyXGA5munchO2hplw5x4s34bVMc68WxXVEYRQ5Ki5VG',11,'2024-10-15 16:57:21',11,'2024-10-15 16:57:21',1),(12,'75229067','Pepe','Mendoza','Dominguez','785652315','pepe@gmail.com','$2a$10$VXlVRWcAThX5DG1L4DUm/OGr17TfJB67VI3o9AMzlBOkLk3qADfDK',12,'2024-10-16 01:04:56',12,'2024-10-16 01:04:56',1),(13,'78567689','MARIO','BROS','NINTENDO','985995689','MARIO@NINTENDO.COM','$2a$10$yjpLHophEzHArzbU4HFrSOaA4o4O86ibDtsPe19H8lDnClJMhshvu',13,'2024-10-16 21:50:36',13,'2024-12-02 19:56:19',1),(14,'12325468','Romel','Palomino',NULL,NULL,'Romel@correo.com','clave_generica',NULL,'2024-10-22 20:45:08',NULL,'2024-10-22 20:46:43',1),(15,'12345862','Hugo','Michael',NULL,NULL,'hugo@gmail.com','clave_generica',NULL,'2024-10-22 21:25:36',NULL,NULL,1),(17,'5678223','JULIO','ROBERTO','LEONES',NULL,'NOEL@GMAIL.COM','clave_generica',NULL,'2024-10-22 21:45:56',NULL,'2024-12-02 00:05:57',1),(18,'20202020','JUAN','PEREZ','PEREZ',NULL,'JUANPEREZ@CORREO.COM','clave_generica',NULL,'2024-10-30 15:52:23',NULL,'2024-12-02 00:04:32',1),(19,'30303030','JUAN','ROJAS','ROJAS',NULL,'JUANROJAS@CORREO.COM','clave_generica',NULL,'2024-10-30 15:54:22',NULL,'2024-12-02 00:04:17',1),(20,'65242347','FABIOLA','FULANO','SULTANO',NULL,'FABIOLA@GMAIL.COM','clave_generica',NULL,'2024-11-20 16:14:17',NULL,NULL,1),(21,'75326345','FULTANITO','SULTANITO','MELGANITO','123874956','MELGANITO@CORREO.COM','$2a$10$JJBRuptxwlLVvT2Yl0KsDOKjdtCv.O48cVZ6CYw0sCF0TKeUuqhO.',21,'2024-11-20 16:21:59',21,'2024-11-20 16:21:59',1),(22,'752310345','PRUEBA','PRUEBITA ','PRUEBITA','4523265','PRUEBA@GMAIL.COM','$2a$10$MKXJPHLANP4Xkk/WaaJgJ.QBtAhhvjsqDM8r8sEZsQrzZTL8jw2QK',22,'2024-11-20 16:24:57',22,'2024-11-20 16:24:57',1),(23,'9865632','PRUEBA 2 ','TRIGGER','FUNCIONA','985632185','TRIGGER@FUNCIONA.COM','$2a$10$3o.gvMSx2rQ0bY7p/nuNxO7nXu5lAcsHOVYGQix.8gVmARwdzNkmO',23,'2024-11-20 16:33:50',23,'2024-11-20 16:33:50',1),(24,'75229852','PRUEBA','DEFINITIVA','TRIGGER','1234','DEFINITIVO@GMAIL.COM','$2a$10$HA5l2LaHIjIavbD3nPTg8.LpMH7BKcsgBZ3LN.fyRqnxRZdkpENdG',24,'2024-11-20 16:37:41',24,'2024-11-20 16:37:41',1),(25,'865324','CHRISTIAN','ESTUDIANTE','CHILET','12345','ESTUDIANTECHRIS@GMAIL.COM','$2a$10$it/Tga0hqlWKgVflYldpEu5UTK2zJZa3uWimfgXS6nQ6PIypmQJI.',25,'2024-11-20 16:39:53',25,'2024-11-20 16:39:53',1),(26,'78854865','JUANCITO','PEREZ','PEREZ',NULL,'JUANCITO@CORREO.COM','clave_generica',NULL,'2024-11-20 17:41:32',NULL,NULL,1),(27,'45232568','BENITO','PEREZ','DOMINGUEZ','986524879','BENITO@GMAIL.COM','$2a$10$VadncVQDV1Dxdjgjg0GCYeJF6PX4SUTqvVvY5jiHFllkueDltZ.46',27,'2024-12-01 23:29:21',27,'2024-12-04 10:34:23',1),(28,'75229068','CARLITOS','SAINZ','SAINZ','985587986','SAINZ@GMAIL.COM','$2a$10$67dWzXbMO2ZgfH6YsH..CuqQZoqz2Jo4Iahx0cni.uCYMgaTPj50a',28,'2024-12-01 23:30:51',28,'2024-12-02 00:14:29',1),(29,'98563258','YUKI','ZUNODA','ZUNODA','996532487','YUKI@GMAIL.COM','$2a$10$Kd36AqQwLyefDKGEaM9pRe1vfv/EbuY3dThU2ODiiBQBKApi75QIe',29,'2024-12-01 23:32:31',29,'2024-12-01 23:32:31',1),(30,'75229075','MARTIN','HILARIO','FULANO','9859654325','MARTIN@GMAIL.COM','$2a$10$TuuseuGL0RhecF2BTrjJROkG6MtJ4jEiZX.c6PKnYT8Dt.eNd2m7S',30,'2024-12-01 23:38:46',30,'2024-12-01 23:38:46',1),(31,'85965325','SERAFIN','FULANO','ZULTANO','975986324','SERAFIN@GMAIL.COM','$2a$10$kj9e0vTnARJA4k0lA6eNkORsvfnXQYGlYAH1qV3v0gpfYnJDdB972',31,'2024-12-01 23:42:18',31,'2024-12-01 23:42:18',1),(32,'78565248','FULANO','FULANITO','MELGANO','985896325','FULANO01@GMAIL.COM','$2a$10$rKwftpcOwXQqxYSETs2jAOdVG88brYF.3feYiwwfD7xsOde6rxaOS',32,'2024-12-01 23:58:45',32,'2024-12-04 16:34:33',1),(33,'9856265','PEPITO','FULANITO','REGISTRITO','985625689','pepito@gmail.com','$2a$10$FlibX7FFkSfXnk.LYdzOFOd3P99CQzWwZLUiGS2Oky5H0dXYEt3FO',33,'2024-12-03 22:22:30',33,'2024-12-03 22:22:30',1),(41,'98562329','FULANO','JULES','DIAZ','982537856','MAX@GMAIL.COM','$2a$10$HkvUzDguv2YeXsp2f/ag/uE/ZhXiwGj/MrM62nrGoeQMWJ3zkZQL2',41,'2024-12-03 23:07:12',41,'2024-12-04 16:18:27',1),(54,'85229033','PEPE','KAREN','DIAZ','999999999','charles@correo.com','$2a$10$Uw0DHYAAFaV9DyRq5zlam.q5JTuhJ4ipKgHy60LHQNEXJFCM43gNu',54,'2024-12-04 01:03:29',54,'2024-12-04 01:03:29',1),(55,'96325698','PEPELUX','NUÑEZ','PEPEX','985642314','pepelux@gmail.com','$2a$10$bx0WVmgFH6OnEbcOV3zLqeqzY9wOTPu6tbbwUB7dNqzlCXqYGzCKm',55,'2024-12-04 01:04:50',55,'2024-12-04 01:04:50',1),(56,'98765432','ALICE','SMITH','JOHNSON','987654321','ALICE.SMITH@EMAIL.COM','password1',1,'2024-11-30 10:00:00',1,'2024-12-04 10:39:03',1),(57,'98765432','Alice','Smith','Johnson','987654321','alice.smith@email.com','password1',1,'2024-11-30 10:00:00',1,'2024-11-30 10:00:00',1),(58,'87654321','Bob','Johnson','Brown','876543210','bob.johnson@email.com','password2',1,'2024-11-30 10:05:00',1,'2024-11-30 10:05:00',1),(59,'76543210','Charlie','Williams','Taylor','765432109','charlie.williams@email.com','password3',1,'2024-11-30 10:10:00',1,'2024-11-30 10:10:00',1),(60,'65432109','David','Brown','Wilson','654321098','david.brown@email.com','password4',1,'2024-11-30 10:15:00',1,'2024-11-30 10:15:00',1),(61,'54321098','Eve','Miller','Moore','543210987','eve.miller@email.com','password5',1,'2024-11-30 10:20:00',1,'2024-11-30 10:20:00',1),(62,'43210987','Frank','Taylor','Anderson','432109876','frank.taylor@email.com','password6',1,'2024-11-30 10:25:00',1,'2024-11-30 10:25:00',1),(63,'32109876','Grace','Thomas','Jackson','321098765','grace.thomas@email.com','password7',1,'2024-11-30 10:30:00',1,'2024-11-30 10:30:00',1),(64,'21098765','Hank','Anderson','White','210987654','hank.anderson@email.com','password8',1,'2024-11-30 10:35:00',1,'2024-11-30 10:35:00',1),(65,'10987654','Ivy','Jackson','Martin','109876543','ivy.jackson@email.com','password9',1,'2024-11-30 10:40:00',1,'2024-11-30 10:40:00',1),(66,'98765431','John','White','Clark','987654321','john.white@email.com','password10',1,'2024-11-30 10:45:00',1,'2024-11-30 10:45:00',1),(67,'87654320','Katie','Clark','Rodriguez','876543210','katie.clark@email.com','password11',1,'2024-11-30 10:50:00',1,'2024-11-30 10:50:00',1),(68,'76543209','Liam','Rodriguez','Lewis','765432109','liam.rodriguez@email.com','password12',1,'2024-11-30 10:55:00',1,'2024-11-30 10:55:00',1),(69,'65432108','Mia','Lewis','Scott','654321098','mia.lewis@email.com','password13',1,'2024-11-30 11:00:00',1,'2024-11-30 11:00:00',1),(70,'54321097','Noah','Scott','Adams','543210987','noah.scott@email.com','password14',1,'2024-11-30 11:05:00',1,'2024-11-30 11:05:00',1),(71,'43210976','Olivia','Adams','Baker','432109876','olivia.adams@email.com','password15',1,'2024-11-30 11:10:00',1,'2024-11-30 11:10:00',1),(72,'32109865','Peter','Baker','Carter','321098765','peter.baker@email.com','password16',1,'2024-11-30 11:15:00',1,'2024-11-30 11:15:00',1),(73,'21098754','Quinn','Carter','Perez','210987654','quinn.carter@email.com','password17',1,'2024-11-30 11:20:00',1,'2024-11-30 11:20:00',1),(74,'10987643','Ryan','Perez','Nelson','109876543','ryan.perez@email.com','password18',1,'2024-11-30 11:25:00',1,'2024-11-30 11:25:00',1),(75,'98765430','Sophia','Nelson','Young','987654321','sophia.nelson@email.com','password19',1,'2024-11-30 11:30:00',1,'2024-11-30 11:30:00',1),(76,'87654319','Thomas','Young','King','876543210','thomas.young@email.com','password20',1,'2024-11-30 11:35:00',1,'2024-11-30 11:35:00',1),(77,'9856987','MILES','MORALES','MORALES',NULL,'MILES@GMAIL.COM','clave_generica',NULL,'2024-12-04 01:14:59',NULL,NULL,1),(78,'75229068','PEPE','DOCENTE','JUAREZ','96366589','pepe_docente@gmail.com','$2a$10$cOBrsX2DEVH3G1g927/qKeUAjlMdWRTOt8vZ1Vv/qukfsYSe9Y9Pq',78,'2024-12-04 17:52:32',78,'2024-12-04 17:52:32',1),(79,'95996896','TESTING1','TEST','TESTING','98986589','testing@gmail.com','$2a$10$U2YMGAMeiWscI3N.7/jU4.S49whE6h502.dIsTUFhykoo.R8BX30e',79,'2024-12-08 20:20:11',79,'2024-12-08 20:20:11',1);
+INSERT INTO `usuario` VALUES (2,'38865754','JENIFFER','KAREN','MIROQUESADA','12345678','JENNI@CORREO.COM','456',1,'2024-09-29 19:50:58',1,'2024-12-04 01:00:31',1),(3,'7654321','Max','Verstappen','awdaf','1234212','max@gmail.com','1234',3,'2024-09-29 21:40:11',3,'2024-09-29 21:40:11',1),(8,'75231045','Rayo','Mcqeen','Piston','78564235','mcqueen@correo.com','123',8,'2024-10-06 23:01:33',8,'2024-10-06 23:01:33',1),(9,'85312754','Michael','Schumacher','Ferrari','985321746','michael@correo.com','789',9,'2024-10-07 21:38:32',9,'2024-10-15 17:22:02',1),(11,'75229066','Christian','Rodriguez','Chilet','982537856','christian@correo.com','$2a$10$2fSindppAdHyXGA5munchO2hplw5x4s34bVMc68WxXVEYRQ5Ki5VG',11,'2024-10-15 16:57:21',11,'2024-10-15 16:57:21',1),(12,'75229067','Pepe','Mendoza','Dominguez','785652315','pepe@gmail.com','$2a$10$VXlVRWcAThX5DG1L4DUm/OGr17TfJB67VI3o9AMzlBOkLk3qADfDK',12,'2024-10-16 01:04:56',12,'2024-10-16 01:04:56',1),(13,'78567689','MARIO','BROS','NINTENDO','985995689','MARIO@NINTENDO.COM','$2a$10$yjpLHophEzHArzbU4HFrSOaA4o4O86ibDtsPe19H8lDnClJMhshvu',13,'2024-10-16 21:50:36',13,'2024-12-02 19:56:19',1),(14,'12325468','Romel','Palomino',NULL,NULL,'Romel@correo.com','clave_generica',NULL,'2024-10-22 20:45:08',NULL,'2024-10-22 20:46:43',1),(15,'12345862','Hugo','Michael',NULL,NULL,'hugo@gmail.com','clave_generica',NULL,'2024-10-22 21:25:36',NULL,NULL,1),(17,'5678223','JULIO','ROBERTO','LEONES',NULL,'NOEL@GMAIL.COM','clave_generica',NULL,'2024-10-22 21:45:56',NULL,'2024-12-02 00:05:57',1),(18,'20202020','JUAN','PEREZ','PEREZ',NULL,'JUANPEREZ@CORREO.COM','clave_generica',NULL,'2024-10-30 15:52:23',NULL,'2024-12-02 00:04:32',1),(19,'30303030','JUAN','ROJAS','ROJAS',NULL,'JUANROJAS@CORREO.COM','clave_generica',NULL,'2024-10-30 15:54:22',NULL,'2024-12-02 00:04:17',1),(20,'65242347','FABIOLA','FULANO','SULTANO',NULL,'FABIOLA@GMAIL.COM','clave_generica',NULL,'2024-11-20 16:14:17',NULL,NULL,1),(21,'75326345','FULTANITO','SULTANITO','MELGANITO','123874956','MELGANITO@CORREO.COM','$2a$10$JJBRuptxwlLVvT2Yl0KsDOKjdtCv.O48cVZ6CYw0sCF0TKeUuqhO.',21,'2024-11-20 16:21:59',21,'2024-11-20 16:21:59',1),(22,'752310345','PRUEBA','PRUEBITA ','PRUEBITA','4523265','PRUEBA@GMAIL.COM','$2a$10$MKXJPHLANP4Xkk/WaaJgJ.QBtAhhvjsqDM8r8sEZsQrzZTL8jw2QK',22,'2024-11-20 16:24:57',22,'2024-11-20 16:24:57',1),(23,'9865632','PRUEBA 2 ','TRIGGER','FUNCIONA','985632185','TRIGGER@FUNCIONA.COM','$2a$10$3o.gvMSx2rQ0bY7p/nuNxO7nXu5lAcsHOVYGQix.8gVmARwdzNkmO',23,'2024-11-20 16:33:50',23,'2024-11-20 16:33:50',1),(24,'75229852','PRUEBA','DEFINITIVA','TRIGGER','1234','DEFINITIVO@GMAIL.COM','$2a$10$HA5l2LaHIjIavbD3nPTg8.LpMH7BKcsgBZ3LN.fyRqnxRZdkpENdG',24,'2024-11-20 16:37:41',24,'2024-11-20 16:37:41',1),(25,'865324','CHRISTIAN','ESTUDIANTE','CHILET','12345','ESTUDIANTECHRIS@GMAIL.COM','$2a$10$it/Tga0hqlWKgVflYldpEu5UTK2zJZa3uWimfgXS6nQ6PIypmQJI.',25,'2024-11-20 16:39:53',25,'2024-11-20 16:39:53',1),(26,'78854865','JUANCITO','PEREZ','PEREZ',NULL,'JUANCITO@CORREO.COM','clave_generica',NULL,'2024-11-20 17:41:32',NULL,NULL,1),(27,'45232568','BENITO','PEREZ','DOMINGUEZ','986524879','BENITO@GMAIL.COM','$2a$10$VadncVQDV1Dxdjgjg0GCYeJF6PX4SUTqvVvY5jiHFllkueDltZ.46',27,'2024-12-01 23:29:21',27,'2024-12-04 10:34:23',1),(28,'75229068','CARLITOS','SAINZ','SAINZ','985587986','SAINZ@GMAIL.COM','$2a$10$67dWzXbMO2ZgfH6YsH..CuqQZoqz2Jo4Iahx0cni.uCYMgaTPj50a',28,'2024-12-01 23:30:51',28,'2024-12-14 16:40:14',1),(29,'98563258','YUKI','ZUNODA','ZUNODA','996532487','YUKI@GMAIL.COM','$2a$10$Kd36AqQwLyefDKGEaM9pRe1vfv/EbuY3dThU2ODiiBQBKApi75QIe',29,'2024-12-01 23:32:31',29,'2024-12-01 23:32:31',1),(30,'75229075','MARTIN','HILARIO','FULANO','9859654325','MARTIN@GMAIL.COM','$2a$10$TuuseuGL0RhecF2BTrjJROkG6MtJ4jEiZX.c6PKnYT8Dt.eNd2m7S',30,'2024-12-01 23:38:46',30,'2024-12-01 23:38:46',1),(31,'85965325','SERAFIN','FULANO','ZULTANO','975986324','SERAFIN@GMAIL.COM','$2a$10$kj9e0vTnARJA4k0lA6eNkORsvfnXQYGlYAH1qV3v0gpfYnJDdB972',31,'2024-12-01 23:42:18',31,'2024-12-01 23:42:18',1),(32,'78565248','FULANO','FULANITO','MELGANO','985896325','FULANO01@GMAIL.COM','$2a$10$rKwftpcOwXQqxYSETs2jAOdVG88brYF.3feYiwwfD7xsOde6rxaOS',32,'2024-12-01 23:58:45',32,'2024-12-04 16:34:33',1),(33,'9856265','PEPITO','FULANITO','REGISTRITO','985625689','pepito@gmail.com','$2a$10$FlibX7FFkSfXnk.LYdzOFOd3P99CQzWwZLUiGS2Oky5H0dXYEt3FO',33,'2024-12-03 22:22:30',33,'2024-12-03 22:22:30',1),(41,'98562329','FULANO','JULES','DIAZ','982537856','MAX@GMAIL.COM','$2a$10$HkvUzDguv2YeXsp2f/ag/uE/ZhXiwGj/MrM62nrGoeQMWJ3zkZQL2',41,'2024-12-03 23:07:12',41,'2024-12-04 16:18:27',1),(54,'85229033','PEPE','KAREN','DIAZ','999999999','charles@correo.com','$2a$10$Uw0DHYAAFaV9DyRq5zlam.q5JTuhJ4ipKgHy60LHQNEXJFCM43gNu',54,'2024-12-04 01:03:29',54,'2024-12-04 01:03:29',1),(55,'96325698','PEPELUX','NUÑEZ','PEPEX','985642314','pepelux@gmail.com','$2a$10$bx0WVmgFH6OnEbcOV3zLqeqzY9wOTPu6tbbwUB7dNqzlCXqYGzCKm',55,'2024-12-04 01:04:50',55,'2024-12-04 01:04:50',1),(56,'98765432','ALICE','SMITH','JOHNSON','987654321','ALICE.SMITH@EMAIL.COM','password1',1,'2024-11-30 10:00:00',1,'2024-12-04 10:39:03',1),(57,'98765432','Alice','Smith','Johnson','987654321','alice.smith@email.com','password1',1,'2024-11-30 10:00:00',1,'2024-11-30 10:00:00',1),(58,'87654321','Bob','Johnson','Brown','876543210','bob.johnson@email.com','password2',1,'2024-11-30 10:05:00',1,'2024-11-30 10:05:00',1),(59,'76543210','Charlie','Williams','Taylor','765432109','charlie.williams@email.com','password3',1,'2024-11-30 10:10:00',1,'2024-11-30 10:10:00',1),(60,'65432109','David','Brown','Wilson','654321098','david.brown@email.com','password4',1,'2024-11-30 10:15:00',1,'2024-11-30 10:15:00',1),(61,'54321098','Eve','Miller','Moore','543210987','eve.miller@email.com','password5',1,'2024-11-30 10:20:00',1,'2024-11-30 10:20:00',1),(62,'43210987','Frank','Taylor','Anderson','432109876','frank.taylor@email.com','password6',1,'2024-11-30 10:25:00',1,'2024-11-30 10:25:00',1),(63,'32109876','Grace','Thomas','Jackson','321098765','grace.thomas@email.com','password7',1,'2024-11-30 10:30:00',1,'2024-11-30 10:30:00',1),(64,'21098765','Hank','Anderson','White','210987654','hank.anderson@email.com','password8',1,'2024-11-30 10:35:00',1,'2024-11-30 10:35:00',1),(65,'10987654','Ivy','Jackson','Martin','109876543','ivy.jackson@email.com','password9',1,'2024-11-30 10:40:00',1,'2024-11-30 10:40:00',1),(66,'98765431','John','White','Clark','987654321','john.white@email.com','password10',1,'2024-11-30 10:45:00',1,'2024-11-30 10:45:00',1),(67,'87654320','Katie','Clark','Rodriguez','876543210','katie.clark@email.com','password11',1,'2024-11-30 10:50:00',1,'2024-11-30 10:50:00',1),(68,'76543209','Liam','Rodriguez','Lewis','765432109','liam.rodriguez@email.com','password12',1,'2024-11-30 10:55:00',1,'2024-11-30 10:55:00',1),(69,'65432108','Mia','Lewis','Scott','654321098','mia.lewis@email.com','password13',1,'2024-11-30 11:00:00',1,'2024-11-30 11:00:00',1),(70,'54321097','Noah','Scott','Adams','543210987','noah.scott@email.com','password14',1,'2024-11-30 11:05:00',1,'2024-11-30 11:05:00',1),(71,'43210976','Olivia','Adams','Baker','432109876','olivia.adams@email.com','password15',1,'2024-11-30 11:10:00',1,'2024-11-30 11:10:00',1),(72,'32109865','Peter','Baker','Carter','321098765','peter.baker@email.com','password16',1,'2024-11-30 11:15:00',1,'2024-11-30 11:15:00',1),(73,'21098754','Quinn','Carter','Perez','210987654','quinn.carter@email.com','password17',1,'2024-11-30 11:20:00',1,'2024-11-30 11:20:00',1),(74,'10987643','Ryan','Perez','Nelson','109876543','ryan.perez@email.com','password18',1,'2024-11-30 11:25:00',1,'2024-11-30 11:25:00',1),(75,'98765430','Sophia','Nelson','Young','987654321','sophia.nelson@email.com','password19',1,'2024-11-30 11:30:00',1,'2024-11-30 11:30:00',1),(76,'87654319','Thomas','Young','King','876543210','thomas.young@email.com','password20',1,'2024-11-30 11:35:00',1,'2024-11-30 11:35:00',1),(77,'9856987','MILES','MORALES','MORALES',NULL,'MILES@GMAIL.COM','clave_generica',NULL,'2024-12-04 01:14:59',NULL,NULL,1),(78,'75229068','PEPE','DOCENTE','JUAREZ','96366589','pepe_docente@gmail.com','$2a$10$cOBrsX2DEVH3G1g927/qKeUAjlMdWRTOt8vZ1Vv/qukfsYSe9Y9Pq',78,'2024-12-04 17:52:32',78,'2024-12-04 17:52:32',1),(79,'95996896','TESTING1','TEST','TESTING','98986589','testing@gmail.com','$2a$10$U2YMGAMeiWscI3N.7/jU4.S49whE6h502.dIsTUFhykoo.R8BX30e',79,'2024-12-08 20:20:11',79,'2024-12-08 20:20:11',1),(80,'75229067','PEPITO','PROFE','PROFE','9656665325','PEPITOPROFE@GMAIL.COM','$2a$10$Hn344TxYTJV20lzWLMnVDeckY2rp5XVPC0PyWuessQNca2M13/r1a',80,'2024-12-14 10:07:44',80,'2024-12-14 10:11:08',1),(81,'33659896','ALUMNOFULANO','MELGANO','SULTANO','9889896532','alumnofulano@gmail.com','$2a$10$MRHN4qkL0WXW.uTVCDNueOqQTb8NkhhXKnNywsaP3Ni9e2cEzCPX6',81,'2024-12-14 10:13:35',81,'2024-12-14 10:13:35',1);
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -584,7 +587,7 @@ CREATE TABLE `usuario_perfiles` (
 
 LOCK TABLES `usuario_perfiles` WRITE;
 /*!40000 ALTER TABLE `usuario_perfiles` DISABLE KEYS */;
-INSERT INTO `usuario_perfiles` VALUES (2,1,1),(3,2,1),(8,3,1),(9,2,1),(11,1,1),(12,2,1),(13,3,1),(14,1,1),(15,1,1),(17,1,1),(18,2,1),(19,1,1),(20,3,1),(21,3,1),(22,3,1),(23,3,1),(24,3,1),(25,3,1),(26,3,1),(27,3,1),(28,2,1),(29,1,1),(30,1,1),(31,1,1),(32,2,1),(33,1,1),(41,2,1),(54,1,1),(55,1,1),(56,3,1),(77,3,1),(78,2,1),(79,1,1);
+INSERT INTO `usuario_perfiles` VALUES (2,1,1),(3,2,1),(8,3,1),(9,2,1),(11,1,1),(12,2,1),(13,3,1),(14,1,1),(15,1,1),(17,1,1),(18,2,1),(19,1,1),(20,3,1),(21,3,1),(22,3,1),(23,3,1),(24,3,1),(25,3,1),(26,3,1),(27,3,1),(28,3,1),(29,1,1),(30,1,1),(31,1,1),(32,2,1),(33,1,1),(41,2,1),(54,1,1),(55,1,1),(56,3,1),(77,3,1),(78,2,1),(79,1,1),(80,2,1),(81,3,1);
 /*!40000 ALTER TABLE `usuario_perfiles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -597,4 +600,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-08 20:24:08
+-- Dump completed on 2024-12-16 16:06:23
