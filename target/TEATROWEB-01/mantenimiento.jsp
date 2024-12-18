@@ -21,6 +21,28 @@
     ResultSet rsUsuarios = psUsuarios.executeQuery();
     
     
+ // Obtener Opciones menu
+// Consulta SQL para obtener las opciones de menú con perfiles asociados
+PreparedStatement psMenus = con.prepareStatement(
+    "SELECT m.IdOpcionMenu, m.Nombre, m.UrlMenu, m.Descripcion, m.IdPadre, m.EstadoRegistro, " +
+    "GROUP_CONCAT(p.Nombre ORDER BY p.Nombre ASC SEPARATOR ', ') AS Perfiles " +
+    "FROM OpcionesMenu m " +
+    "LEFT JOIN OpcionesMenu_Perfiles omp ON m.IdOpcionMenu = omp.IdOpcionMenu " +
+    "LEFT JOIN Perfiles p ON omp.IdPerfil = p.IdPerfil " +
+    "WHERE m.EstadoRegistro = 1 " +
+    "GROUP BY m.IdOpcionMenu, m.Nombre, m.UrlMenu, m.Descripcion, m.IdPadre, m.EstadoRegistro " +
+    "ORDER BY COALESCE(m.IdPadre, m.IdOpcionMenu), m.IdOpcionMenu"
+);
+
+
+
+ResultSet rsOpcionesMenu = psMenus.executeQuery();
+
+
+
+
+    
+    
     // Obtener paginado para Docente en su modal
 PreparedStatement psUsuarios2 = con.prepareStatement(
     "SELECT u.IdUsuario, u.DNI, u.Nombres, u.ApellidoPaterno, u.ApellidoMaterno, u.CorreoElectronico, p.Nombre as Perfil " +
@@ -107,12 +129,17 @@ ResultSet rsSesiones = psSesiones.executeQuery();
     
 // Obtener alumnos
 PreparedStatement psAlumnos = con.prepareStatement(
-    "SELECT d.IdAlumno, u.Nombres AS NombreAlumno, g.Nombre AS IdiomaCurso, d.IdUsuario, d.IdIdioma " +
+    "SELECT d.IdAlumno, CONCAT(u.Nombres, ' ', u.ApellidoPaterno, ' ', u.ApellidoMaterno) AS NombreAlumno, g.Nombre AS IdiomaCurso, d.IdUsuario, d.IdIdioma " +
     "FROM Alumno d " +
     "JOIN Usuario u ON d.IdUsuario = u.IdUsuario " +
     "JOIN IdiomaCurso g ON d.IdIdioma = g.IdIdioma"
 );
 ResultSet rsAlumnos = psAlumnos.executeQuery();
+
+
+
+
+
 
 
 %>
@@ -229,7 +256,7 @@ ResultSet rsAlumnos = psAlumnos.executeQuery();
         <script src="js/validacionFechas.js"></script>
     </head>
     <body>
-        
+     
         <div class="container-fluid">
             <div class="row">
                 <!-- Menú principal a la izquierda -->
@@ -245,6 +272,7 @@ ResultSet rsAlumnos = psAlumnos.executeQuery();
                     <div class="dropdownContenido" id="menuUsuarios" style="display: none;">
                         <button  onclick="mostrarCRUD('usuarios')">Gestionar Usuarios</button>
                         <button  onclick="mostrarCRUD('perfiles')">Gestionar Perfiles</button>
+                        <button  onclick="mostrarCRUD('opcionesmenu')">Gestionar Opciones y Permisos</button>
                     </div>
                     
                     
@@ -1081,6 +1109,169 @@ ResultSet rsAlumnos = psAlumnos.executeQuery();
     </div>
 </div>
 
+                        
+<!-- MODAL Opcion de Menú -->
+<div class="modal fade" id="opcionesMenuModal" tabindex="-1" aria-labelledby="opcionesMenuModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="opcionesMenuModalLabel">Registrar Nueva Opción de Menú</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form action="MantenimientoServlet" method="post" id="formOpcionMenu">
+                    <input type="hidden" name="idOpcionMenu" id="idOpcionMenu">
+
+                    <!-- Tipo de Menú: Menú o Submenú -->
+                    <div class="mb-3">
+                        <label for="tipoMenu" class="form-label">Tipo de Menú</label>
+                        <select class="form-select" id="tipoMenu" name="tipoMenu" required>
+                            <option value="menu" selected>Menú</option>
+                            <option value="submenu">Submenú</option>
+                        </select>
+                    </div>
+
+                    <!-- Menú Padre (solo para Submenú) -->
+                    <div class="mb-3" id="divMenuPadre" style="display:none;">
+                        <label for="menuPadre" class="form-label">Menú Padre (Solo para Submenú)</label>
+                        <select class="form-select" id="menuPadre" name="menuPadre">
+                            <option value="" disabled>Seleccionar Menú Padre</option>
+                            <%
+                                // Obtener los menús principales (IdPadre = 0)
+                                PreparedStatement psMenuPadres = con.prepareStatement("SELECT IdOpcionMenu, Nombre FROM OpcionesMenu WHERE IdPadre IS NULL AND EstadoRegistro = 1");
+                                ResultSet rsMenuPadres = psMenuPadres.executeQuery();
+                                while (rsMenuPadres.next()) {
+                            %>
+                            <option value="<%= rsMenuPadres.getInt("IdOpcionMenu")%>">
+                                <%= rsMenuPadres.getString("Nombre")%>
+                            </option>
+                            <% }
+                                rsMenuPadres.close();
+                                psMenuPadres.close(); %>
+                        </select>
+                        <small class="form-text text-muted">Si seleccionas un menú padre, esta opción será un submenú.</small>
+                    </div>
+
+                    <!-- Nombre del Menú -->
+                    <div class="mb-3">
+                        <label for="nombreMenu" class="form-label">Nombre del Menú</label>
+                        <input type="text" class="form-control" id="nombreMenu" name="nombreMenu" required>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label for="descripcionMenu" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcionMenu" name="descripcionMenu" required></textarea>
+                    </div>
+
+                    <!-- URL del Menú -->
+                    <div class="mb-3">
+                        <label for="urlMenu" class="form-label">URL del Menú</label>
+                        <input type="text" class="form-control" id="urlMenu" name="urlMenu" required>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="mb-3">
+                        <label for="estadoMenu" class="form-label">Estado</label>
+                        <select class="form-select" id="estadoMenu" name="estadoMenu">
+                            <option value="1" selected>Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                    </div>
+
+
+
+                    <!-- Permisos (Perfiles) -->
+                    <div class="mb-3">
+                        <label for="perfilesMenu" class="form-label">Permisos (Perfiles)</label>
+                        <div id="perfilesMenu">
+                            <%
+                                // Obtener los perfiles desde la base de datos
+                                PreparedStatement psPerfilesOpciones = con.prepareStatement("SELECT IdPerfil, Nombre FROM Perfiles");
+                                ResultSet rsPerfilesOpciones = psPerfilesOpciones.executeQuery();
+                                while (rsPerfilesOpciones.next()) {
+                            %>
+                            <div class="form-check">
+                                <!-- El valor del checkbox es el IdPerfil que es obtenido de la base de datos -->
+                                <input class="form-check-input" type="checkbox" name="perfilesCheckbox" 
+                                       value="<%= rsPerfilesOpciones.getInt("IdPerfil")%>" 
+                                       id="perfil_<%= rsPerfilesOpciones.getInt("IdPerfil")%>" 
+                                       onclick="updateHiddenInput(<%= rsPerfilesOpciones.getInt("IdPerfil")%>)">
+                                <label class="form-check-label" for="perfil_<%= rsPerfilesOpciones.getInt("IdPerfil")%>">
+                                    <%= rsPerfilesOpciones.getString("Nombre")%> <!-- Nombre del perfil -->
+                                </label>
+                            </div>
+                            <% }
+            rsPerfilesOpciones.close();
+            psPerfilesOpciones.close(); %>
+                        </div>
+
+                        <!-- Input invisible para almacenar los valores seleccionados -->
+                        <input type="hidden" name="perfiles" id="perfiles">
+                    </div>
+
+
+                    <!-- Botones -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" name="accion" value="registrarOpcionMenu" class="btn btn-primary">Registrar Opción de Menú</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Script para manejar la visibilidad de la opción Menú/Submenú -->
+<script>
+    document.getElementById('tipoMenu').addEventListener('change', function() {
+        var tipoMenu = this.value;
+        var divMenuPadre = document.getElementById('divMenuPadre');
+        var menuPadreSelect = document.getElementById('menuPadre');
+
+        if (tipoMenu === 'submenu') {
+            divMenuPadre.style.display = 'block';
+            menuPadreSelect.disabled = false;
+        } else {
+            divMenuPadre.style.display = 'none';
+            menuPadreSelect.disabled = true;
+            menuPadreSelect.value = ''; // Resetear selección si se cambia a Menú
+        }
+    });
+</script>
+
+<script>
+    // Esta función se llama cuando se hace clic en un checkbox
+    function updateHiddenInput(idPerfil) {
+        var perfilesInput = document.getElementById('perfiles');
+        var selectedValues = perfilesInput.value ? perfilesInput.value.split(',') : [];
+
+        // Si el checkbox está marcado, agregar el ID al array
+        if (document.getElementById('perfil_' + idPerfil).checked) {
+            if (!selectedValues.includes(idPerfil.toString())) {
+                selectedValues.push(idPerfil);
+            }
+        } else {
+            // Si el checkbox no está marcado, eliminar el ID del array
+            var index = selectedValues.indexOf(idPerfil.toString());
+            if (index !== -1) {
+                selectedValues.splice(index, 1);
+            }
+        }
+
+        // Actualizar el input oculto con los valores seleccionados
+        perfilesInput.value = selectedValues.join(',');
+    }
+</script>
+
+
+
+
+
+
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -1152,7 +1343,10 @@ ResultSet rsAlumnos = psAlumnos.executeQuery();
                                     </div>
                                     `;
                                     break;
-case 'perfiles':
+                                    
+                                    
+
+                            case 'perfiles':
                                             contenido = `
                                <h5>Gestión de Perfiles</h5>
                                <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#perfilModal">
@@ -1185,6 +1379,7 @@ case 'perfiles':
                                </table>
                            `;
                            break;
+                    
                     
                     case 'grados':
                             contenido = `
@@ -1652,14 +1847,14 @@ case 'redesSociales':
     break;
     
     case 'alumnos':
-        contenido = `
+    contenido =  `
 <h5>Gestión de Alumnos</h5>
 <button type="button" class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#alumnoModal">Nuevo Alumno</button>
 <h5 class="mt-4">Alumnos Registrados</h5>
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Usuario</th>
+            <th>Nombre completo</th>
             <th>Idioma</th>
             <th>Acciones</th>
             <th>Detalles</th>
@@ -1688,6 +1883,9 @@ case 'redesSociales':
 </table>
 `;
 break;
+
+
+
     
 case 'matriculas':
     contenido = `
@@ -1697,7 +1895,7 @@ case 'matriculas':
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Nombre del Alumno</th>
+            <th>Nombre completo</th>
             <th>Curso</th>
             <th>Fecha de Matrícula</th>
             <th>Acciones</th>
@@ -1707,7 +1905,7 @@ case 'matriculas':
         <%
     try {
         PreparedStatement psMatriculas = con.prepareStatement(
-            "SELECT u.Nombres AS AlumnoNombre, " +
+            "SELECT a.IdAlumno, CONCAT(u.Nombres, ' ', u.ApellidoPaterno, ' ', u.ApellidoMaterno) AS AlumnoNombre, " +
             "       c.Nombre AS CursoNombre, " +
             "       m.FechaMatricula, " +
             "       m.IdMatricula " +
@@ -1740,6 +1938,154 @@ case 'matriculas':
 
 `;
     break;
+    case 'opcionesmenu':
+    console.log("Gestión de Opciones de Menú cargada");
+
+    contenido = `
+        <h5>Gestión de Opciones de Menú</h5>
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#opcionesMenuModal">
+            Nueva Opción de Menú
+        </button>
+        <h5 class="mt-4">Opciones de Menú Registradas</h5>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>URL</th>
+                    <th>Estado</th>
+                    <th>Perfiles Asociados</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+    <% while (rsOpcionesMenu.next()) { %>
+    <% 
+        int idPadre = rsOpcionesMenu.getInt("IdPadre");
+        String perfiles = rsOpcionesMenu.getString("Perfiles") != null ? rsOpcionesMenu.getString("Perfiles") : "Sin perfiles";
+        String nombre = rsOpcionesMenu.getString("Nombre");
+        String descripcion = rsOpcionesMenu.getString("Descripcion");
+        String urlMenu = rsOpcionesMenu.getString("UrlMenu");
+        int estado = rsOpcionesMenu.getInt("EstadoRegistro");
+        int idOpcionMenu = rsOpcionesMenu.getInt("IdOpcionMenu");
+    %>
+
+    <% if (idPadre == 0) { %> 
+        <!-- Fila de menú principal -->
+        <tr>
+            <td><%= nombre %></td>
+            <td><%= descripcion %></td>
+            <td><%= urlMenu %></td>
+            <td><%= estado == 1 ? "Activo" : "Inactivo" %></td>
+            <td><%= perfiles %></td> <!-- Mostrar los perfiles asociados -->
+            <td>
+<button class="btn btn-warning btn-sm" 
+    onclick="abrirModalEditar(
+        <%= idOpcionMenu %>, 
+        '<%= nombre %>', 
+        '<%= urlMenu %>',
+        '<%= descripcion %>',
+        <%= idPadre %>,
+        <%= estado %>,
+        '<%= perfiles %>'
+    )">
+    Editar
+</button>
+
+
+                                                                                    
+                <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta opción de menú?');">
+                    <input type="hidden" name="idOpcionMenu" value="<%= idOpcionMenu %>">
+                    <button type="submit" name="accion" value="eliminarOpcionMenu" class="btn btn-danger btn-sm">
+                        Eliminar
+                    </button>
+                </form>
+                <button class="btn btn-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSubmenus<%= idOpcionMenu %>" aria-expanded="false" aria-controls="collapseSubmenus<%= idOpcionMenu %>">
+                    Ver Submenús
+                </button>
+            </td>
+        </tr>
+        <!-- Submenús colapsables -->
+        <tr class="collapse" id="collapseSubmenus<%= idOpcionMenu %>">
+            <td colspan="6">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>URL</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    <% 
+        // Mostrar submenús para la opción de menú actual
+        PreparedStatement psSubmenus = con.prepareStatement(
+            "SELECT m.IdOpcionMenu, m.Nombre, m.UrlMenu, m.Descripcion, m.IdPadre, m.EstadoRegistro, " +
+            "GROUP_CONCAT(p.Nombre ORDER BY p.Nombre ASC) AS Perfiles " +
+            "FROM OpcionesMenu m " +
+            "LEFT JOIN OpcionesMenu_Perfiles omp ON m.IdOpcionMenu = omp.IdOpcionMenu " +
+            "LEFT JOIN Perfiles p ON omp.IdPerfil = p.IdPerfil " +
+            "WHERE m.EstadoRegistro = 1 AND m.IdPadre = ? " +
+            "GROUP BY m.IdOpcionMenu, m.Nombre, m.UrlMenu, m.Descripcion, m.IdPadre, m.EstadoRegistro " +
+            "ORDER BY m.IdOpcionMenu");
+        psSubmenus.setInt(1, idOpcionMenu);
+        ResultSet rsSubmenus = psSubmenus.executeQuery();
+
+        while (rsSubmenus.next()) {
+            String submenuNombre = rsSubmenus.getString("Nombre");
+            String submenuUrl = rsSubmenus.getString("UrlMenu");
+            String submenuDescripcion = rsSubmenus.getString("Descripcion");
+            String submenuPerfiles = rsSubmenus.getString("Perfiles") != null ? rsSubmenus.getString("Perfiles") : "Sin perfiles";
+            int submenuIdOpcionMenu = rsSubmenus.getInt("IdOpcionMenu");
+    %>
+    <!-- Fila de submenú -->
+    <tr>
+        <td><%= submenuNombre %></td>
+        <td><%= submenuDescripcion %></td>
+        <td><%= submenuUrl %></td>
+    
+        <td>
+<button class="btn btn-warning btn-sm" 
+    onclick="abrirModalEditar(
+        <%= idOpcionMenu %>, 
+        '<%= nombre %>', 
+        '<%= urlMenu %>',
+        '<%= descripcion %>',
+        <%= idPadre %>,
+        <%= estado %>,
+        '<%= perfiles %>'
+    )">
+    Editar
+</button>
+
+
+
+            <form action="MantenimientoServlet" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este submenú?');">
+                <input type="hidden" name="idOpcionMenu" value="<%= submenuIdOpcionMenu %>">
+                <button type="submit" name="accion" value="eliminarOpcionMenu" class="btn btn-danger btn-sm">
+                    Eliminar
+                </button>
+            </form>
+        </td>
+    </tr>
+    <% } %> <!-- Fin del while para submenús -->
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    <% } %> <!-- Fin del if para opciones principales -->
+    <% } %> <!-- Fin del while para opciones principales -->
+            </tbody>
+        </table>`;
+    break;
+
+
+
+
+
+
+
                                     
 }
 
@@ -1748,6 +2094,8 @@ case 'matriculas':
     seccionCRUD.style.display = 'block';
     
  }
+ 
+ 
 
                         function editarUsuario(idUsuario, dni, nombres, apellidoPaterno, apellidoMaterno, correo, perfil) {
                             document.getElementById('idUsuario').value = idUsuario;
@@ -2148,10 +2496,107 @@ var matriculaModal = document.getElementById('matriculaModal');
         document.querySelector('#formAlumno button[type="submit"]').innerText = "Guardar Alumno";
         document.querySelector('#formAlumno button[type="submit"]').value = "registrarAlumno";
     });
-        
+   
         
         </script>
         
+        
+        <script>
+                
+                function abrirModalEditar(id, nombre, url, descripcion, idPadre, estado, perfiles) {
+    // Cambiar el título del modal
+    document.getElementById('opcionesMenuModalLabel').textContent = 'Editar Opción de Menú';
+
+    // Configurar el formulario con los valores existentes
+    document.getElementById('idOpcionMenu').value = id;
+    document.getElementById('nombreMenu').value = nombre;
+    document.getElementById('descripcionMenu').value = descripcion;
+    document.getElementById('urlMenu').value = url;
+    document.getElementById('estadoMenu').value = estado;
+
+    // Configurar el tipo de menú y mostrar/ocultar el campo de Menú Padre
+    const tipoMenu = idPadre ? 'submenu' : 'menu';
+    document.getElementById('tipoMenu').value = tipoMenu;
+    const divMenuPadre = document.getElementById('divMenuPadre');
+    if (idPadre) {
+        divMenuPadre.style.display = 'block';
+        document.getElementById('menuPadre').value = idPadre;
+    } else {
+        divMenuPadre.style.display = 'none';
+        document.getElementById('menuPadre').value = '';
+    }
+
+    // Configurar los perfiles asociados
+    const perfilesSeleccionados = perfiles.split(','); // Se espera que los perfiles lleguen como una cadena separada por comas
+    const checkboxes = document.querySelectorAll('#perfilesMenu .form-check-input');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = perfilesSeleccionados.includes(checkbox.value);
+    });
+
+    // Cambiar el texto y valor del botón de envío
+    const submitButton = document.querySelector('#formOpcionMenu button[type="submit"]');
+    submitButton.innerText = "Actualizar Opción de Menú";
+    submitButton.value = "editarOpcionMenu";
+
+    // Cambiar la acción del formulario a "editar"
+    const form = document.getElementById('formOpcionMenu');
+    form.action = 'MantenimientoServlet';
+
+    // Abrir el modal
+    const modal = new bootstrap.Modal(document.getElementById('opcionesMenuModal'));
+    modal.show();
+}
+
+// Resetear el formulario cuando se cierra el modal
+document.getElementById('opcionesMenuModal').addEventListener('hidden.bs.modal', function () {
+    // Restablecer los campos del formulario
+    document.getElementById('formOpcionMenu').reset();
+    document.getElementById('idOpcionMenu').value = '';
+    document.getElementById('divMenuPadre').style.display = 'none';
+
+    // Limpiar los checkboxes de perfiles
+    const checkboxes = document.querySelectorAll('#perfilesMenu .form-check-input');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+
+    // Restablecer el título y el botón del formulario
+    document.getElementById('opcionesMenuModalLabel').textContent = 'Registrar Nueva Opción de Menú';
+    const submitButton = document.querySelector('#formOpcionMenu button[type="submit"]');
+    submitButton.innerText = "Registrar Opción de Menú";
+    submitButton.value = "registrarOpcionMenu";
+});
+
+        // Función para abrir el modal en modo de registro
+document.querySelector('[data-bs-target="#opcionesMenuModal"]').addEventListener('click', () => {
+    // Cambiar el título del modal
+    document.getElementById('opcionesMenuModalLabel').textContent = 'Registrar Nueva Opción de Menú';
+
+    // Restablecer el formulario
+    const form = document.getElementById('formOpcionMenu');
+    form.reset(); // Limpia todos los campos del formulario automáticamente
+    document.getElementById('idOpcionMenu').value = ''; // Asegurar que el campo oculto esté vacío
+    document.getElementById('divMenuPadre').style.display = 'none'; // Ocultar el campo de menú padre
+
+    // Limpiar los checkboxes de perfiles
+    const checkboxes = document.querySelectorAll('#perfilesMenu .form-check-input');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false; // Desmarcar todos los checkboxes
+    });
+
+    // Cambiar la acción del formulario a "registrar"
+    form.action = 'MantenimientoServlet';
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.innerText = "Registrar Opción de Menú"; // Cambiar el texto del botón
+    submitButton.value = "registrarOpcionMenu"; // Cambiar el valor del botón
+
+    // Eliminar cualquier input oculto de acciones previas (si existe)
+    const accionInput = document.querySelector('input[name="accion"]');
+    if (accionInput) accionInput.remove();
+});
+
+                
+        </script>
         <script>
             function verPerfilAlumno(idMatricula) {
                 var contextPath = '<%= request.getContextPath() %>';

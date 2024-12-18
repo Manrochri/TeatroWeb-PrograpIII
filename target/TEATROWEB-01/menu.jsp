@@ -82,7 +82,7 @@
 
         .menu-logout {
             margin-top: auto;
-            background-color: #e74c3c;
+            
             text-align: center;
         }
 
@@ -157,7 +157,9 @@
         %>
 
         <div class="menu-logout">
-            <a href="logout.jsp">Cerrar sesión</a>
+             <form action="LogoutServlet" method="post" class="mt-3">
+                        <button type="submit" class="btn btn-danger w-100">Cerrar Sesión</button>
+             </form>
         </div>
     </div>
 

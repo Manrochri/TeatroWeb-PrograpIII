@@ -19,6 +19,8 @@ import jakarta.servlet.http.Part;
 import jakarta.ws.rs.Path;
 import java.io.FileWriter;
 import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 
@@ -1064,7 +1066,178 @@ case "editarCurso": {
                         break;
                     }
 
-                    
+          case "registrarOpcionMenu": {
+    // Obtener los parámetros del formulario
+    String nombreMenu = request.getParameter("nombreMenu");
+    String descripcionMenu = request.getParameter("descripcionMenu");
+    String urlMenu = request.getParameter("urlMenu");
+    String estadoMenu = request.getParameter("estadoMenu");
+    String menuPadre = request.getParameter("menuPadre"); // Esto puede ser null si el menú es principal
+    String tipoMenu = request.getParameter("tipoMenu");  // Obtenemos el tipo de menú (menú o submenú)
+    String perfilesString = request.getParameter("perfiles"); // Obtenemos el string de los perfiles seleccionados
+
+    // Convertir a mayúsculas para mantener uniformidad en la base de datos
+    nombreMenu = nombreMenu.toUpperCase();
+    descripcionMenu = descripcionMenu.toUpperCase();
+    urlMenu = urlMenu.toLowerCase(); // Por convención, URL suele ir en minúsculas
+
+    try {
+        // Lógica para obtener el IdPadre dependiendo del tipo de menú
+        Integer idPadre = null;
+        if (tipoMenu.equals("submenu") && menuPadre != null && !menuPadre.isEmpty()) {
+            // Si es un submenú, asignar el IdPadre del menú seleccionado
+            idPadre = Integer.parseInt(menuPadre);
+        } else {
+            // Si es un menú principal, el IdPadre es null (o 0 si lo prefieres)
+            idPadre = null;
+        }
+
+        // Inserción de la nueva opción de menú
+        String query = "INSERT INTO OpcionesMenu (Nombre, Descripcion, UrlMenu, EstadoRegistro, IdPadre) VALUES (?, ?, ?, ?, ?)";
+        ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        ps.setString(1, nombreMenu);
+        ps.setString(2, descripcionMenu);
+        ps.setString(3, urlMenu);
+        ps.setInt(4, Integer.parseInt(estadoMenu));
+        ps.setObject(5, idPadre); // Usamos setObject para permitir null en IdPadre
+
+        int rowsAffected = ps.executeUpdate();
+
+        // Obtener el ID de la nueva opción de menú
+        ResultSet rs = ps.getGeneratedKeys();
+        int idOpcionMenu = 0;
+        if (rs.next()) {
+            idOpcionMenu = rs.getInt(1);
+        }
+
+        // Asociar los perfiles seleccionados a la nueva opción de menú
+        if (perfilesString != null && !perfilesString.isEmpty()) {
+            // Dividir los perfiles seleccionados en una lista de Strings
+            String[] perfiles = perfilesString.split(",");
+
+            String perfilQuery = "INSERT INTO OpcionesMenu_Perfiles (IdOpcionMenu, IdPerfil, Orden, EstadoRegistro) VALUES (?, ?, ?, ?)";
+            int orden = 1;  // Puedes ajustar el valor de 'orden' si es necesario para tus necesidades
+            for (String perfilId : perfiles) {
+                ps = con.prepareStatement(perfilQuery);
+                ps.setInt(1, idOpcionMenu);
+                ps.setInt(2, Integer.parseInt(perfilId)); // Convertir el IdPerfil de String a Integer
+                ps.setInt(3, orden);  // Establecer el valor de 'Orden'
+                ps.setInt(4, 1);  // Establecer EstadoRegistro como activo (1)
+                ps.executeUpdate();
+                orden++;  // Incrementar el orden para cada perfil seleccionado
+            }
+        }
+
+        // Redirigir a la página de mantenimiento con éxito
+        response.sendRedirect("mantenimiento.jsp?success=opcionMenuRegistrada");
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        // Manejar la excepción (si es necesario)
+        response.sendRedirect("mantenimiento.jsp?error=registroFallido");
+    }
+
+    break;
+}
+          
+   case "editarOpcionMenu": {
+    try {
+        // Capturar los parámetros enviados desde el formulario
+        int idOpcionMenu = Integer.parseInt(request.getParameter("idOpcionMenu"));
+        String nombre = request.getParameter("nombreMenu");
+        String urlMenu = request.getParameter("urlMenu");
+        String descripcion = request.getParameter("descripcionMenu");
+        String tipoMenu = request.getParameter("tipoMenu");
+        String idPadreStr = request.getParameter("menuPadre");
+        int estadoRegistro = Integer.parseInt(request.getParameter("estadoMenu"));
+        String[] perfilesSeleccionados = request.getParameterValues("perfilesCheckbox");
+
+        // Determinar si tiene un menú padre (solo si es un submenú)
+        Integer idPadre = null;
+        if ("submenu".equals(tipoMenu) && idPadreStr != null && !idPadreStr.isEmpty()) {
+            idPadre = Integer.parseInt(idPadreStr);
+        }
+
+        // Actualizar los datos básicos de la opción de menú
+        String consultaActualizar = "UPDATE OpcionesMenu SET Nombre=?, UrlMenu=?, Descripcion=?, IdPadre=?, EstadoRegistro=? WHERE IdOpcionMenu=?";
+        PreparedStatement psActualizar = con.prepareStatement(consultaActualizar);
+        psActualizar.setString(1, nombre);
+        psActualizar.setString(2, urlMenu);
+        psActualizar.setString(3, descripcion);
+        if (idPadre != null) {
+            psActualizar.setInt(4, idPadre);
+        } else {
+            psActualizar.setNull(4, java.sql.Types.INTEGER);
+        }
+        psActualizar.setInt(5, estadoRegistro);
+        psActualizar.setInt(6, idOpcionMenu);
+
+        psActualizar.executeUpdate();
+
+        // Eliminar perfiles existentes
+        String consultaEliminarPerfiles = "DELETE FROM OpcionesMenu_Perfiles WHERE IdOpcionMenu=?";
+        PreparedStatement psEliminarPerfiles = con.prepareStatement(consultaEliminarPerfiles);
+        psEliminarPerfiles.setInt(1, idOpcionMenu);
+        psEliminarPerfiles.executeUpdate();
+
+        // Insertar nuevos perfiles seleccionados
+        if (perfilesSeleccionados != null) {
+            String consultaInsertarPerfil = "INSERT INTO OpcionesMenu_Perfiles (IdOpcionMenu, IdPerfil, Orden, EstadoRegistro) VALUES (?, ?, ?, 1)";
+            PreparedStatement psInsertarPerfil = con.prepareStatement(consultaInsertarPerfil);
+
+            for (String perfil : perfilesSeleccionados) {
+                int idPerfil = Integer.parseInt(perfil);
+                psInsertarPerfil.setInt(1, idOpcionMenu);
+                psInsertarPerfil.setInt(2, idPerfil);
+                psInsertarPerfil.setInt(3, 0); // Orden predeterminado
+                psInsertarPerfil.addBatch();
+            }
+
+            psInsertarPerfil.executeBatch();
+            psInsertarPerfil.close();
+        }
+
+        // Redirigir con mensaje de éxito
+        response.sendRedirect("mantenimiento.jsp?success=opcionEditada");
+    } catch (Exception e) {
+        e.printStackTrace();
+        
+        // Redirigir con mensaje de error en caso de fallo
+        response.sendRedirect("mantenimiento.jsp?error=opcionNoEditada");
+    }
+    break;
+}
+
+   case "eliminarOpcionMenu": {
+    try {
+        // Capturar el ID de la opción de menú a eliminar
+        int idOpcionMenu = Integer.parseInt(request.getParameter("idOpcionMenu"));
+
+        // Actualizar EstadoRegistro a 0 para el menú padre
+        String consultaActualizarPadre = "UPDATE OpcionesMenu SET EstadoRegistro = 0 WHERE IdOpcionMenu = ?";
+        PreparedStatement psActualizarPadre = con.prepareStatement(consultaActualizarPadre);
+        psActualizarPadre.setInt(1, idOpcionMenu);
+        psActualizarPadre.executeUpdate();
+
+        // Actualizar EstadoRegistro a 0 para todos los menús hijos
+        String consultaActualizarHijos = "UPDATE OpcionesMenu SET EstadoRegistro = 0 WHERE IdPadre = ?";
+        PreparedStatement psActualizarHijos = con.prepareStatement(consultaActualizarHijos);
+        psActualizarHijos.setInt(1, idOpcionMenu);
+        psActualizarHijos.executeUpdate();
+
+        // Redirigir con mensaje de éxito
+        response.sendRedirect("mantenimiento.jsp?success=opcionEliminada");
+    } catch (Exception e) {
+        e.printStackTrace();
+        
+        // Redirigir con mensaje de error en caso de fallo
+        response.sendRedirect("mantenimiento.jsp?error=opcionNoEliminada");
+    }
+    break;
+}
+
+
+
                         
 
                
