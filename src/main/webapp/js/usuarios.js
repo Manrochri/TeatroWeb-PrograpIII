@@ -96,55 +96,10 @@ function paginacionTabla(tablaId, itemsPorPagina = 5, paginacionId = 'paginacion
     mostrarPagina(1);
 }
  
-function seleccionarUsuario(idUsuario, dni, nombres, apellidoPaterno) {
-    console.log('Datos seleccionados:', {
-        idUsuario: idUsuario,
-        dni: dni,
-        nombres: nombres,
-        apellidoPaterno: apellidoPaterno
-    });
 
-    // Asignar valores al formulario
-    const inputIdUsuario = document.getElementById('idUsuario');
-    inputIdUsuario.value = idUsuario;
+
     
-    alert(idUsuario);
 
-    const searchDocente = document.getElementById('searchDocente');
-    searchDocente.value = `${nombres} ${apellidoPaterno}`.trim();
-
-    console.log('Valor establecido en input:', {
-        value: inputIdUsuario.value,
-        tipo: typeof inputIdUsuario.value
-    });
-}
-
- 
-document.getElementById('formDocente').addEventListener('submit', function(e) {
-    const idUsuario = document.getElementById('idUsuario').value;
-    const idGradoAcademico = document.getElementById('idGradoAcademico').value;
-    const descripcion = document.getElementById('descripcion').value;
- 
-    if (!idUsuario || idUsuario.trim() === '') {
-        e.preventDefault();
-        alert('Por favor, seleccione un usuario');
-        return false;
-    }
- 
-    if (!idGradoAcademico || idGradoAcademico === '') {
-        e.preventDefault();
-        alert('Por favor, seleccione un grado académico');
-        return false;
-    }
- 
-    if (!descripcion || descripcion.trim() === '') {
-        e.preventDefault();
-        alert('Por favor, ingrese una descripción');
-        return false;
-    }
- 
-    return true;
-});
  
 document.addEventListener('DOMContentLoaded', () => {
     paginacionTabla('tablaUsuarios2', resultsPerPage, 'paginacionUsuarios2');

@@ -614,7 +614,7 @@ case "editarCurso": {
                     
                     case "registrarDocente": {
                         // Obtener parámetros del formulario para registrar un nuevo docente
-                        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+                        int idUsuario = Integer.parseInt(request.getParameter("idUsuarioDocente"));
                         int idGradoAcademico = Integer.parseInt(request.getParameter("idGradoAcademico"));
                         String descripcion = request.getParameter("descripcion");
 
@@ -964,6 +964,55 @@ case "editarCurso": {
                         response.sendRedirect("mantenimiento.jsp?success=redSocialEliminada");
                         break;
                     }
+                    // Alumnos y Curso Alumnos
+                    case "registrarMatricula1": {
+                        try {
+                            String idAlumnoStr = request.getParameter("idAlumno");
+                            String idCursoStr = request.getParameter("idCurso");
+                            String fechaMatricula = request.getParameter("fechaMatricula");
+
+                            if (idAlumnoStr == null || idCursoStr == null || fechaMatricula == null) {
+                                request.setAttribute("errorMessage", "Datos inválidos. Por favor, inténtalo nuevamente.");
+                                request.getRequestDispatcher("matricula.jsp?idCurso=" + idCursoStr).forward(request, response);
+                                return;
+                            }
+
+                            int idAlumno = Integer.parseInt(idAlumnoStr);
+                            int idCurso = Integer.parseInt(idCursoStr);
+
+                            String consulta = "INSERT INTO Matriculas (IdAlumno, IdCurso, FechaMatricula, EstadoRegistro) VALUES (?, ?, ?, 1)";
+                            ps = con.prepareStatement(consulta);
+                            ps.setInt(1, idAlumno);
+                            ps.setInt(2, idCurso);
+                            ps.setDate(3, java.sql.Date.valueOf(fechaMatricula));
+
+                            ps.executeUpdate();
+
+                            request.setAttribute("successMessage", "¡Te has matriculado exitosamente en el curso!");
+                            request.getRequestDispatcher("matricula.jsp?idCurso=" + idCursoStr).forward(request, response);
+
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                            request.setAttribute("errorMessage", "Error en el formato de los datos enviados.");
+                            request.getRequestDispatcher("matricula.jsp?idCurso=" + request.getParameter("idCurso")).forward(request, response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            request.setAttribute("errorMessage", "Ocurrió un error al intentar matricularte. Por favor, inténtalo de nuevo.");
+                            request.getRequestDispatcher("matricula.jsp?idCurso=" + request.getParameter("idCurso")).forward(request, response);
+                        } finally {
+                            if (ps != null) try {
+                                ps.close();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            if (con != null) try {
+                                con.close();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
+                            }
                     
                     // Alumnos y Curso Alumnos
                     case "registrarMatricula": {
